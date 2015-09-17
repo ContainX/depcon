@@ -1,8 +1,8 @@
 package marathon
 
 import (
-	"github.com/spf13/cobra"
 	"github.com/gondor/depcon/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
 var deployCmd = &cobra.Command{

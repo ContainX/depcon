@@ -1,13 +1,13 @@
 package commands
 
 import (
-	"github.com/gondor/depcon/cliconfig"
-	"github.com/gondor/depcon/utils"
 	"errors"
 	"fmt"
+	"github.com/gondor/depcon/cliconfig"
+	"github.com/gondor/depcon/pkg/cli"
+	"github.com/gondor/depcon/utils"
 	"github.com/spf13/cobra"
 	"io"
-	"github.com/gondor/depcon/pkg/cli"
 )
 
 type ConfigEnvironments struct {

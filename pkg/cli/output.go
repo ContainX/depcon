@@ -14,7 +14,7 @@ type Formatter interface {
 // Handles writing the formatted type into the desired output and global formatting
 type CLIWriter struct {
 	FormatWriter func(f Formatter)
-	ErrorWriter func(err error)
+	ErrorWriter  func(err error)
 }
 
 var writer *CLIWriter
@@ -30,7 +30,6 @@ func Output(f Formatter, err error) {
 		writer.ErrorWriter(err)
 	}
 }
-
 
 func FlushWriter(w *tabwriter.Writer) {
 	fmt.Fprintln(w, "")

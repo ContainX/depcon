@@ -3,11 +3,11 @@ package cliconfig
 // Some functions have been imported for docker/cliconfig
 
 import (
-	"github.com/gondor/depcon/pkg/userdir"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/gondor/depcon/pkg/userdir"
 	"io"
 	"os"
 	"path/filepath"

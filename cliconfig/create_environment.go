@@ -1,9 +1,9 @@
 package cliconfig
 
 import (
-	"github.com/gondor/depcon/utils"
 	"fmt"
 	"github.com/bgentry/speakeasy"
+	"github.com/gondor/depcon/utils"
 	"net/url"
 	"regexp"
 )

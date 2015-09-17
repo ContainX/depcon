@@ -1,9 +1,9 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/pkg/httpclient"
 	"errors"
 	"fmt"
+	"github.com/gondor/depcon/pkg/httpclient"
 )
 
 func (c *MarathonClient) ListDeployments() ([]*Deploy, error) {

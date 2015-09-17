@@ -2,7 +2,6 @@ package marathon
 
 import (
 	"github.com/spf13/cobra"
-
 )
 
 var eventCmd = &cobra.Command{

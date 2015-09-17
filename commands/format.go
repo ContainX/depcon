@@ -1,11 +1,11 @@
 package commands
 
 import (
+	"fmt"
+	"github.com/gondor/depcon/pkg/cli"
 	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/gondor/depcon/pkg/logger"
-	"fmt"
 	"os"
-	"github.com/gondor/depcon/pkg/cli"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 )
 
 func init() {
-	cli.Register(&cli.CLIWriter{ FormatWriter: PrintFormat, ErrorWriter: PrintError })
+	cli.Register(&cli.CLIWriter{FormatWriter: PrintFormat, ErrorWriter: PrintError})
 	rootCmd.PersistentFlags().StringP(FLAG_FORMAT, "o", "column", "Specifies the output format [column | json | yaml]")
 }
 
@@ -58,7 +58,6 @@ func printEncodedType(formatter cli.Formatter, encoder encoding.EncoderType) {
 func printColumn(formatter cli.Formatter) {
 	err := formatter.ToColumns(os.Stdout)
 	if err != nil {
-		logger.Logger().Error("Error: %s",err.Error())
+		logger.Logger().Error("Error: %s", err.Error())
 	}
 }
-

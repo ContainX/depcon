@@ -1,15 +1,15 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/pkg/encoding"
 	"errors"
 	"fmt"
+	"github.com/gondor/depcon/marathon"
+	"github.com/gondor/depcon/pkg/cli"
+	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/spf13/cobra"
 	"strconv"
 	"strings"
 	"time"
-	"github.com/gondor/depcon/pkg/cli"
 )
 
 const (

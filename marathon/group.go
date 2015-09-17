@@ -1,8 +1,8 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/pkg/encoding"
 	"fmt"
+	"github.com/gondor/depcon/pkg/encoding"
 	"os"
 	"time"
 )

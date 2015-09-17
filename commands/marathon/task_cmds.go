@@ -2,8 +2,8 @@ package marathon
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"github.com/gondor/depcon/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
 var taskCmd = &cobra.Command{

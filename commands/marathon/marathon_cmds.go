@@ -1,8 +1,8 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/marathon"
 	"github.com/gondor/depcon/cliconfig"
+	"github.com/gondor/depcon/marathon"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -24,7 +24,7 @@ var (
     See marathon's subcommands for available choices`,
 	}
 	marathonClient marathon.Marathon
-	configFile *cliconfig.ConfigFile
+	configFile     *cliconfig.ConfigFile
 )
 
 // Associates the marathon service to the given command
@@ -42,7 +42,9 @@ func AddJailedMarathonToCmd(rc *cobra.Command, c *cliconfig.ConfigFile) {
 }
 
 // Associates all marathon service commands to specified parent
-func associateServiceCommands(parent *cobra.Command) { parent.AddCommand(appCmd, groupCmd, deployCmd, taskCmd, eventCmd, serverCmd) }
+func associateServiceCommands(parent *cobra.Command) {
+	parent.AddCommand(appCmd, groupCmd, deployCmd, taskCmd, eventCmd, serverCmd)
+}
 
 func client(c *cobra.Command) marathon.Marathon {
 	if marathonClient == nil {

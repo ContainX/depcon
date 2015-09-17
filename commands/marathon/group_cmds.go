@@ -1,11 +1,11 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/marathon"
 	"fmt"
+	"github.com/gondor/depcon/marathon"
+	"github.com/gondor/depcon/pkg/cli"
 	"github.com/spf13/cobra"
 	"strings"
-	"github.com/gondor/depcon/pkg/cli"
 )
 
 var groupCmd = &cobra.Command{

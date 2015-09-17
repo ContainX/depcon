@@ -1,9 +1,9 @@
 package httpclient
 
 import (
+	"errors"
 	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/gondor/depcon/pkg/logger"
-	"errors"
 	"io/ioutil"
 	"net/http"
 	"strings"

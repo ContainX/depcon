@@ -1,11 +1,11 @@
 package marathon
 
 import (
+	"errors"
+	"fmt"
 	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/gondor/depcon/pkg/httpclient"
 	"github.com/gondor/depcon/utils"
-	"errors"
-	"fmt"
 	"os"
 )
 

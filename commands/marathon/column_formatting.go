@@ -1,14 +1,14 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/utils"
 	"fmt"
+	"github.com/gondor/depcon/marathon"
+	"github.com/gondor/depcon/pkg/cli"
+	"github.com/gondor/depcon/utils"
 	"io"
 	"strconv"
 	"text/tabwriter"
 	"time"
-	"github.com/gondor/depcon/pkg/cli"
 )
 
 const (

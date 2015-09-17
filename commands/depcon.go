@@ -1,14 +1,14 @@
 package commands
 
 import (
-	"github.com/gondor/depcon/cliconfig"
-	"github.com/gondor/depcon/pkg/logger"
 	"fmt"
+	"github.com/gondor/depcon/cliconfig"
+	"github.com/gondor/depcon/commands/marathon"
+	"github.com/gondor/depcon/pkg/logger"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
 	"strings"
-	"github.com/gondor/depcon/commands/marathon"
 )
 
 const (
