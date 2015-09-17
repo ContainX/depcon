@@ -1,3 +1,4 @@
+// Logging configuration and management
 package logger
 
 // Loosely wraps go-logging to offer a possible facade in the future for other logging frameworks

@@ -1,3 +1,4 @@
+// Provides storage and retrieval of user preferences and cluster environment configuration
 package cliconfig
 
 // Some functions have been imported for docker/cliconfig

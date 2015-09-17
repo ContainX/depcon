@@ -1,3 +1,4 @@
+// HTTP Client which handles generic error routing and marshaling
 package httpclient
 
 import (

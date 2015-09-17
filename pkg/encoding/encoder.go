@@ -1,3 +1,4 @@
+// YAML and JSON encoding
 package encoding
 
 import (

@@ -1,3 +1,4 @@
+// Defines all the CLI command definitions and execution against internal frameworks
 package commands
 
 import (
