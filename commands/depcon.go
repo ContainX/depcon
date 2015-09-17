@@ -48,6 +48,7 @@ var (
 )
 
 func init() {
+	logger.InitWithDefaultLogger("depcon")
 	rootCmd.PersistentFlags().StringP(FlagEnv, "e", "", EnvHelp)
 	rootCmd.PersistentFlags().Bool(FlagVerbose, false, "Enables debug/verbose logging")
 	viper.BindPFlag(FlagEnv, rootCmd.PersistentFlags().Lookup(FlagEnv))
@@ -129,8 +130,6 @@ func findEnvNameFromArgs() string {
 // Configures the logging levels based on the logLevels map.  If --verbose is flagged
 // then all categories defined in the map become DEBUG
 func configureLogging(cmd *cobra.Command, args []string) {
-	logger.InitWithDefaultLogger("depcon")
-
 	verbose, _ := cmd.Flags().GetBool(FlagVerbose)
 
 	for category, level := range logLevels {
