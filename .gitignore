@@ -22,3 +22,9 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+# App and IDEA
+depcon
+depcon.iml
+.idea
+tests/
