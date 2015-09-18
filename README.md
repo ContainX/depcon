@@ -20,3 +20,15 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 - Future releases will offer a proposed Open Deployment Descriptor format which will allow Depcon to deploy a common descriptor against Marathon, Kubernetes, ECS and Docker Swarm.
 - Ability to wait until a new or updated container deployment is healthy
 
+### Build and Install the Binaries from Source
+
+Add Depcon and its package dependencies to your go `src` directory
+
+    go get -v github.com/gondor/depcon
+
+Once the `get` has completed, you should find your new `depcon` (or `depcon.exe`) executable sitting inside the `$GOPATH/bin/`
+
+To update Depcon's dependencies, use `go get` with the `-u` option.
+
+    go get -u -v github.com/gondor/depcon
+
