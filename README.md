@@ -20,6 +20,18 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 - Future releases will offer a proposed Open Deployment Descriptor format which will allow Depcon to deploy a common descriptor against Marathon, Kubernetes, ECS and Docker Swarm.
 - Ability to wait until a new or updated container deployment is healthy
 
+### Binary Installation 
+
+You can download the binaries (ver 0.1)
+
+ * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_darwin_386.zip?direct) / [freebsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_freebsd_386.zip?direct) / [openbsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_openbsd_386.zip?direct) ]
+ * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_darwin_amd64.zip?direct) / [freebsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_freebsd_amd64.zip?direct) / [openbsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_openbsd_amd64.zip?direct) ]
+
+Or by installing via deb packages (ver 0.1)
+
+ * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.1_armhf.deb?direct) ]
+
+
 ### Build and Install the Binaries from Source
 
 Add Depcon and its package dependencies to your go `src` directory
