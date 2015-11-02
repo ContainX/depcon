@@ -44,6 +44,52 @@ To update Depcon's dependencies, use `go get` with the `-u` option.
 
     go get -u -v github.com/gondor/depcon
 
+## Global options in Depcon
+
+#### Output Options
+
+Depcon makes it easy to integrate with third party systems.  Any command or query in depcon has the options to list results in tabular, json or yaml formats.
+
+For example:  `depcon app list -o json` would return a list of running applications in JSON form.  You can also use `-o yaml` for yaml or no option which by default results in table/tabular form.
+
+## Using Depcon with Mesos/Marathon
+
+### Applications
+
+Below are examples with application managements
+
+#### Listing deployed applications
+
+List all applications
+
+```
+$ depcon app list
+```
+
+### Getting details about a running application by it's ID
+
+Gets an application details by Id
+
+```
+$ depcon app get myapp
+```
+
+### Destroy/Delete a running application
+
+Remove an application [applicationId] and all of it's instances
+
+```
+$ decon app destroy myapp
+```
+
+### Scale an Application
+
+Scales [appliationId] to total [instances]
+
+```
+$ depcon app scale myapp 2
+```
+
 ## License
 
 This software is licensed under the Apache 2 license, quoted below.
