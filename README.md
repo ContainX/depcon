@@ -66,7 +66,7 @@ List all applications
 $ depcon app list
 ```
 
-### Getting details about a running application by it's ID
+#### Getting details about a running application by it's ID
 
 Gets an application details by Id
 
@@ -74,7 +74,7 @@ Gets an application details by Id
 $ depcon app get myapp
 ```
 
-### Destroy/Delete a running application
+#### Destroy/Delete a running application
 
 Remove an application [applicationId] and all of it's instances
 
@@ -82,12 +82,30 @@ Remove an application [applicationId] and all of it's instances
 $ decon app destroy myapp
 ```
 
-### Scale an Application
+#### Scale an Application
 
 Scales [appliationId] to total [instances]
 
 ```
 $ depcon app scale myapp 2
+```
+
+#### Restart a running application
+
+Restarts an application by Id
+
+```
+$ depcon app restart myapp
+```
+
+#### Update a running application
+
+```
+// Update CPU resources
+$ depcon app update cpu myapp 0.5
+
+// Update Memory to 400mb
+$ depcon app update mem myapp 400
 ```
 
 ## License
