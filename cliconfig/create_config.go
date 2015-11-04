@@ -35,9 +35,10 @@ func CreateNewConfigFromUserInput() *ConfigFile {
 func getDefaultFormatOption() string {
 
 	var response string
-	fmt.Println("Default output format (can be overriden via runtime flag)")
+	fmt.Println("Default output format (can be overridden via runtime flag)")
 	fmt.Println("1 - column")
-	fmt.Println("2 - json\n")
+	fmt.Println("2 - json")
+	fmt.Println("3 - yaml\n")
 	fmt.Printf("Option: ")
 
 	fmt.Scanf("%s", &response)
@@ -45,6 +46,9 @@ func getDefaultFormatOption() string {
 
 	if strings.HasPrefix(response, "2") {
 		return "json"
+	}
+	if strings.HasPrefix(response, "3") {
+		return "yaml"
 	}
 	return "column"
 }
