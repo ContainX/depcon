@@ -2,7 +2,7 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/pkg/httpclient"
+	"github.com/shirkevich/depcon/pkg/httpclient"
 	"github.com/gondor/depcon/pkg/logger"
 	"github.com/gondor/depcon/utils"
 	"time"

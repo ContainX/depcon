@@ -7,6 +7,7 @@ import (
 	"github.com/gondor/depcon/pkg/logger"
 	"io/ioutil"
 	"net/http"
+	"crypto/tls"
 	"strings"
 	"sync"
 	"time"
@@ -66,6 +67,7 @@ func NewHttpClient(config HttpClientConfig) *HttpClient {
 	return &HttpClient{
 		config: config,
 		http: &http.Client{
+			Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
 			Timeout: (time.Duration(config.RequestTimeout) * time.Second),
 		},
 	}
