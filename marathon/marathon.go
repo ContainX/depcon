@@ -196,10 +196,10 @@ type MarathonClient struct {
 
 func NewMarathonClient(host, username, password string) Marathon {
 	httpConfig := httpclient.NewDefaultConfig()
-	httpClient := httpclient.NewHttpClient(*httpConfig)
-
 	httpConfig.HttpUser = username
 	httpConfig.HttpPass = password
+
+	httpClient := httpclient.NewHttpClient(*httpConfig)
 
 	c := new(MarathonClient)
 	c.http = *httpClient
