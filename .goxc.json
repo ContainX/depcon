@@ -1,0 +1,19 @@
+{
+ "ArtifactsDest": "build",
+ "ConfigVersion": "0.9",
+ "PackageVersion": "0.1",
+ "TaskSettings": {
+  "bintray": {
+   "user": "gondor",
+   "package": "depcon",
+   "repository": "utils",
+   "subject": "pacesys"
+  },
+  "debs": {
+      "metadata": {
+        "description": "Depcon - Mesos/Marathon, Kubernetes, Compose and ECS deployer",
+        "maintainer": "Jeremy Unruh (https://github.com/gondor)"
+      }
+    }
+ }
+}
