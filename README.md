@@ -108,6 +108,68 @@ $ depcon app update cpu myapp 0.5
 $ depcon app update mem myapp 400
 ```
 
+## Using Depcon as a Docker Compose client
+
+Depcon supports Docker Compose natively on all major operating systems.  This feature is currently in beta, please report any found issues.
+
+**Available Docker Compose Actions**
+
+```
+$ depcon compose
+
+Usage:
+  depcon compose [command]
+
+Available Commands:
+  build       Build or rebuild services
+  kill        Kill containers
+  logs        View output from containers
+  port        Stops services
+  ps          List containers
+  up          Create and start containers
+  pull        Pulls service imagess
+  restart     Restart running containers
+  rm          Remove stopped containers
+  start       Start services
+  stop        Stops services
+  up          Create and start containers
+
+Flags:
+      --compose-file="docker-compose.yml": Docker compose file
+  -h, --help[=false]: help for compose
+      --name="depcon_proj": Project name for this composition
+
+
+Global Flags:
+  -e, --env="": Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined
+  -o, --output="column": Specifies the output format [column | json | yaml]
+      --verbose[=false]: Enables debug/verbose logging
+
+
+Use "depcon compose [command] --help" for more information about a command.
+```
+
+The examples below assume `docker-compose.yml` is found in the execution directory.  If the compose file is located in another location then
+the global `--compose-file` flag can be invoked.
+
+#### Creating and Starting containers
+
+```
+$ depcon compose up
+```
+
+#### Creating and Starting a specific service
+
+```
+$ depcon compose up redis
+```
+
+#### Stopping compose services
+
+```
+$ depcon compose kill
+```
+
 ## License
 
 This software is licensed under the Apache 2 license, quoted below.
