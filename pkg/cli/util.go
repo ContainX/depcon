@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"strings"
 	"time"
 )
 
@@ -18,4 +19,18 @@ func FormatDate(date string) string {
 		return date
 	}
 	return t.Format("2006-01-_2 15:04:05")
+}
+
+func NameValueSliceToMap(params []string) map[string]string {
+	if params == nil {
+		return nil
+	}
+	envmap := make(map[string]string)
+	for _, p := range params {
+		if strings.Contains(p, "=") {
+			v := strings.Split(p, "=")
+			envmap[v[0]] = v[1]
+		}
+	}
+	return envmap
 }
