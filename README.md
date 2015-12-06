@@ -12,24 +12,27 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 - Variable substistution in deployment descriptors
 - Output results in Column, YAML and JSON formats for easy integration with automation
 - Accepts deployment descriptors in either JSON or YAML format
-- Full Mesos/Marathon support
+- **Full Mesos/Marathon support**
   - Application, Group & Task management
   - Partial application updates: CPU, Memory & Scaling
   - Quick application rollback
   - Leader election, Server info and elapsed response
+- **Docker compose support**
+  - Supports all major operating systems
+  - Works with Docker Machine aka Boot2Docker
 - Future releases will offer a proposed Open Deployment Descriptor format which will allow Depcon to deploy a common descriptor against Marathon, Kubernetes, ECS and Docker Swarm.
 - Ability to wait until a new or updated container deployment is healthy
 
 ### Binary Installation 
 
-You can download the binaries (ver 0.2)
+You can download the binaries (ver 0.3)
 
- * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_darwin_386.zip?direct) / [freebsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_freebsd_386.zip?direct) / [openbsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_openbsd_386.zip?direct) ]
- * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_darwin_amd64.zip?direct) / [freebsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_freebsd_amd64.zip?direct) / [openbsd](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_openbsd_amd64.zip?direct) ]
+ * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_darwin_386.zip?direct) 
+ * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_darwin_amd64.zip?direct)
 
-Or by installing via deb packages (ver 0.2)
+Or by installing via deb packages (ver 0.3)
 
- * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.2_armhf.deb?direct) ]
+ * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_armhf.deb?direct) ]
 
 
 ### Build and Install the Binaries from Source

@@ -1,7 +1,7 @@
-VERSION = 0.2
+VERSION = 0.3
 
 GO_FMT = gofmt -s -w -l .
-GO_XC = goxc -os="linux darwin windows freebsd openbsd netbsd"
+GO_XC = goxc -os="linux darwin windows"
 
 GOXC_FILE = .goxc.local.json
 
