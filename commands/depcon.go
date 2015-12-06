@@ -4,6 +4,7 @@ package commands
 import (
 	"fmt"
 	"github.com/gondor/depcon/cliconfig"
+	"github.com/gondor/depcon/commands/compose"
 	"github.com/gondor/depcon/commands/marathon"
 	"github.com/gondor/depcon/pkg/logger"
 	"github.com/spf13/cobra"
@@ -98,6 +99,7 @@ func executeWithExistingConfig() {
 			marathon.AddMarathonToCmd(rootCmd, configFile)
 		}
 	}
+	compose.AddComposeToCmd(rootCmd, nil)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.Execute()
 }
