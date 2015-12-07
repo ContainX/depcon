@@ -1,84 +1,67 @@
 package compose
 
 import (
+	"errors"
 	"fmt"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
+	"github.com/gondor/depcon/pkg/envsubst"
+	"io/ioutil"
 	"os"
+)
+
+const (
+	DOCKER_TLS_VERIFY string = "DOCKER_TLS_VERIFY"
+)
+
+var (
+	ErrorParamsMissing = errors.New("One or more ${PARAMS} that were defined in the compose file could not be resolved.")
 )
 
 type ComposeWrapper struct {
 	context *Context
+	project *project.Project
 }
 
 func NewCompose(context *Context) Compose {
 	c := new(ComposeWrapper)
 	c.context = context
+	project, err := c.createDockerContext()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.project = project
+
 	return c
 }
 
-func (c *ComposeWrapper) Up(envParams map[string]string, ErrorOnMissingParams bool, services ...string) error {
-
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Up(services...)
+func (c *ComposeWrapper) Up(services ...string) error {
+	return c.project.Up(services...)
 }
 
 func (c *ComposeWrapper) Kill(services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Kill(services...)
+	return c.project.Kill(services...)
 }
 
 func (c *ComposeWrapper) Build(services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Build(services...)
+	return c.project.Build(services...)
 }
 
 func (c *ComposeWrapper) Restart(services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Restart(services...)
+	return c.project.Restart(services...)
 }
 
 func (c *ComposeWrapper) Pull(services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Pull(services...)
+	return c.project.Pull(services...)
 }
 
 func (c *ComposeWrapper) Delete(services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Delete(services...)
+	return c.project.Delete(services...)
 }
 
 func (c *ComposeWrapper) Logs(services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
-	return project.Log(services...)
+	return c.project.Log(services...)
 }
 
 func (c *ComposeWrapper) Start(services ...string) error {
@@ -90,24 +73,15 @@ func (c *ComposeWrapper) Stop(services ...string) error {
 }
 
 func (c *ComposeWrapper) execStartStop(start bool, services ...string) error {
-	project, err := c.createDockerContext()
-
-	if err != nil {
-		return err
-	}
 	if start {
-		return project.Start(services...)
+		return c.project.Start(services...)
 	}
-	return project.Down(services...)
+	return c.project.Down(services...)
 }
 
 func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
-	project, err := c.createDockerContext()
-	if err != nil {
-		return err
-	}
 
-	s, err := project.CreateService(service)
+	s, err := c.project.CreateService(service)
 	if err != nil {
 		return err
 	}
@@ -130,15 +104,10 @@ func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 }
 
 func (c *ComposeWrapper) PS(quiet bool) error {
-	p, err := c.createDockerContext()
 	allInfo := project.InfoSet{}
 
-	if err != nil {
-		return err
-	}
-
-	for name := range p.Configs {
-		service, err := p.CreateService(name)
+	for name := range c.project.Configs {
+		service, err := c.project.CreateService(name)
 		if err != nil {
 			return err
 		}
@@ -161,7 +130,7 @@ func (c *ComposeWrapper) createDockerContext() (*project.Project, error) {
 		log.Fatal(err)
 	}
 
-	tlsVerify := os.Getenv("DOCKER_TLS_VERIFY")
+	tlsVerify := os.Getenv(DOCKER_TLS_VERIFY)
 
 	if tlsVerify == "1" {
 		clientFactory, err = docker.NewDefaultClientFactory(docker.ClientOpts{
@@ -171,6 +140,28 @@ func (c *ComposeWrapper) createDockerContext() (*project.Project, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
+	}
+
+	if c.context.EnvParams != nil && len(c.context.EnvParams) > 0 {
+		file, err := os.Open(c.context.ComposeFile)
+		if err != nil {
+			return nil, fmt.Errorf("Error opening filename %s, %s", c.context.ComposeFile, err.Error())
+		}
+		parsed, missing := envsubst.SubstFileTokens(file, c.context.ComposeFile, c.context.EnvParams)
+		log.Debug("Map: %v\nParsed: %s\n", c.context.EnvParams, parsed)
+
+		if c.context.ErrorOnMissingParams && missing {
+			return nil, ErrorParamsMissing
+		}
+		file, err = ioutil.TempFile("", "depcon")
+		if err != nil {
+			return nil, err
+		}
+		err = ioutil.WriteFile(file.Name(), []byte(parsed), os.ModeTemporary)
+		if err != nil {
+			return nil, err
+		}
+		c.context.ComposeFile = file.Name()
 	}
 
 	return docker.NewProject(&docker.Context{

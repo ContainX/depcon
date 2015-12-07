@@ -1,0 +1,8 @@
+web:
+  image: ubuntu
+  links:
+   - redis
+redis:
+  image: redis
+  ports:
+        - "${REDIS_PORT}:${REDIS_PORT}"  

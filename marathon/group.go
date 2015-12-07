@@ -3,6 +3,7 @@ package marathon
 import (
 	"fmt"
 	"github.com/gondor/depcon/pkg/encoding"
+	"github.com/gondor/depcon/pkg/envsubst"
 	"os"
 	"time"
 )
@@ -23,7 +24,7 @@ func (c *MarathonClient) CreateGroupFromFile(filename string, opts *CreateOption
 		return nil, err
 	}
 
-	parsed, missing := substFileTokens(file, filename, options.EnvParams)
+	parsed, missing := envsubst.SubstFileTokens(file, filename, options.EnvParams)
 
 	if options.ErrorOnMissingParams && missing {
 		return nil, ErrorAppParamsMissing

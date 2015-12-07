@@ -98,9 +98,9 @@ func AddComposeToCmd(rc *cobra.Command, c *cliconfig.ConfigFile) {
 }
 
 func init() {
-	upCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
+	composeCmd.PersistentFlags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
-	upCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
+	composeCmd.PersistentFlags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the compose file.
                   These take precidence over env vars`)
 

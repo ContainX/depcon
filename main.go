@@ -17,6 +17,8 @@ import (
 	"github.com/gondor/depcon/commands"
 )
 
+var VERSION string = ""
+
 func main() {
-	commands.Execute()
+	commands.Execute(VERSION)
 }

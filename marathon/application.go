@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gondor/depcon/pkg/encoding"
+	"github.com/gondor/depcon/pkg/envsubst"
 	"github.com/gondor/depcon/pkg/httpclient"
 	"github.com/gondor/depcon/utils"
 	"os"
@@ -38,7 +39,7 @@ func (c *MarathonClient) CreateApplicationFromFile(filename string, opts *Create
 		return nil, err
 	}
 
-	parsed, missing := substFileTokens(file, filename, options.EnvParams)
+	parsed, missing := envsubst.SubstFileTokens(file, filename, options.EnvParams)
 
 	if options.ErrorOnMissingParams && missing {
 		return nil, ErrorAppParamsMissing

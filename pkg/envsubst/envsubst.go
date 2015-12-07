@@ -7,10 +7,13 @@ package envsubst
 import (
 	"bufio"
 	"bytes"
+	"github.com/gondor/depcon/pkg/logger"
 	"io"
-	"log"
+	"os"
 	"unicode"
 )
+
+var log = logger.GetLogger("depcon")
 
 type runeReader interface {
 	ReadRune() (rune, int, error)
@@ -187,4 +190,18 @@ func Substitute(in io.Reader, preserveUndef bool, resolver func(string) string) 
 		log.Fatal(err)
 	}
 	return buf.String()
+}
+
+func SubstFileTokens(in io.Reader, filename string, params map[string]string) (parsed string, missing bool) {
+	parsed = Substitute(in, true, func(s string) string {
+		if params != nil && params[s] != "" {
+			return params[s]
+		}
+		if os.Getenv(s) == "" {
+			log.Warning("Cannot find a value for varable ${%s} which was defined in %s", s, filename)
+			missing = true
+		}
+		return os.Getenv(s)
+	})
+	return parsed, missing
 }

@@ -20,19 +20,20 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 - **Docker compose support**
   - Supports all major operating systems
   - Works with Docker Machine aka Boot2Docker
+  - Adds param support -- `${PARAMS}` can be placed in compose files
 - Future releases will offer a proposed Open Deployment Descriptor format which will allow Depcon to deploy a common descriptor against Marathon, Kubernetes, ECS and Docker Swarm.
 - Ability to wait until a new or updated container deployment is healthy
 
 ### Binary Installation 
 
-You can download the binaries (ver 0.3)
+You can download the binaries (ver 0.4)
 
- * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_darwin_386.zip?direct) ]
- * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_darwin_amd64.zip?direct) ]
+ * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_darwin_386.zip?direct) ]
+ * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_darwin_amd64.zip?direct) ]
 
-Or by installing via deb packages (ver 0.3)
+Or by installing via deb packages (ver 0.4)
 
- * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.3_armhf.deb?direct) ]
+ * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_armhf.deb?direct) ]
 
 
 ### Build and Install the Binaries from Source
@@ -171,6 +172,21 @@ $ depcon compose up redis
 
 ```
 $ depcon compose kill
+```
+
+### Using parameters within Compose templates
+
+Depcon offers extenability on top of tradditional Docker compose.  It allows params to be placed within compose files in the format of `${PARAM}`.  Depcon allows these params to be resolved via the flag `--param PARAM=value` during use or via exported env variables.
+
+Take a look at the `samples/docker-compose-params.yml` in Depcon source repo.  Here's an example of params using the referenced sample compose file.
+
+```
+// Inline params
+$ depcon compose up redis --compose-file samples/docker-compose-params.yml -p REDIS_PORT=6379
+
+// As env variables
+$ export REDIS_PORT=6379
+$ depcon compose up redis --compose-file samples/docker-compose-params.yml
 ```
 
 ## License

@@ -19,7 +19,7 @@ const (
 	ViperEnv    = "env_name"
 	EnvHelp     = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
 	DepConHelp  = `
-DEPCON (Deploy Containers)
+DEPCON (Deploy Containers) -- VER: %s
 
 Provides management and deployment aid across user-defined clusters such as
   - Mesos/Marathon
@@ -35,7 +35,6 @@ var (
 	rootCmd = &cobra.Command{
 		Use:              "depcon",
 		Short:            "Manage container clusters and deployments",
-		Long:             DepConHelp,
 		PersistentPreRun: configureLogging,
 	}
 
@@ -58,7 +57,8 @@ func init() {
 
 // Main Entry point called by main - responsible for detecting if this is a first run without a config
 // to force initial setup
-func Execute() {
+func Execute(version string) {
+	rootCmd.Long = fmt.Sprintf(DepConHelp, version)
 	file, found := cliconfig.HasExistingConfig()
 	if found {
 		configFile = file

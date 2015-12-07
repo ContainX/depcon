@@ -13,22 +13,37 @@ var (
 
 type ComposeAction func(c compose.Compose, cmd *cobra.Command, args []string) error
 
+type ComposePreHook func(composeFile, projName string, cmd *cobra.Command) compose.Compose
+
 func execAction(action ComposeAction) func(cmd *cobra.Command, args []string) {
+	return execActionWithPreHook(action, defaultCompose)
+}
+
+func execActionWithPreHook(action ComposeAction, preHook ComposePreHook) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		composeFile, _ := cmd.Flags().GetString(COMPOSE_FILE_FLAG)
 		projName, _ := cmd.Flags().GetString(PROJECT_NAME_FLAG)
 
-		context := &compose.Context{
-			ComposeFile: composeFile,
-			ProjectName: projName,
-		}
-		compose := compose.NewCompose(context)
+		compose := preHook(composeFile, projName, cmd)
 		err := action(compose, cmd, args)
 
 		if err != nil {
 			cli.Output(nil, err)
 		}
 	}
+}
+
+func defaultCompose(composeFile, projName string, cmd *cobra.Command) compose.Compose {
+	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
+	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
+
+	context := &compose.Context{
+		ComposeFile:          composeFile,
+		ProjectName:          projName,
+		EnvParams:            cli.NameValueSliceToMap(params),
+		ErrorOnMissingParams: !ignore,
+	}
+	return compose.NewCompose(context)
 }
 
 func logs(c compose.Compose, cmd *cobra.Command, args []string) error {
@@ -79,11 +94,5 @@ func port(c compose.Compose, cmd *cobra.Command, args []string) error {
 }
 
 func up(c compose.Compose, cmd *cobra.Command, args []string) error {
-	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
-	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
-
-	if len(args) > 0 {
-		return c.Up(cli.NameValueSliceToMap(params), !ignore, args...)
-	}
-	return c.Up(cli.NameValueSliceToMap(params), !ignore)
+	return c.Up(args...)
 }

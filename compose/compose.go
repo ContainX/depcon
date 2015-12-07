@@ -11,7 +11,7 @@ const (
 var log = logger.GetLogger("depcon.compose")
 
 type Compose interface {
-	Up(envParams map[string]string, ErrorOnMissingParams bool, services ...string) error
+	Up(services ...string) error
 
 	Kill(services ...string) error
 
