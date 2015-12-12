@@ -19,7 +19,9 @@ const (
 	ViperEnv    = "env_name"
 	EnvHelp     = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
 	DepConHelp  = `
-DEPCON (Deploy Containers) -- VER: %s
+DEPCON (Deploy Containers)
+
+== Version: %s - Built: %s ==
 
 Provides management and deployment aid across user-defined clusters such as
   - Mesos/Marathon
@@ -45,7 +47,11 @@ var (
 		"depcon.deploy.wait": logger.INFO,
 		"depcon.marathon":    logger.WARNING,
 		"depcon.marshal":     logger.WARNING,
+		"depcon.compose":     logger.WARNING,
 	}
+
+	Version string = ""
+	BuildDate string = ""
 )
 
 func init() {
@@ -57,8 +63,8 @@ func init() {
 
 // Main Entry point called by main - responsible for detecting if this is a first run without a config
 // to force initial setup
-func Execute(version string) {
-	rootCmd.Long = fmt.Sprintf(DepConHelp, version)
+func Execute() {
+	rootCmd.Long = fmt.Sprintf(DepConHelp, Version, BuildDate)
 	file, found := cliconfig.HasExistingConfig()
 	if found {
 		configFile = file

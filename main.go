@@ -18,7 +18,10 @@ import (
 )
 
 var VERSION string = ""
+var BUILD_DATE string = ""
 
 func main() {
-	commands.Execute(VERSION)
+	commands.Version = VERSION
+	commands.BuildDate = BUILD_DATE
+	commands.Execute()
 }
