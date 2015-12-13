@@ -38,6 +38,10 @@ Or by installing via deb packages (ver 0.4)
 
 ### Build and Install the Binaries from Source
 
+**Pre-Requisites**
+* GOLANG 1.5+
+* Vendor support enabled.  Add env variable `GO15VENDOREXPERIMENT=1` to enable
+
 Add Depcon and its package dependencies to your go `src` directory
 
     go get -v github.com/gondor/depcon
