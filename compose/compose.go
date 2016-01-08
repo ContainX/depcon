@@ -1,14 +1,8 @@
 package compose
 
-import (
-	"github.com/gondor/depcon/pkg/logger"
-)
-
 const (
 	DEFAULT_PROJECT string = "depcon_proj"
 )
-
-var log = logger.GetLogger("depcon.compose")
 
 type Compose interface {
 	Up(services ...string) error

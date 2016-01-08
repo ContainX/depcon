@@ -85,7 +85,6 @@ func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 	if err != nil {
 		return err
 	}
-
 	containers, err := s.Containers()
 	if err != nil {
 		return err
@@ -168,6 +167,8 @@ func (c *ComposeWrapper) createDockerContext() (*project.Project, error) {
 		Context: project.Context{
 			ComposeFile: c.context.ComposeFile,
 			ProjectName: c.context.ProjectName,
+			Log: true,
+			LoggerFactory: &ComposeLogger{},
 		},
 		ClientFactory: clientFactory,
 	})
