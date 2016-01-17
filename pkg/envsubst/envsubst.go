@@ -198,7 +198,7 @@ func SubstFileTokens(in io.Reader, filename string, params map[string]string) (p
 			return params[s]
 		}
 		if os.Getenv(s) == "" {
-			log.Warning("Cannot find a value for varable ${%s} which was defined in %s", s, filename)
+			log.Warning("Cannot find a value for varible ${%s} which was defined in %s", s, filename)
 			missing = true
 		}
 		return os.Getenv(s)

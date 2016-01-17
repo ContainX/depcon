@@ -1,0 +1,38 @@
+{
+  "args": [],
+  "container": {
+    "type": "DOCKER",
+    "docker": {
+      "network": "BRIDGE",
+      "portMappings": [
+        {"containerPort": 9100, "hostPort": 0, "protocol": "tcp"}
+      ],
+      "image": "prom/node-exporter:${NODE_EXPORTER_VERSION}"
+    },
+    "volumes": [ ]
+  },
+  "env": {
+    "CONSUL_CONNECT": "consul.service.consul:8500"
+  },
+  "labels": {
+    "tags": "prom-metrics"
+  },
+  "constraints": [["hostname", "UNIQUE"]],
+  "id": "node-exporter",
+  "instances": 2,
+  "cpus": 0.1,
+  "mem": 64,
+  "requirePorts": true,
+  "ports": [9100],
+  "upgradeStrategy": {
+    "minimumHealthCapacity": 0
+  },
+  "healthChecks": [{
+    "protocol": "HTTP",
+    "portIndex": 0,
+    "path": "/",
+    "gracePeriodSeconds": 10,
+    "intervalSeconds": 30,
+    "maxConsecutiveFailures": 3
+  }]
+}

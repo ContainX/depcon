@@ -23,6 +23,7 @@ type Application struct {
 	CPUs            float64             `json:"cpus,omitempty"`
 	Disk            float64             `json:"disk,omitempty"`
 	Env             map[string]string   `json:"env,omitempty"`
+	Labels          map[string]string   `json:"labels,omitempty"`
 	Executor        string              `json:"executor,omitempty"`
 	HealthChecks    []*HealthCheck      `json:"healthChecks,omitempty"`
 	Instances       int                 `json:"instances,omitempty"`
