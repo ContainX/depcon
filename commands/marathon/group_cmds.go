@@ -52,7 +52,7 @@ func init() {
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
 	groupCreateCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
-                  These take precidence over env vars`)
+                  These take precidence over env vars and params in file`)
 
 }
 
