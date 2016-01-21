@@ -75,7 +75,7 @@ func Execute() {
 	}
 }
 
-func executeWithExistingConfig() {
+func determineEnvironment() string {
 	envName := findEnvNameFromArgs()
 
 	if envName == "" {
@@ -88,11 +88,18 @@ func executeWithExistingConfig() {
 				rootCmd.Execute()
 				logger.Logger().Error("Multiple environments are defined in config.  You must execute with -e envname.")
 				printValidEnvironments()
-				return
+				return ""
 			}
 		}
 	}
+	return envName
+}
 
+func executeWithExistingConfig() {
+	envName := determineEnvironment()
+	if envName == "" {
+		os.Exit(1)
+	}
 	if _, err := configFile.GetEnvironment(envName); err != nil {
 		logger.Logger().Error("'%s' environment could not be found in config (%s)\n\n", envName, configFile.Filename())
 		printValidEnvironments()

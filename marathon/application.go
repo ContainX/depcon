@@ -25,33 +25,40 @@ var (
 )
 
 func (c *MarathonClient) CreateApplicationFromFile(filename string, opts *CreateOptions) (*Application, error) {
+	app, options, err := c.parseApplicationFromFile(filename, opts)
+	if err != nil {
+		return app, nil
+	}
+	return c.CreateApplication(app, options.Wait, options.Force)
+}
+
+func (c *MarathonClient) parseApplicationFromFile(filename string, opts *CreateOptions) (*Application, *CreateOptions, error) {
 	log.Info("Creating Application from file: %s", filename)
 	options := initCreateOptions(opts)
 
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("Error opening filename %s, %s", filename, err.Error())
+		return nil, nil, fmt.Errorf("Error opening filename %s, %s", filename, err.Error())
 	}
 
 	var encoder encoding.Encoder
 	encoder, err = encoding.NewEncoderFromFileExt(filename)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	parsed, missing := envsubst.SubstFileTokens(file, filename, options.EnvParams)
 
 	if options.ErrorOnMissingParams && missing {
-		return nil, ErrorAppParamsMissing
+		return nil, nil, ErrorAppParamsMissing
 	}
 
 	app := new(Application)
 	err = encoder.UnMarshalStr(parsed, &app)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return c.CreateApplication(app, options.Wait, options.Force)
-
+	return app, options, nil
 }
 
 func (c *MarathonClient) CreateApplication(app *Application, wait, force bool) (*Application, error) {
