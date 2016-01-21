@@ -10,6 +10,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"os"
+	"io/ioutil"
 )
 
 const (
@@ -125,6 +127,8 @@ func init() {
 	appCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
 	appCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
+	appCreateCmd.Flags().StringP(ENV_FILE_FLAG, "c", "", `Adds a file with a param(s) that can be used for substitution.
+						These take precidence over env vars`)
 	appCreateCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
@@ -149,19 +153,25 @@ func createApp(cmd *cobra.Command, args []string) {
 
 	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
 	force, _ := cmd.Flags().GetBool(FORCE_FLAG)
+	paramsFile, _ := cmd.Flags().GetString(ENV_FILE_FLAG)
 	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
 	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
 	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore}
 
+	if paramsFile != "" {
+		envParams, _ := parseParamsFile(paramsFile)
+		options.EnvParams = envParams
+	} else {
+		options.EnvParams = make(map[string]string)
+	}
+
 	if params != nil {
-		envmap := make(map[string]string)
 		for _, p := range params {
 			if strings.Contains(p, "=") {
 				v := strings.Split(p, "=")
-				envmap[v[0]] = v[1]
+				options.EnvParams[v[0]] = v[1]
 			}
 		}
-		options.EnvParams = envmap
 	}
 
 	result, e := client(cmd).CreateApplicationFromFile(args[0], options)
@@ -170,6 +180,28 @@ func createApp(cmd *cobra.Command, args []string) {
 		return
 	}
 	cli.Output(Application{result}, e)
+}
+
+func parseParamsFile(filename string) (map[string]string, error) {
+	paramsFile, err := os.Open(filename);
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := ioutil.ReadAll(paramsFile)
+	if err != nil {
+		return nil, err
+	}
+	data := string(bytes)
+	params := strings.Split(data, "\n")
+
+	envmap := make(map[string]string)
+	for _, p := range params {
+		if strings.Contains(p, "=") {
+			v := strings.Split(p, "=")
+			envmap[v[0]] = v[1]
+		}
+	}
+	return envmap, nil
 }
 
 func restartApp(cmd *cobra.Command, args []string) {

@@ -12,6 +12,7 @@ const (
 	FORCE_FLAG     string = "force"
 	DETAIL_FLAG    string = "detail"
 	PARAMS_FLAG    string = "param"
+	ENV_FILE_FLAG  string = "env-file"
 	IGNORE_MISSING string = "ignore"
 )
 
