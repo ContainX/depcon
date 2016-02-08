@@ -106,8 +106,8 @@ var appScaleCmd = &cobra.Command{
 }
 
 var appRollbackCmd = &cobra.Command{
-	Use:   "rollback [applicationId] [version]",
-	Short: "Rolls an [appliationId] to a specific [version]",
+	Use:   "rollback [applicationId] (version)",
+	Short: "Rolls an [appliationId] to a specific (version : optional)",
 	Long:  `Rolls an [appliationId] to a specific [version] - See: "depcon app versions" for a list of versions`,
 	Run:   rollbackAppVersion,
 }
@@ -276,13 +276,22 @@ func updateAppMemory(cmd *cobra.Command, args []string) {
 }
 
 func rollbackAppVersion(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
 		return
 	}
 
 	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
+	version := ""
 
-	update := marathon.NewApplication(args[0]).RollbackVersion(args[1])
+	if len(args) > 1 {
+		version = args[1]
+	} else {
+		versions, e := client(cmd).ListVersions(args[0])
+		if e == nil && len(versions.Versions) > 1 {
+			version = versions.Versions[1]
+		}
+	}
+	update := marathon.NewApplication(args[0]).RollbackVersion(version)
 	v, e := client(cmd).UpdateApplication(update, wait)
 	cli.Output(Application{v}, e)
 }

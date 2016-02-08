@@ -78,13 +78,13 @@ type QueuedTasks struct {
 
 func (a Applications) ToColumns(output io.Writer) error {
 	w := cli.NewTabWriter(output)
-	fmt.Fprintln(w, "\nID\tINSTANCES\tCPU\tMEM\tPORTS\tCONTAINER")
+	fmt.Fprintln(w, "\nID\tINSTANCES\tCPU\tMEM\tPORTS\tCONTAINER\tVERSION")
 	for _, e := range a.Apps {
 		var container string
 		if e.Container != nil && e.Container.Docker != nil {
 			container = e.Container.Docker.Image
 		}
-		fmt.Fprintf(w, "%s\t%d\t%.2f\t%.2f\t%s\t%s\n", e.ID, e.Instances, e.CPUs, e.Mem, utils.ConcatInts(e.Ports), container)
+		fmt.Fprintf(w, "%s\t%d\t%.2f\t%.2f\t%s\t%s\t%s\n", e.ID, e.Instances, e.CPUs, e.Mem, utils.ConcatInts(e.Ports), container, e.Version)
 	}
 	cli.FlushWriter(w)
 	return nil
@@ -98,6 +98,7 @@ func (a Application) ToColumns(output io.Writer) error {
 	fmt.Fprintf(w, OBJ_FLFMT, "Memory", a.Mem)
 	fmt.Fprintf(w, OBJ_FMT, "Ports", utils.ConcatInts(a.Ports))
 	fmt.Fprintf(w, OBJ_FMT, "Instances", strconv.Itoa(a.Instances))
+	fmt.Fprintf(w, OBJ_FMT, "Version", a.Version)
 	fmt.Fprintf(w, OBJ_KVFMT, "Tasks", "Staged", strconv.Itoa(a.TasksStaged))
 	fmt.Fprintf(w, OBJ_VAL_KVFMT, "Running", strconv.Itoa(a.TasksRunning))
 	fmt.Fprintf(w, OBJ_VAL_KVFMT, "Healthy", strconv.Itoa(a.TasksHealthy))
