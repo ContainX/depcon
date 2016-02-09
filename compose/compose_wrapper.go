@@ -8,6 +8,7 @@ import (
 	"github.com/gondor/depcon/pkg/envsubst"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 const (
@@ -166,7 +167,7 @@ func (c *ComposeWrapper) createDockerContext() (*project.Project, error) {
 
 	return docker.NewProject(&docker.Context{
 		Context: project.Context{
-			ComposeFile: c.context.ComposeFile,
+			ComposeFiles: strings.Split(c.context.ComposeFile, ","),
 			ProjectName: c.context.ProjectName,
 		},
 		ClientFactory: clientFactory,
