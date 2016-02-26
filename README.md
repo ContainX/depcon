@@ -26,12 +26,12 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 
 ### Binary Installation
 
-You can download the binaries (ver 0.4)
+You can download the binaries (ver 0.5)
 
  * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_darwin_386.zip?direct) ]
  * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_darwin_amd64.zip?direct) ]
 
-Or by installing via deb packages (ver 0.4)
+Or by installing via deb packages (ver 0.5)
 
  * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_armhf.deb?direct) ]
 
