@@ -1,8 +1,8 @@
 package marathon
 
 import (
-	"testing"
 	"log"
+	"testing"
 )
 
 func TestParseParamFile(t *testing.T) {

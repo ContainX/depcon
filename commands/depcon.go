@@ -50,7 +50,7 @@ var (
 		"depcon.compose":     logger.WARNING,
 	}
 
-	Version string = ""
+	Version   string = ""
 	BuildDate string = ""
 )
 

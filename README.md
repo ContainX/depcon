@@ -1,6 +1,6 @@
 # Depcon (*Container Deployment*)
 
-[![Build Status](https://travis-ci.org/gondor/depcon.svg)](https://travis-ci.org/gondor/depcon)  [![GoDoc](https://godoc.org/github.com/gondor/depcon?status.svg)](https://godoc.org/github.com/gondor/depcon) [![Join the chat at https://gitter.im/gondor/depcon](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gondor/depcon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) 
+[![Build Status](https://travis-ci.org/gondor/depcon.svg)](https://travis-ci.org/gondor/depcon)  [![GoDoc](https://godoc.org/github.com/gondor/depcon?status.svg)](https://godoc.org/github.com/gondor/depcon) [![Join the chat at https://gitter.im/gondor/depcon](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gondor/depcon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 An advanced deployment tool for docker containers against Mesos/Marathon, Kubernetes and Amazon ECS
 
@@ -24,16 +24,16 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 - Future releases will offer a proposed Open Deployment Descriptor format which will allow Depcon to deploy a common descriptor against Marathon, Kubernetes, ECS and Docker Swarm.
 - Ability to wait until a new or updated container deployment is healthy
 
-### Binary Installation 
+### Binary Installation
 
 You can download the binaries (ver 0.4)
 
- * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_darwin_386.zip?direct) ]
- * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_darwin_amd64.zip?direct) ]
+ * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_darwin_386.zip?direct) ]
+ * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_darwin_amd64.zip?direct) ]
 
 Or by installing via deb packages (ver 0.4)
 
- * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.4_armhf.deb?direct) ]
+ * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.5_armhf.deb?direct) ]
 
 
 ### Build and Install the Binaries from Source

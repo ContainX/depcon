@@ -7,7 +7,6 @@ import (
 
 var log = depconLog.GetLogger("depcon.compose")
 
-
 type ComposeLogger struct {
 }
 
@@ -22,4 +21,3 @@ func (n *ComposeLogger) Err(b []byte) {
 func (n *ComposeLogger) Create(name string) logger.Logger {
 	return &ComposeLogger{}
 }
-

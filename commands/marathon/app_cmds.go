@@ -7,11 +7,11 @@ import (
 	"github.com/gondor/depcon/pkg/cli"
 	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"os"
 	"strconv"
 	"strings"
 	"time"
-	"os"
-	"io/ioutil"
 )
 
 const (
@@ -183,7 +183,7 @@ func createApp(cmd *cobra.Command, args []string) {
 }
 
 func parseParamsFile(filename string) (map[string]string, error) {
-	paramsFile, err := os.Open(filename);
+	paramsFile, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}

@@ -113,8 +113,8 @@ func (et *envsubst) processRune(char rune) error {
 		}
 	case readingVarName:
 		switch {
-		case isVarNameCharacter(char, et.buffer.Len() == 0):
-			return writeRune(char, &et.buffer)
+		//		case isVarNameCharacter(char, et.buffer.Len() == 0):
+		//			return writeRune(char, &et.buffer)
 		case char == '{' && et.buffer.Len() == 0:
 			et.state = readingBracedVarName
 		default:

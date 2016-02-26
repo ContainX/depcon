@@ -27,7 +27,7 @@ var (
 func (c *MarathonClient) CreateApplicationFromFile(filename string, opts *CreateOptions) (*Application, error) {
 	app, options, err := c.parseApplicationFromFile(filename, opts)
 	if err != nil {
-		return app, nil
+		return app, err
 	}
 	return c.CreateApplication(app, options.Wait, options.Force)
 }
