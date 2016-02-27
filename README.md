@@ -40,7 +40,7 @@ Or by installing via deb packages (ver 0.5)
 
 **Pre-Requisites**
 * GOLANG 1.5+
-* Vendor support enabled.  Add env variable `GO15VENDOREXPERIMENT=1` to enable
+* Vendor support enabled.  You **MUST** add env variable `GO15VENDOREXPERIMENT=1` to enable
 
 Add Depcon and its package dependencies to your go `src` directory
 
