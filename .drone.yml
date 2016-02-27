@@ -1,5 +1,7 @@
 build:
   image: golang:1.5
+  environment:
+    - GO15VENDOREXPERIMENT=1
   commands:
     - go get github.com/stretchr/testify
     - go get -v ./...
