@@ -1,0 +1,7 @@
+build:
+  image: golang:1.5
+  commands:
+    - go get github.com/stretchr/testify
+    - go get -v ./...
+    - go build
+    - go test ./...
