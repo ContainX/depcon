@@ -179,6 +179,9 @@ func createApp(cmd *cobra.Command, args []string) {
 		cli.Output(nil, errors.New(fmt.Sprintf("%s, consider using the --force flag to update when an application exists", e.Error())))
 		return
 	}
+	if result == nil {
+		return
+	}
 	cli.Output(Application{result}, e)
 }
 
