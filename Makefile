@@ -1,4 +1,4 @@
-VERSION = 0.5
+VERSION = 0.6
 
 GO_FMT = gofmt -s -w -l .
 GO_XC = goxc -os="linux darwin windows"
