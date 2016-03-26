@@ -192,9 +192,18 @@ type Marathon interface {
 type MarathonClient struct {
 	http httpclient.HttpClient
 	host string
+	opts *MarathonOptions
+}
+
+type MarathonOptions struct {
+	WaitTimeout time.Duration
 }
 
 func NewMarathonClient(host, username, password string) Marathon {
+	return NewMarathonClientWithOpts(host, username, password, nil)
+}
+
+func NewMarathonClientWithOpts(host, username, password string, opts *MarathonOptions) Marathon {
 	httpConfig := httpclient.NewDefaultConfig()
 	httpConfig.HttpUser = username
 	httpConfig.HttpPass = password
@@ -204,6 +213,7 @@ func NewMarathonClient(host, username, password string) Marathon {
 	c := new(MarathonClient)
 	c.http = *httpClient
 	c.host = host
+	c.opts = opts
 	return c
 }
 

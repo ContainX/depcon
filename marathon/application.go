@@ -8,6 +8,7 @@ import (
 	"github.com/gondor/depcon/pkg/httpclient"
 	"github.com/gondor/depcon/utils"
 	"os"
+	"time"
 )
 
 const (
@@ -82,7 +83,7 @@ func (c *MarathonClient) CreateApplication(app *Application, wait, force bool) (
 		return nil, resp.Error
 	}
 	if wait {
-		err := c.WaitForApplication(result.ID, DefaultTimeout)
+		err := c.WaitForApplication(result.ID, c.determineTimeout(app))
 		if err != nil {
 			return result, err
 		}
@@ -110,10 +111,10 @@ func (c *MarathonClient) UpdateApplication(app *Application, wait bool) (*Applic
 		return nil, resp.Error
 	}
 	if wait {
-		if err := c.WaitForDeployment(result.DeploymentID, DefaultTimeout); err != nil {
+		if err := c.WaitForDeployment(result.DeploymentID, c.determineTimeout(nil)); err != nil {
 			return nil, err
 		}
-		err := c.WaitForApplication(id, DefaultTimeout)
+		err := c.WaitForApplication(id, c.determineTimeout(nil))
 		if err != nil {
 			return nil, err
 		}
@@ -234,4 +235,28 @@ func (app *Application) CPU(cpu float64) *Application {
 func (app *Application) RollbackVersion(version string) *Application {
 	app.Version = version
 	return app
+}
+
+func (c *MarathonClient) determineTimeout(app *Application) time.Duration {
+	if c.opts != nil && c.opts.WaitTimeout > 0 {
+		return c.opts.WaitTimeout
+	}
+
+	if app == nil {
+		return DefaultTimeout
+	}
+
+	max := DefaultTimeout
+
+	if len(app.HealthChecks) > 0 {
+		for _, h := range app.HealthChecks {
+			grace := time.Duration(h.GracePeriodSeconds) * time.Second
+			if grace > max {
+				max = grace
+			}
+		}
+		log.Info("Max was %d\n", max)
+		return max
+	}
+	return DefaultTimeout
 }

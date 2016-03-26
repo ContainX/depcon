@@ -123,7 +123,6 @@ func init() {
 	appCmd.AddCommand(appListCmd, appGetCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, appRestartCmd, appScaleCmd, appVersionsCmd, appConvertFileCmd)
 
 	// Create Flags
-	appCreateCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for application to become healthy")
 	appCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
 	appCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
@@ -132,18 +131,8 @@ func init() {
 	appCreateCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
-	// Update Flags
-	appUpdateCPUCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for application to become healthy")
-	appUpdateMemoryCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for application to become healthy")
-	appRollbackCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for application to become healthy")
 
-	// Destroy Flags
-	appDestroyCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for destroy to complete")
-	// Restart Flags
-	appRestartCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for restart to complete")
-	appRestartCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force restart")
-	// Scale Flags
-	appScaleCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for deployment to complete")
+	applyCommonAppFlags(appCreateCmd, appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd)
 }
 
 func createApp(cmd *cobra.Command, args []string) {
@@ -177,10 +166,14 @@ func createApp(cmd *cobra.Command, args []string) {
 	result, e := client(cmd).CreateApplicationFromFile(args[0], options)
 	if e != nil && e == marathon.ErrorAppExists {
 		cli.Output(nil, errors.New(fmt.Sprintf("%s, consider using the --force flag to update when an application exists", e.Error())))
-		return
+		os.Exit(1)
 	}
 	if result == nil {
-		return
+		if e != nil {
+
+			fmt.Printf("[ERROR] %s\n", e.Error())
+		}
+		os.Exit(1)
 	}
 	cli.Output(Application{result}, e)
 }
@@ -209,7 +202,7 @@ func parseParamsFile(filename string) (map[string]string, error) {
 
 func restartApp(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
-		return
+		os.Exit(1)
 	}
 
 	force, _ := cmd.Flags().GetBool(FORCE_FLAG)
@@ -221,7 +214,7 @@ func restartApp(cmd *cobra.Command, args []string) {
 
 func destroyApp(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
-		return
+		os.Exit(1)
 	}
 
 	v, e := client(cmd).DestroyApplication(args[0])
@@ -231,13 +224,13 @@ func destroyApp(cmd *cobra.Command, args []string) {
 
 func scaleApp(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
-		return
+		os.Exit(1)
 	}
 
 	instances, err := strconv.Atoi(args[1])
 	if err != nil {
 		cli.Output(nil, err)
-		return
+		os.Exit(1)
 	}
 	v, e := client(cmd).ScaleApplication(args[0], instances)
 	cli.Output(DeploymentId{v}, e)
@@ -246,7 +239,7 @@ func scaleApp(cmd *cobra.Command, args []string) {
 
 func updateAppCPU(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
-		return
+		os.Exit(1)
 	}
 
 	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
@@ -254,7 +247,7 @@ func updateAppCPU(cmd *cobra.Command, args []string) {
 
 	if err != nil {
 		cli.Output(nil, err)
-		return
+		os.Exit(1)
 	}
 	update := marathon.NewApplication(args[0]).CPU(cpu)
 	v, e := client(cmd).UpdateApplication(update, wait)
@@ -263,7 +256,7 @@ func updateAppCPU(cmd *cobra.Command, args []string) {
 
 func updateAppMemory(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
-		return
+		os.Exit(1)
 	}
 
 	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
@@ -271,7 +264,7 @@ func updateAppMemory(cmd *cobra.Command, args []string) {
 
 	if err != nil {
 		cli.Output(nil, err)
-		return
+		os.Exit(1)
 	}
 	update := marathon.NewApplication(args[0]).Memory(mem)
 	v, e := client(cmd).UpdateApplication(update, wait)
@@ -280,7 +273,7 @@ func updateAppMemory(cmd *cobra.Command, args []string) {
 
 func rollbackAppVersion(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
-		return
+		os.Exit(1)
 	}
 
 	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
@@ -301,11 +294,11 @@ func rollbackAppVersion(cmd *cobra.Command, args []string) {
 
 func convertFile(cmd *cobra.Command, args []string) {
 	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
-		return
+		os.Exit(1)
 	}
 	if err := encoding.ConvertFile(args[0], args[1], &marathon.Application{}); err != nil {
 		cli.Output(nil, err)
-		return
+		os.Exit(1)
 	}
 	fmt.Printf("Source file %s has been re-written into new format in %s\n\n", args[0], args[1])
 }
@@ -313,5 +306,12 @@ func convertFile(cmd *cobra.Command, args []string) {
 func waitForDeploymentIfFlagged(cmd *cobra.Command, depId string) {
 	if found, err := cmd.Flags().GetBool(WAIT_FLAG); err == nil && found {
 		client(cmd).WaitForDeployment(depId, time.Duration(80)*time.Second)
+	}
+}
+
+func applyCommonAppFlags(cmd ...*cobra.Command) {
+	for _, c := range cmd {
+		c.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for application to become healthy")
+		c.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
 	}
 }

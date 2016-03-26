@@ -9,6 +9,7 @@ import (
 
 const (
 	WAIT_FLAG      string = "wait"
+	TIMEOUT_FLAG   string = "wait-timeout"
 	FORCE_FLAG     string = "force"
 	DETAIL_FLAG    string = "detail"
 	PARAMS_FLAG    string = "param"
@@ -51,7 +52,12 @@ func client(c *cobra.Command) marathon.Marathon {
 	if marathonClient == nil {
 		envName := viper.GetString("env_name")
 		mc := *configFile.Environments[envName].Marathon
-		marathonClient = marathon.NewMarathonClient(mc.HostUrl, mc.Username, mc.Password)
+		opts := &marathon.MarathonOptions{}
+		if timeout, err := c.Flags().GetDuration(TIMEOUT_FLAG); err == nil {
+			opts.WaitTimeout = timeout
+		}
+
+		marathonClient = marathon.NewMarathonClientWithOpts(mc.HostUrl, mc.Username, mc.Password, opts)
 
 	}
 	return marathonClient

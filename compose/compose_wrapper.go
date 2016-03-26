@@ -28,12 +28,14 @@ func NewCompose(context *Context) Compose {
 	c := new(ComposeWrapper)
 	c.context = context
 	project, err := c.createDockerContext()
-
 	if err != nil {
 		log.Fatal(err)
 	}
 	c.project = project
-
+	for k, v := range c.project.Configs {
+		log.Error("%s = \n", k)
+		log.Error("%s, %v, %v, %v, %v\n\n", v.Image, v.Links, v.Ports, v.Environment, v)
+	}
 	return c
 }
 
@@ -164,7 +166,6 @@ func (c *ComposeWrapper) createDockerContext() (*project.Project, error) {
 		}
 		c.context.ComposeFile = file.Name()
 	}
-
 	return docker.NewProject(&docker.Context{
 		Context: project.Context{
 			ComposeFiles: strings.Split(c.context.ComposeFile, ","),
