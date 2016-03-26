@@ -32,10 +32,6 @@ func NewCompose(context *Context) Compose {
 		log.Fatal(err)
 	}
 	c.project = project
-	for k, v := range c.project.Configs {
-		log.Error("%s = \n", k)
-		log.Error("%s, %v, %v, %v, %v\n\n", v.Image, v.Links, v.Ports, v.Environment, v)
-	}
 	return c
 }
 
