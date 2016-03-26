@@ -26,14 +26,14 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 
 ### Binary Installation
 
-You can download the binaries (ver 0.6)
+You can download the binaries (ver 0.7)
 
- * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_darwin_386.zip?direct) ]
- * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_darwin_amd64.zip?direct) ]
+ * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_darwin_386.zip?direct) ]
+ * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_darwin_amd64.zip?direct) ]
 
-Or by installing via deb packages (ver 0.6)
+Or by installing via deb packages (ver 0.7)
 
- * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.6_armhf.deb?direct) ]
+ * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.7_armhf.deb?direct) ]
 
 
 ### Build and Install the Binaries from Source
