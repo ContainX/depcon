@@ -16,6 +16,25 @@ we are only dealing with a single service and know what it is.
 Root single environment`
 )
 
+func CreateMemoryMarathonConfig(host, user, password string) *ConfigFile {
+	configFile, _ := Load("")
+	configFile.RootService = true
+	configFile.Format = "column"
+	serviceEnv := &ServiceConfig{
+		Name:     "memory",
+		HostUrl:  host,
+		Username: user,
+		Password: password,
+	}
+	configEnv := &ConfigEnvironment{
+		Marathon: serviceEnv,
+	}
+	configFile.Environments[serviceEnv.Name] = configEnv
+	configFile.DefaultEnv = serviceEnv.Name
+	//configFile.Save()
+	return configFile
+}
+
 func CreateNewConfigFromUserInput() *ConfigFile {
 	fmt.Println("\n-------------------------------[   Generating Initital Configuration   ]-------------------------------")
 
@@ -28,7 +47,6 @@ func CreateNewConfigFromUserInput() *ConfigFile {
 	}
 	configFile.Environments[serviceEnv.Name] = configEnv
 	configFile.Save()
-
 	return configFile
 }
 

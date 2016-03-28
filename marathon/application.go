@@ -21,7 +21,9 @@ var (
 	ErrorAppExists        = errors.New("The application already exists")
 	ErrorGroupExists      = errors.New("The group already exists")
 	ErrorInvalidAppId     = errors.New("The application identifier is invalid")
+	ErrorInvalidGroupId   = errors.New("The group identifier is invalid")
 	ErrorNoAppExists      = errors.New("The application does not exist.  Create an application before updating")
+	ErrorGropAppExists    = errors.New("The group does not exist.  Create a group before updating")
 	ErrorAppParamsMissing = errors.New("One or more ${PARAMS} that were defined in the app configuration could not be resolved.")
 )
 
@@ -111,10 +113,10 @@ func (c *MarathonClient) UpdateApplication(app *Application, wait bool) (*Applic
 		return nil, resp.Error
 	}
 	if wait {
-		if err := c.WaitForDeployment(result.DeploymentID, c.determineTimeout(nil)); err != nil {
+		if err := c.WaitForDeployment(result.DeploymentID, c.determineTimeout(app)); err != nil {
 			return nil, err
 		}
-		err := c.WaitForApplication(id, c.determineTimeout(nil))
+		err := c.WaitForApplication(id, c.determineTimeout(app))
 		if err != nil {
 			return nil, err
 		}

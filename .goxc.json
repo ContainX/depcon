@@ -9,6 +9,10 @@
    "repository": "utils",
    "subject": "pacesys"
   },
+  "publish-github": {
+      "owner": "gondor",
+      "repository": "depcon"
+  },
   "debs": {
       "metadata": {
         "description": "Depcon - Mesos/Marathon, Kubernetes, Compose and ECS deployer",

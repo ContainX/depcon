@@ -14,11 +14,16 @@ import (
 )
 
 const (
-	FlagVerbose = "verbose"
-	FlagEnv     = "env"
-	ViperEnv    = "env_name"
-	EnvHelp     = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
-	DepConHelp  = `
+	FlagVerbose     = "verbose"
+	EnvDepconMode   = "DEPCON_MODE"
+	ModeMarathon    = "marathon"
+	EnvMarathonHost = "MARATHON_HOST"
+	EnvMarathonUser = "MARATHON_USER"
+	EnvMarathonPass = "MARATHON_PASS"
+	FlagEnv         = "env"
+	ViperEnv        = "env_name"
+	EnvHelp         = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
+	DepConHelp      = `
 DEPCON (Deploy Containers)
 
 == Version: %s - Built: %s ==
@@ -70,9 +75,18 @@ func Execute() {
 		configFile = file
 		executeWithExistingConfig()
 	} else {
-		logger.Logger().Error("%s file not found.  Generating initial configuration", file.Filename())
-		configFile = cliconfig.CreateNewConfigFromUserInput()
+		if len(os.Getenv(EnvDepconMode)) > 0 && os.Getenv(EnvDepconMode) == ModeMarathon {
+			configFile = marathonConfigFromEnv()
+			executeWithExistingConfig()
+		} else {
+			logger.Logger().Error("%s file not found.  Generating initial configuration", file.Filename())
+			configFile = cliconfig.CreateNewConfigFromUserInput()
+		}
 	}
+}
+
+func marathonConfigFromEnv() *cliconfig.ConfigFile {
+	return cliconfig.CreateMemoryMarathonConfig(os.Getenv(EnvMarathonHost), os.Getenv(EnvMarathonUser), os.Getenv(EnvMarathonPass))
 }
 
 func determineEnvironment() string {

@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/gondor/depcon/marathon"
 	"github.com/gondor/depcon/pkg/cli"
+	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 )
 
@@ -40,8 +42,14 @@ var groupCreateCmd = &cobra.Command{
 	Run:   createGroup,
 }
 
+var groupConvertFileCmd = &cobra.Command{
+	Use:   "convert [from.(json | yaml)] [to.(json | yaml)]",
+	Short: "Utilty to convert an group file from json to yaml or yaml to json.",
+	Run:   convertGroupFile,
+}
+
 func init() {
-	groupCmd.AddCommand(groupListCmd, groupGetCmd, groupCreateCmd, groupDestroyCmd)
+	groupCmd.AddCommand(groupListCmd, groupGetCmd, groupCreateCmd, groupDestroyCmd, groupConvertFileCmd)
 
 	// Destroy Flags
 	groupDestroyCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for destroy to complete")
@@ -106,4 +114,15 @@ func createGroup(cmd *cobra.Command, args []string) {
 		return
 	}
 	cli.Output(AppGroup{result}, e)
+}
+
+func convertGroupFile(cmd *cobra.Command, args []string) {
+	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+		os.Exit(1)
+	}
+	if err := encoding.ConvertFile(args[0], args[1], &marathon.Groups{}); err != nil {
+		cli.Output(nil, err)
+		os.Exit(1)
+	}
+	fmt.Printf("Source file %s has been re-written into new format in %s\n\n", args[0], args[1])
 }

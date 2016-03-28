@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/gondor/depcon/pkg/envsubst"
+	"github.com/gondor/depcon/pkg/httpclient"
 	"os"
 	"time"
 )
@@ -43,6 +44,18 @@ func (c *MarathonClient) CreateGroup(group *Group, wait, force bool) (*Group, er
 	result := new(DeploymentID)
 	resp := c.http.HttpPost(c.marathonUrl(API_GROUPS), group, result)
 	if resp.Error != nil {
+		if resp.Error == httpclient.ErrorMessage {
+			if resp.Status == 409 {
+				if force {
+					return c.UpdateGroup(group, wait)
+				}
+				return nil, ErrorGroupExists
+			}
+			if resp.Status == 422 {
+				return nil, ErrorInvalidGroupId
+			}
+			return nil, fmt.Errorf("Error occurred (Status %v) Body -> %s", resp.Status, resp.Content)
+		}
 		return nil, resp.Error
 	}
 	if wait {
@@ -51,6 +64,28 @@ func (c *MarathonClient) CreateGroup(group *Group, wait, force bool) (*Group, er
 		}
 	}
 	return group, nil
+}
+
+func (c *MarathonClient) UpdateGroup(group *Group, wait bool) (*Group, error) {
+	log.Info("Update Group '%s', wait = %v", group.GroupID, wait)
+	result := new(DeploymentID)
+	resp := c.http.HttpPut(c.marathonUrl(API_GROUPS), group, result)
+
+	if resp.Error != nil {
+		if resp.Error == httpclient.ErrorMessage {
+			if resp.Status == 422 {
+				return nil, ErrorGropAppExists
+			}
+		}
+		return nil, resp.Error
+	}
+	if wait {
+		if err := c.WaitForDeployment(result.DeploymentID, c.determineTimeout(nil)); err != nil {
+			return nil, err
+		}
+	}
+	// Get the latest version of the application to return
+	return c.GetGroup(group.GroupID)
 }
 
 func (c *MarathonClient) ListGroups() (*Groups, error) {
