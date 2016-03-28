@@ -1,6 +1,6 @@
 # Depcon (*Container Deployment*)
 
-[![Build Status](https://travis-ci.org/gondor/depcon.svg)](https://travis-ci.org/gondor/depcon)  [![GoDoc](https://godoc.org/github.com/gondor/depcon?status.svg)](https://godoc.org/github.com/gondor/depcon) [![Join the chat at https://gitter.im/gondor/depcon](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gondor/depcon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/gondor/depcon.svg)](https://travis-ci.org/gondor/depcon)  [![release](http://github-release-version.herokuapp.com/github/gondor/depcon/release.svg?style=flat)](https://github.com/gondor/depcon/releases/latest)  [![GoDoc](https://godoc.org/github.com/gondor/depcon?status.svg)](https://godoc.org/github.com/gondor/depcon) [![Join the chat at https://gitter.im/gondor/depcon](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gondor/depcon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 An advanced deployment tool for docker containers against Mesos/Marathon, Kubernetes and Amazon ECS
 
@@ -26,15 +26,7 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 
 ### Binary Installation
 
-You can download the binaries (ver 0.8)
-
- * Architecture i386 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_linux_386.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_windows_386.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_darwin_386.zip?direct) ]
- * Architecture amd64 [ [linux](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_linux_amd64.tar.gz?direct) / [windows](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_windows_amd64.zip?direct) / [darwin](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_darwin_amd64.zip?direct) ]
-
-Or by installing via deb packages (ver 0.7)
-
- * [ [amd64](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_amd64.deb?direct) / [armhf](https://dl.bintray.com//content/pacesys/utils/depcon_0.8_armhf.deb?direct) ]
-
+Binaries are available through GitHub releases.  You can download the appropriate binary, package and version from the [Releases](https://github.com/gondor/depcon/releases) page
 
 ### Build and Install the Binaries from Source
 
