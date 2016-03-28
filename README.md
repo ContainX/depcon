@@ -44,6 +44,11 @@ To update Depcon's dependencies, use `go get` with the `-u` option.
 
     go get -u -v github.com/gondor/depcon
 
+### Running Depcon in Docker
+
+With each release we publish a very small docker image containing depcon.  For instructions in testing depcon within docker (useful for CI systems) see the docker hub repository at: https://hub.docker.com/r/pacesys/depcon/
+
+
 ## Global options in Depcon
 
 #### Output Options

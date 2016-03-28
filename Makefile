@@ -1,4 +1,4 @@
-VERSION = 0.8.1
+VERSION = 0.8.2
 
 GO_FMT = gofmt -s -w -l .
 GO_XC = goxc -os="linux darwin windows" -tasks-="rmbin"
@@ -20,7 +20,7 @@ goxc:
 	$(shell echo '     "include": "*.zip,*.tar.gz,*.deb,depcon_$(VERSION)_linux_amd64-bin"' >> $(GOXC_FILE))
 	$(shell echo '  }\n } \n}' >> $(GOXC_FILE))
 	$(GO_XC) 
-	cp build/$(VERSION)/linux_amd64/depcon build/$(VERSION)/depcon_0.8.1_linux_amd64-bin
+	cp build/$(VERSION)/linux_amd64/depcon build/$(VERSION)/depcon_$(VERSION)_linux_amd64-bin
 
 deps:
 	go get
@@ -33,3 +33,12 @@ bintray:
 
 github:
 	$(GO_XC) publish-github
+
+docker-build:
+	cp build/$(VERSION)/linux_amd64/depcon docker-release/depcon
+	docker build -t pacesys/depcon docker-release/
+	docker tag pacesys/depcon pacesys/depcon:$(VERSION)
+
+docker-push:
+	docker push pacesys/depcon
+	docker push pacesys/depcon:$(VERSION)

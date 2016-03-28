@@ -6,6 +6,7 @@ import (
 	"github.com/gondor/depcon/utils"
 	"net/url"
 	"regexp"
+	"os"
 )
 
 const (
@@ -50,7 +51,11 @@ func getPasswordWithVerify() string {
 }
 
 // Asks the user for the remote URI of the Marathon service
-func getMarathonURL() string {
+func getMarathonURL(count int) string {
+	if count > 5 {
+		fmt.Printf("Too many retries obtaining Marathon URL.  If depcon is running within docker please insure 'docker run -it' is set.\n")
+		os.Exit(1)
+	}
 	var response string
 	fmt.Print("Marathon URL (eg. http://hostname:8080)  : ")
 	fmt.Scanf("%s", &response)
@@ -61,13 +66,13 @@ func getMarathonURL() string {
 	}
 
 	fmt.Printf("\nERROR: '%s' must be a valid URL\n", response)
-	return getMarathonURL()
+	return getMarathonURL(count+1)
 }
 
 func createEnvironment() *ServiceConfig {
 	service := ServiceConfig{}
 	service.Name = getAlpaNumDash("Environment Name (eg. test, stage, prod) ")
-	service.HostUrl = getMarathonURL()
+	service.HostUrl = getMarathonURL(0)
 
 	if getBoolAnswer("Authentication Required", false) {
 		service.Username = getAlpaNumDash("Username")
