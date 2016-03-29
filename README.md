@@ -44,10 +44,23 @@ To update Depcon's dependencies, use `go get` with the `-u` option.
 
     go get -u -v github.com/gondor/depcon
 
+
 ### Running Depcon in Docker
 
-With each release we publish a very small docker image containing depcon.  For instructions in testing depcon within docker (useful for CI systems) see the docker hub repository at: https://hub.docker.com/r/pacesys/depcon/
+With each release we publish a very small docker image containing depcon. 
 
+**Quick Example**
+```
+# Run depcon in the background capture cid, add alias
+$ cid=$(docker run -itd -v $PWD:/data pacesys/depcon)
+$ alias depcon="docker exec -it ${cid} depcon"
+
+# Use depcon like it was native
+$ depcon app list
+
+```
+
+For additional instructions in testing depcon within docker (useful for CI systems) see the docker hub repository at: https://hub.docker.com/r/pacesys/depcon/
 
 ## Global options in Depcon
 
