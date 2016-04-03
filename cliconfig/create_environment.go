@@ -5,8 +5,8 @@ import (
 	"github.com/bgentry/speakeasy"
 	"github.com/gondor/depcon/utils"
 	"net/url"
-	"regexp"
 	"os"
+	"regexp"
 )
 
 const (
@@ -66,7 +66,7 @@ func getMarathonURL(count int) string {
 	}
 
 	fmt.Printf("\nERROR: '%s' must be a valid URL\n", response)
-	return getMarathonURL(count+1)
+	return getMarathonURL(count + 1)
 }
 
 func createEnvironment() *ServiceConfig {

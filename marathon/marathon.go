@@ -16,6 +16,7 @@ const (
 	API_SUBSCRIPTION = API_VERSION + "/eventSubscriptions"
 	API_APPS         = API_VERSION + "/apps"
 	API_TASKS        = API_VERSION + "/tasks"
+	API_TASKS_DELETE = API_VERSION + "/tasks/delete"
 	API_DEPLOYMENTS  = API_VERSION + "/deployments"
 	API_GROUPS       = API_VERSION + "/groups"
 	API_QUEUE        = API_VERSION + "/queue"
@@ -170,6 +171,10 @@ type Marathon interface {
 	// {taskId} - the task id
 	// {scale}  - Scale the app down (ie. decrement it's instances setting by the number of tasks killed). Default: false
 	KillAppTask(taskId string, scale bool) (*Task, error)
+
+	// Kill the specified task IDs and scale
+	// {ids} - one or more task identifiers to kill and scale
+	KillTasksAndScale(ids ...string) error
 
 	// List Queue - tasks currently pending
 	ListQueue() (*Queue, error)

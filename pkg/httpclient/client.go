@@ -62,6 +62,10 @@ func NewDefaultConfig() *HttpClientConfig {
 	return &HttpClientConfig{RequestTimeout: 30}
 }
 
+func DefaultHttpClient() *HttpClient {
+	return NewHttpClient(*NewDefaultConfig())
+}
+
 func NewHttpClient(config HttpClientConfig) *HttpClient {
 	return &HttpClient{
 		config: config,

@@ -47,6 +47,20 @@ func (c *MarathonClient) KillAppTask(taskId string, scale bool) (*Task, error) {
 	return task, nil
 }
 
+func (c *MarathonClient) KillTasksAndScale(ids ...string) error {
+	tasks := new(KillTasksScale)
+	tasks.ids = ids
+
+	url := c.marathonUrl(API_TASKS_DELETE)
+	url = fmt.Sprintf("%s?scale=true", url)
+
+	resp := c.http.HttpPost(url, tasks, &Tasks{})
+	if resp.Error != nil {
+		return resp.Error
+	}
+	return nil
+}
+
 func (c *MarathonClient) GetTasks(id string) ([]*Task, error) {
 	tasks := new(Tasks)
 	resp := c.http.HttpGet(c.marathonUrl(API_APPS, id, PathTasks), &tasks)

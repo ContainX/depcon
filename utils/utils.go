@@ -81,3 +81,29 @@ func HasPrefix(str string, prefixes ...string) bool {
 func ElapsedStr(d time.Duration) string {
 	return fmt.Sprintf("%0.2f sec(s)", d.Seconds())
 }
+
+func IntInSlice(a int, list []int) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func StringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func MapStringKeysToSlice(m map[string]interface{}) []string {
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	return keys
+}

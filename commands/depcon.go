@@ -53,6 +53,7 @@ var (
 		"depcon.marathon":    logger.WARNING,
 		"depcon.marshal":     logger.WARNING,
 		"depcon.compose":     logger.WARNING,
+		"depcon.marathon.bg": logger.INFO,
 	}
 
 	Version   string = ""

@@ -46,6 +46,10 @@ type Application struct {
 	Version               string              `json:"version,omitempty"`
 }
 
+type KillTasksScale struct {
+	ids []string `json:"ids"`
+}
+
 type AppKillTasksOptions struct {
 	Host  string `json:"host"`
 	Scale bool   `json:bool`
