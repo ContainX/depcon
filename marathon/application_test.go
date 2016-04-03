@@ -12,7 +12,7 @@ func TestCreateApplicationFromFile(t *testing.T) {
 	envParams["NODE_EXPORTER_VERSION"] = "1"
 
 	opts := &CreateOptions{Wait: false, Force: true, ErrorOnMissingParams: true, EnvParams: envParams}
-	app, _, err := c.parseApplicationFromFile("resources/marathon.json", opts)
+	app, _, err := c.ParseApplicationFromFile("resources/marathon.json", opts)
 	if err != nil {
 		log.Panic("Expected success %v", err)
 	}
