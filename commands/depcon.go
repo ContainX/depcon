@@ -165,7 +165,11 @@ func configureLogging(cmd *cobra.Command, args []string) {
 
 	for category, level := range logLevels {
 		if verbose {
-			logger.SetLevel(logger.DEBUG, category)
+			if category != "client" {
+				logger.SetLevel(logger.DEBUG, category)
+			} else {
+				logger.SetLevel(level, category)
+			}
 		} else {
 			logger.SetLevel(level, category)
 		}

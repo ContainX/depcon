@@ -25,15 +25,16 @@ func findServicePort(app *marathon.Application) int {
 }
 
 func labelExists(app *marathon.Application, label string) bool {
-	exist, _ := app.Labels[label]
+	_, exist := app.Labels[label]
 	return exist
 }
 
 func formatIdentifier(appId, colour string) string {
 	id := fmt.Sprintf("%s-%s", appId, colour)
 	if []rune(id)[0] != '/' {
-		id = '/' + id
+		id = "/" + id
 	}
+	return id
 }
 
 func intOrZero(s string) int {

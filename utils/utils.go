@@ -100,7 +100,7 @@ func StringInSlice(a string, list []string) bool {
 	return false
 }
 
-func MapStringKeysToSlice(m map[string]interface{}) []string {
+func MapStringKeysToSlice(m map[string]string) []string {
 	keys := make([]string, 0, len(m))
 	for k := range m {
 		keys = append(keys, k)

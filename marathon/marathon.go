@@ -65,6 +65,10 @@ type Marathon interface {
 	//         - if false and a application exists an error will be returned
 	CreateApplication(app *Application, wait, force bool) (*Application, error)
 
+	// Responsible for parsing an application [ json | yaml ] and susbstituting variables.
+	// This method is called as part of the CreateApplicationFromFile method.
+	ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, *CreateOptions, error)
+
 	// Updates an Application
 	// {app} - the application structure containing configuration
 	// {wait} - if true will attempt to wait until the application updated is running

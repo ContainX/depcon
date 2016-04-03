@@ -120,7 +120,7 @@ var appConvertFileCmd = &cobra.Command{
 
 func init() {
 	appUpdateCmd.AddCommand(appUpdateCPUCmd, appUpdateMemoryCmd)
-	appCmd.AddCommand(appListCmd, appGetCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, appRestartCmd, appScaleCmd, appVersionsCmd, appConvertFileCmd)
+	appCmd.AddCommand(appListCmd, appGetCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, bgCmd, appRestartCmd, appScaleCmd, appVersionsCmd, appConvertFileCmd)
 
 	// Create Flags
 	appCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")

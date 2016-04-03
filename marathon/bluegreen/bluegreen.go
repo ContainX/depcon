@@ -1,137 +1,78 @@
 package bluegreen
 
 import (
-	"errors"
-	"fmt"
 	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/pkg/logger"
-	"strconv"
+	"github.com/gondor/depcon/pkg/httpclient"
 	"time"
 )
 
-const (
-	DeployGroup           = "HAPROXY_DEPLOYMENT_GROUP"
-	DeployGroupAltPort    = "HAPROXY_DEPLOYMENT_ALT_PORT"
-	DeployGroupColour     = "HAPROXY_DEPLOYMENT_COLOUR"
-	DeployProxyPort       = "HAPROXY_0_PORT"
-	DeployTargetInstances = "HAPROXY_DEPLOYMENT_TARGET_INSTANCES"
-	DeployStartedAt       = "HAPROXY_DEPLOYMENT_STARTED_AT"
-	ProxyAppId            = "HAPROXY_APP_ID"
-	ColourBlue            = "blue"
-	ColourGreen           = "green"
-)
+type BlueGreen interface {
 
-var (
-	ErrorNoLabels         = errors.New("No labels found. Please define the HAPROXY_DEPLOYMENT_GROUP and HAPROXY_DEPLOYMENT_ALT_PORT label")
-	ErrorNoServicePortSet = errors.New("No service port set")
-	LabelFormatErr        = "Please define the %s label"
-	log                   = logger.GetLogger("depcon.marathon.bg")
-)
+	// Starts a blue green deployment.  If the application exists then the deployment will slowly
+	// release the new version, draining connections from the HAProxy balancer during the process
+	// {filename} - the file name of the json | yaml application
+	// {opts} - blue/green options
+	DeployBlueGreenFromFile(filename string) (*marathon.Application, error)
 
-func (c *BGClient) DeployBlueGreen(app *marathon.Application) error {
-
-	if app.Labels == nil || len(app.Labels) == 0 {
-		return ErrorNoLabels
-	}
-
-	if !labelExists(app, DeployGroup) {
-		return fmt.Errorf(LabelFormatErr, DeployGroup)
-	}
-
-	if !labelExists(app, DeployGroupAltPort) {
-		return fmt.Errorf(LabelFormatErr, DeployGroupAltPort)
-	}
-
-	group := app.Labels[DeployGroup]
-	groupAltPort, err := strconv.Atoi(app.Labels[DeployGroupAltPort])
-	if err != nil {
-		return err
-	}
-
-	app.Labels[ProxyAppId] = app.ID
-	servicePort := findServicePort(app)
-
-	if servicePort <= 0 {
-		return ErrorNoServicePortSet
-	}
-
-	state, err := c.bgAppInfo(group, groupAltPort)
-	if err != nil {
-		return err
-	}
-
-	app.ID = formatIdentifier(app.ID, state.colour)
-	if state.existingApp != nil {
-		app.Instances = c.opts.InitialInstances
-		app.Labels[DeployTargetInstances] = strconv.Itoa(state.existingApp.Instances)
-	} else {
-		app.Labels[DeployTargetInstances] = strconv.Itoa(app.Instances)
-	}
-
-	app.Labels[DeployGroupColour] = state.colour
-	app.Labels[DeployStartedAt] = time.Now().Format(time.RFC3339)
-	app.Labels[DeployProxyPort] = strconv.Itoa(servicePort)
-
-	return nil
+	// Starts a blue green deployment.  If the application exists then the deployment will slowly
+	// release the new version, draining connections from the HAProxy balancer during the process
+	// {app} - the application to deploy/update
+	// {opts} - blue/green options
+	DeployBlueGreen(app *marathon.Application) (*marathon.Application, error)
 }
 
-func (c *BGClient) startDeployment(app *marathon.Application, state appState) bool {
-	if !state.resuming {
-	}
-	if state.existingApp != nil {
-		return c.checkIfTasksDrained(app, state.existingApp, time.Now())
-	}
-	return false
+type BlueGreenOptions struct {
+	// The max time to wait on HAProxy to drain connections (in seconds)
+	ProxyWaitTimeout time.Duration
+	// Initial number of app instances to create
+	InitialInstances int
+	// Delay (in seconds) to wait between each successive deployment step
+	StepDelay time.Duration
+	// Resume from previous deployment
+	Resume bool
+	// Marathon-LB stats endpoint - ex: http://host:9090
+	LoadBalancer string
+	// if true will attempt to wait until the NEW application or group is running
+	Wait bool
+	// If true an error will be returned on params defined in the configuration file that
+	// could not resolve to user input and environment variables
+	ErrorOnMissingParams bool
+	// Additional environment params - looks at this map for token substitution which takes
+	// priority over matching environment variables
+	EnvParams map[string]string
 }
 
-func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (appState, error) {
-	apps, err := c.marathon.ListApplications()
+type BGClient struct {
+	marathon marathon.Marathon
+	opts     *BlueGreenOptions
+	http     *httpclient.HttpClient
+}
 
-	if err != nil {
-		return err
-	}
+type appState struct {
+	colour      string
+	nextPort    int
+	existingApp *marathon.Application
+	resuming    bool
+}
 
-	var existingApp marathon.Application
+type proxyInfo struct {
+	hmap          map[string]int
+	backends      [][]string
+	instanceCount int
+}
 
-	colour := ColourBlue
-	nextPort := deployGroupAltPort
-	resume := false
+func NewBlueGreenClient(marathon marathon.Marathon, opts *BlueGreenOptions) BlueGreen {
+	c := new(BGClient)
+	c.marathon = marathon
+	c.opts = opts
+	c.http = httpclient.DefaultHttpClient()
+	return c
+}
 
-	for _, app := range apps.Apps {
-		if len(app.Labels) <= 0 {
-			continue
-		}
-		if labelExists(app, DeployGroup) && labelExists(app, DeployGroupColour) && app.Labels[DeployGroup] == deployGroupAltPort {
-			if existingApp != nil {
-				if c.opts.Resume {
-					log.Info("Found previous deployment -- resuming")
-					resume = true
-					if deployStartTimeCompare(existingApp, app) == -1 {
-						break
-					}
-				} else {
-					return errors.New("There appears to be an existing deployment in progress")
-				}
-			}
-			prev_colour := app.Labels[DeployGroupColour]
-			prev_port := app.Ports[0]
-			if prev_port == deployGroupAltPort {
-				nextPort, _ = strconv.Atoi(app.Labels[DeployProxyPort])
-			} else {
-				nextPort = deployGroupAltPort
-			}
-
-			if prev_colour == ColourBlue {
-				colour = ColourGreen
-			} else {
-				colour = ColourBlue
-			}
-		}
-	}
-	return &appState{
-		existingApp: existingApp,
-		nextPort:    nextPort,
-		colour:      colour,
-		resuming:    resume,
-	}, nil
+func NewBlueGreenOptions() *BlueGreenOptions {
+	opts := &BlueGreenOptions{}
+	opts.InitialInstances = 1
+	opts.ProxyWaitTimeout = time.Duration(300) * time.Second
+	opts.StepDelay = time.Duration(6) * time.Second
+	return opts
 }

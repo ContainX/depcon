@@ -28,14 +28,14 @@ var (
 )
 
 func (c *MarathonClient) CreateApplicationFromFile(filename string, opts *CreateOptions) (*Application, error) {
-	app, options, err := c.parseApplicationFromFile(filename, opts)
+	app, options, err := c.ParseApplicationFromFile(filename, opts)
 	if err != nil {
 		return app, err
 	}
 	return c.CreateApplication(app, options.Wait, options.Force)
 }
 
-func (c *MarathonClient) parseApplicationFromFile(filename string, opts *CreateOptions) (*Application, *CreateOptions, error) {
+func (c *MarathonClient) ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, *CreateOptions, error) {
 	log.Info("Creating Application from file: %s", filename)
 	options := initCreateOptions(opts)
 
@@ -257,7 +257,7 @@ func (c *MarathonClient) determineTimeout(app *Application) time.Duration {
 				max = grace
 			}
 		}
-		log.Info("Max was %d\n", max)
+		log.Debug("determineTimeout:  Max is %d\n", max)
 		return max
 	}
 	return DefaultTimeout

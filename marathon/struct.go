@@ -47,7 +47,7 @@ type Application struct {
 }
 
 type KillTasksScale struct {
-	ids []string `json:"ids"`
+	IDs []string `json:"ids"`
 }
 
 type AppKillTasksOptions struct {

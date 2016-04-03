@@ -3,8 +3,7 @@ package bluegreen
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/gondor/depcon/commands/marathon"
-	"github.com/gondor/depcon/pkg/httpclient"
+	"github.com/gondor/depcon/marathon"
 	"github.com/gondor/depcon/utils"
 	"io"
 	"math"
@@ -22,6 +21,15 @@ const (
 	BackendRE      = `(?i)^(\d+)_(\d+)_(\d+)_(\d+)_(\d+)$`
 )
 
+// Simple HTTP Test to determine if the current LB is the correct URL. Better to test this before we modify Marathon with this
+// existing deployment
+func (c *BGClient) isProxyAlive() {
+	resp := c.http.HttpGet(c.opts.LoadBalancer+HAProxyStatsQP, nil)
+	if resp.Error != nil {
+		log.Fatal("HAProxy is not responding or is invalid or Stats service not enabled.\n\n", resp.Error.Error())
+	}
+}
+
 func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, stepStartedAt time.Time) bool {
 	time.Sleep(c.opts.StepDelay)
 
@@ -33,17 +41,14 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 
 	hosts, err := proxiesFromURI(c.opts.LoadBalancer)
 	if err != nil {
-		return nil, err
-	}
-
-	if c.http == nil {
-		c.http = httpclient.DefaultHttpClient()
+		log.Error("Error with HAProxy Stats URL: %s", err.Error())
 	}
 
 	var errCaught error = nil
 	var csvData string
 
 	for _, h := range hosts {
+		log.Debug("Querying HAProxy stats: %s", h+HAProxyStatsQP)
 		resp := c.http.HttpGet(h+HAProxyStatsQP, nil)
 		if resp.Error != nil {
 			errCaught = resp.Error
@@ -63,7 +68,7 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 		}
 
 		if errCaught != nil {
-			log.Warning("Caught error when retrieving HAProxy stats from %s", h)
+			log.Warning("Caught error when retrieving HAProxy stats from %s: Error (%s)", h, errCaught.Error())
 			return c.checkIfTasksDrained(app, existingApp, stepStartedAt)
 		}
 	}
@@ -90,7 +95,7 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 	for _, be := range backendsDrained {
 		// Verify that the backends have no sessions or pending connections.
 		// This is likely overkill, but we'll do it anyway to be safe.
-		if intOrZero(be[pinfo.hmap["qcur"]]) > 0 || intOrZero(be[pinfo.hmap["scur"]]) > 0 {
+		if intOrZero(string(be[pinfo.hmap["qcur"]])) > 0 || intOrZero(string(be[pinfo.hmap["scur"]])) > 0 {
 			// Backends are not yet defined
 			return c.checkIfTasksDrained(app, existingApp, stepStartedAt)
 		}
@@ -111,7 +116,7 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 	}
 
 	// Scale new app up
-	instances := math.Floor(app.Instances + (app.Instances+1)/2)
+	instances := int(math.Floor(float64(app.Instances + (app.Instances+1)/2)))
 	if instances >= existingApp.Instances {
 		instances = targetInstances
 	}
@@ -143,13 +148,13 @@ func findTasksToKill(tasks []*marathon.Task, hostPorts map[string][]int) []strin
 	return utils.MapStringKeysToSlice(tasksToKill)
 }
 
-func hostPortsFromBackends(hmap map[string]int, backends []string, instanceCount int) map[string][]int {
+func hostPortsFromBackends(hmap map[string]int, backends [][]string, instanceCount int) map[string][]int {
 	regex := regexp.MustCompile(BackendRE)
 	counts := map[string]int{}
 	hostPorts := map[string][]int{}
 
 	for _, be := range backends {
-		svname := be[hmap["svname"]]
+		svname := string(be[hmap["svname"]])
 		if _, ok := counts[svname]; ok {
 			counts[svname] += 1
 		} else {
@@ -173,8 +178,8 @@ func hostPortsFromBackends(hmap map[string]int, backends []string, instanceCount
 	return hostPorts
 }
 
-func backendsForStatus(pinfo *proxyInfo, status string) []string {
-	results := []string{}
+func backendsForStatus(pinfo *proxyInfo, status string) [][]string {
+	var results [][]string
 	for _, b := range pinfo.backends {
 		if b[pinfo.hmap["status"]] == status {
 			results = append(results, b)
@@ -188,7 +193,7 @@ func parseProxyBackends(data string, app *marathon.Application) *proxyInfo {
 	pi := &proxyInfo{
 		instanceCount: 0,
 		hmap:          map[string]int{},
-		backends:      [][]string{},
+		backends:      make([][]string, 0),
 	}
 
 	var headers []string
@@ -203,7 +208,7 @@ func parseProxyBackends(data string, app *marathon.Application) *proxyInfo {
 			log.Fatal(err)
 		}
 
-		if []rune(row)[0] == '#' {
+		if []rune(row[0])[0] == '#' {
 			headers = row
 			pi.instanceCount += 1
 			continue
@@ -247,7 +252,7 @@ func proxiesFromURI(uri string) ([]string, error) {
 	}
 	ips, err := net.LookupIP(url.Host)
 	if err != nil {
-		return url.Host, nil
+		return []string{url.String()}, nil
 	}
 
 	results := []string{}
