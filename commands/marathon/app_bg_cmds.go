@@ -15,7 +15,7 @@ const (
 	RESUME_FLAG     = "resume"
 	LB_FLAG         = "lb"
 	LB_TIMEOUT_FLAG = "lb-timeout"
-	BG_DRYRUN_FLAG = "dry"
+	BG_DRYRUN_FLAG  = "dry"
 )
 
 var bgCmd = &cobra.Command{
