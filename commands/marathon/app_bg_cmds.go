@@ -5,6 +5,7 @@ import (
 	"github.com/gondor/depcon/pkg/cli"
 	"github.com/spf13/cobra"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -14,6 +15,7 @@ const (
 	RESUME_FLAG     = "resume"
 	LB_FLAG         = "lb"
 	LB_TIMEOUT_FLAG = "lb-timeout"
+	BG_DRYRUN_FLAG = "dry"
 )
 
 var bgCmd = &cobra.Command{
@@ -38,6 +40,8 @@ func init() {
 	bgCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
+	bgCmd.Flags().Bool(BG_DRYRUN_FLAG, false, "Dry run (no deployment or scaling)")
+
 }
 
 func deployBlueGreenCmd(cmd *cobra.Command, args []string) {
@@ -52,44 +56,38 @@ func deployBlueGreenCmd(cmd *cobra.Command, args []string) {
 }
 
 func bgc(c *cobra.Command) bluegreen.BlueGreen {
+
+	paramsFile, _ := c.Flags().GetString(ENV_FILE_FLAG)
+	params, _ := c.Flags().GetStringSlice(PARAMS_FLAG)
+	ignore, _ := c.Flags().GetBool(IGNORE_MISSING)
+	sd, _ := c.Flags().GetInt(STEP_DELAY_FLAG)
+	lbtimeout, _ := c.Flags().GetInt(LB_TIMEOUT_FLAG)
+
+	// Create Options
 	opts := bluegreen.NewBlueGreenOptions()
 	opts.Resume, _ = c.Flags().GetBool(RESUME_FLAG)
 	opts.LoadBalancer, _ = c.Flags().GetString(LB_FLAG)
-
 	opts.InitialInstances, _ = c.Flags().GetInt(INSTANCES_FLAG)
-	ignore, _ := c.Flags().GetBool(IGNORE_MISSING)
 	opts.ErrorOnMissingParams = !ignore
-
-	sd, _ := c.Flags().GetInt(STEP_DELAY_FLAG)
 	opts.StepDelay = time.Duration(sd) * time.Second
-
-	lbtimeout, _ := c.Flags().GetInt(LB_TIMEOUT_FLAG)
 	opts.ProxyWaitTimeout = time.Duration(lbtimeout) * time.Second
+	opts.DryRun, _ = c.Flags().GetBool(BG_DRYRUN_FLAG)
+
+	if paramsFile != "" {
+		envParams, _ := parseParamsFile(paramsFile)
+		opts.EnvParams = envParams
+	} else {
+		opts.EnvParams = make(map[string]string)
+	}
+
+	if params != nil {
+		for _, p := range params {
+			if strings.Contains(p, "=") {
+				v := strings.Split(p, "=")
+				opts.EnvParams[v[0]] = v[1]
+			}
+		}
+	}
 
 	return bluegreen.NewBlueGreenClient(client(c), opts)
 }
-
-/*
-
-opts.InitialInstances = 1
-	opts.ProxyWaitTimeout = time.Duration(300) * time.Second
-	opts.StepDelay = time.Duration(6) * time.Second
-// The max time to wait on HAProxy to drain connections (in seconds)
-	ProxyWaitTimeout time.Duration
-	// Initial number of app instances to create
-	InitialInstances int
-	// Delay (in seconds) to wait between each successive deployment step
-	StepDelay time.Duration
-	// Resume from previous deployment
-	Resume bool
-	// Marathon-LB stats endpoint - ex: http://host:9090
-	LoadBalancer string
-	// if true will attempt to wait until the NEW application or group is running
-	Wait bool
-	// If true an error will be returned on params defined in the configuration file that
-	// could not resolve to user input and environment variables
-	ErrorOnMissingParams bool
-	// Additional environment params - looks at this map for token substitution which takes
-	// priority over matching environment variables
-	EnvParams map[string]string
-*/

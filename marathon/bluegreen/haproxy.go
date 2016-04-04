@@ -61,6 +61,7 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 			errCaught = resp.Error
 		} else {
 			pids := strings.Split(resp.Content, " ")
+			log.Debug("Pids: %v, length: %d, time constraint: %v", pids, len(pids), (time.Now().Sub(stepStartedAt) < c.opts.StepDelay))
 			if len(pids) > 1 && time.Now().Sub(stepStartedAt) < c.opts.StepDelay {
 				log.Info("Waiting for %d, pids on %s", len(pids), h)
 				return c.checkIfTasksDrained(app, existingApp, stepStartedAt)
@@ -75,12 +76,14 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 
 	pinfo := parseProxyBackends(csvData, app)
 	if len(pinfo.backends)/pinfo.instanceCount != (app.Instances + existingApp.Instances) {
+		log.Debug("HAProxy hasn't updated: %d / %d != (%d + %d)", len(pinfo.backends), pinfo.instanceCount, app.Instances, existingApp.Instances)
 		// HAProxy hasn't updated yet, try again
 		return c.checkIfTasksDrained(app, existingApp, stepStartedAt)
 	}
 
 	backendsUp := backendsForStatus(pinfo, "UP")
 	if len(backendsUp)/pinfo.instanceCount < targetInstances {
+		log.Debug("Waiting until health state: %d / %d < %d", len(backendsUp), pinfo.instanceCount, targetInstances)
 		// Wait until we're in a health state
 		return c.checkIfTasksDrained(app, existingApp, stepStartedAt)
 	}
@@ -88,6 +91,7 @@ func (c *BGClient) checkIfTasksDrained(app, existingApp *marathon.Application, s
 	// Double check that current draining backends are finished serving requests
 	backendsDrained := backendsForStatus(pinfo, "MAINT")
 	if len(backendsDrained)/pinfo.instanceCount < 1 {
+		log.Debug("No backends have started draining yet: %d / %d < 1", len(backendsDrained), pinfo.instanceCount)
 		// No backends have started draining yet
 		return c.checkIfTasksDrained(app, existingApp, stepStartedAt)
 	}
@@ -233,12 +237,14 @@ func notBackFrontend(value string) bool {
 }
 
 func (c *BGClient) refreshAppOrPanic(id string) *marathon.Application {
+	log.Debug("Enter: refreshAppOrPanic -> %s", id)
 	// Retry in case of minor network errors
 	for i := 0; i < 3; i++ {
 		if a, err := c.marathon.GetApplication(id); err != nil {
 			log.Error("Error refresh app info: %s, Will retry %d more times before giving up", err.Error(), 3-(i+1))
 			time.Sleep(time.Duration(3) * time.Second)
 		} else {
+			log.Debug("refreshAppOrPanic: returning %s", sprintApp(a))
 			return a
 		}
 	}
@@ -250,14 +256,19 @@ func proxiesFromURI(uri string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	ips, err := net.LookupIP(url.Host)
+	hp := strings.Split(url.Host, ":")
+	host := hp[0]
+	port := hp[1]
+
+	ips, err := net.LookupIP(host)
 	if err != nil {
+		log.Debug("Lookup IP failed for: %s, error: %s", host, err.Error())
 		return []string{url.String()}, nil
 	}
 
 	results := []string{}
 	for _, ip := range ips {
-		url.Host = ip.String()
+		url.Host = ip.String() + ":" + port
 		results = append(results, url.String())
 	}
 	return results, nil

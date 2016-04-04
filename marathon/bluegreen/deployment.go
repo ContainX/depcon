@@ -96,6 +96,10 @@ func (c *BGClient) DeployBlueGreen(app *marathon.Application) (*marathon.Applica
 	app.Labels[DeployStartedAt] = time.Now().Format(time.RFC3339)
 	app.Labels[DeployProxyPort] = strconv.Itoa(servicePort)
 
+	if c.opts.DryRun {
+		return app, nil
+	}
+
 	c.startDeployment(app, state)
 
 	return c.marathon.GetApplication(app.ID)
@@ -137,23 +141,24 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 		return nil, err
 	}
 
-	var existingApp *marathon.Application
+	var existingApp marathon.Application
 
 	colour := ColourBlue
 	nextPort := deployGroupAltPort
 	resume := false
+	exists := false
 
-	for _, a := range apps.Apps {
-		app := &a
+	for _, app := range apps.Apps {
+		log.Debug("bgAppInfo: loop %s", app.ID)
 		if len(app.Labels) <= 0 {
 			continue
 		}
-		if labelExists(app, DeployGroup) && labelExists(app, DeployGroupColour) && app.Labels[DeployGroup] == deployGroup {
-			if existingApp != nil {
+		if labelExists(&app, DeployGroup) && labelExists(&app, DeployGroupColour) && app.Labels[DeployGroup] == deployGroup {
+			if exists {
 				if c.opts.Resume {
 					log.Info("Found previous deployment -- resuming")
 					resume = true
-					if deployStartTimeCompare(existingApp, app) == -1 {
+					if deployStartTimeCompare(&existingApp, &app) == -1 {
 						break
 					}
 				} else {
@@ -162,7 +167,11 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 			}
 			prev_colour := app.Labels[DeployGroupColour]
 			prev_port := app.Ports[0]
+
+			log.Debug("bgAppInfo: assigning %s to existing app: %s = %s", app.ID, app.Labels[DeployGroup], deployGroup)
 			existingApp = app
+			exists = true
+
 			if prev_port == deployGroupAltPort {
 				nextPort, _ = strconv.Atoi(app.Labels[DeployProxyPort])
 			} else {
@@ -176,10 +185,16 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 			}
 		}
 	}
+
+	log.Debug("bgAppInfo: Returning %s, np: %d, clr: %s", sprintApp(&existingApp), nextPort, colour)
 	return &appState{
-		existingApp: existingApp,
+		existingApp: &existingApp,
 		nextPort:    nextPort,
 		colour:      colour,
 		resuming:    resume,
 	}, nil
+}
+
+func sprintApp(a *marathon.Application) string {
+	return fmt.Sprintf("[id: %s, i: %d, lbls: %v]", a.ID, a.Instances, a.Labels)
 }

@@ -40,6 +40,8 @@ type BlueGreenOptions struct {
 	// Additional environment params - looks at this map for token substitution which takes
 	// priority over matching environment variables
 	EnvParams map[string]string
+	// Do not actually deploy or scale.  Dry run only
+	DryRun bool
 }
 
 type BGClient struct {

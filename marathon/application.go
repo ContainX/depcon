@@ -127,6 +127,8 @@ func (c *MarathonClient) UpdateApplication(app *Application, wait bool) (*Applic
 }
 
 func (c *MarathonClient) ListApplications() (*Applications, error) {
+	log.Debug("Enter: ListApplications")
+
 	apps := new(Applications)
 
 	resp := c.http.HttpGet(c.marathonUrl(API_APPS), apps)
@@ -137,6 +139,7 @@ func (c *MarathonClient) ListApplications() (*Applications, error) {
 }
 
 func (c *MarathonClient) GetApplication(id string) (*Application, error) {
+	log.Debug("Enter: GetApplication: %s", id)
 	app := new(AppById)
 	resp := c.http.HttpGet(c.marathonUrl(API_APPS, id), app)
 	if resp.Error != nil {
