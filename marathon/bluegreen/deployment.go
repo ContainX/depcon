@@ -84,7 +84,7 @@ func (c *BGClient) DeployBlueGreen(app *marathon.Application) (*marathon.Applica
 	app = c.updateServicePort(app, state.nextPort)
 
 	app.ID = formatIdentifier(app.ID, state.colour)
-	log.Debug("State existingApp = %v", state.existingApp)
+
 	if state.existingApp != nil {
 		app.Instances = c.opts.InitialInstances
 		app.Labels[DeployTargetInstances] = strconv.Itoa(state.existingApp.Instances)
@@ -186,13 +186,19 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 		}
 	}
 
-	log.Debug("bgAppInfo: Returning %s, np: %d, clr: %s", sprintApp(&existingApp), nextPort, colour)
-	return &appState{
-		existingApp: &existingApp,
+	as := &appState{
 		nextPort:    nextPort,
 		colour:      colour,
 		resuming:    resume,
-	}, nil
+	}
+
+	if exists {
+		as.existingApp = &existingApp
+		log.Debug("bgAppInfo: Returning %s, np: %d, clr: %s", sprintApp(as.existingApp), as.nextPort, as.colour)
+	} else {
+		log.Debug("bgAppInfo: Returning np: %d, clr: %s", as.nextPort, as.colour)
+	}
+	return as, nil
 }
 
 func sprintApp(a *marathon.Application) string {
