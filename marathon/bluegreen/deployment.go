@@ -187,9 +187,9 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 	}
 
 	as := &appState{
-		nextPort:    nextPort,
-		colour:      colour,
-		resuming:    resume,
+		nextPort: nextPort,
+		colour:   colour,
+		resuming: resume,
 	}
 
 	if exists {

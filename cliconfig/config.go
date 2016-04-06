@@ -58,10 +58,11 @@ type ConfigEnvironment struct {
 }
 
 type ServiceConfig struct {
-	Username string `json:"username,omitempty"`
-	Password string `json:"password,omitempty"`
-	HostUrl  string `json:"serveraddress,omitempty"`
-	Name     string `json:"-"`
+	Username string            `json:"username,omitempty"`
+	Password string            `json:"password,omitempty"`
+	HostUrl  string            `json:"serveraddress,omitempty"`
+	Features map[string]string `json:"features,omitempty"`
+	Name     string            `json:"-"`
 }
 
 func HasExistingConfig() (*ConfigFile, bool) {
