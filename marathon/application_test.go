@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	AppsFolder = "testdata/apps/"
+	AppsFolder   = "testdata/apps/"
+	CommonFolder = "testdata/common/"
 )
 
 func TestCreateApplicationFromFile(t *testing.T) {
@@ -78,7 +79,7 @@ func TestHasApplicationInvalid(t *testing.T) {
 }
 
 func TestDestroyApplication(t *testing.T) {
-	s := mockrest.StartNewWithFile(AppsFolder + "deployid_response.json")
+	s := mockrest.StartNewWithFile(CommonFolder + "deployid_response.json")
 	defer s.Stop()
 
 	c := NewMarathonClient(s.URL, "", "")
@@ -88,7 +89,7 @@ func TestDestroyApplication(t *testing.T) {
 }
 
 func TestRestartApplication(t *testing.T) {
-	s := mockrest.StartNewWithFile(AppsFolder + "deployid_response.json")
+	s := mockrest.StartNewWithFile(CommonFolder + "deployid_response.json")
 	defer s.Stop()
 
 	c := NewMarathonClient(s.URL, "", "")
@@ -98,7 +99,7 @@ func TestRestartApplication(t *testing.T) {
 }
 
 func TestScaleApplication(t *testing.T) {
-	s := mockrest.StartNewWithFile(AppsFolder + "deployid_response.json")
+	s := mockrest.StartNewWithFile(CommonFolder + "deployid_response.json")
 	defer s.Stop()
 
 	c := NewMarathonClient(s.URL, "", "")
