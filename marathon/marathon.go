@@ -205,7 +205,7 @@ type MarathonClient struct {
 }
 
 type MarathonOptions struct {
-	WaitTimeout time.Duration
+	WaitTimeout      time.Duration
 	TLSAllowInsecure bool
 }
 

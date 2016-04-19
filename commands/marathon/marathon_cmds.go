@@ -61,7 +61,7 @@ func client(c *cobra.Command) marathon.Marathon {
 		if timeout, err := c.Flags().GetDuration(TIMEOUT_FLAG); err == nil {
 			opts.WaitTimeout = timeout
 		}
-		opts.TLSAllowInsecure = insecure;
+		opts.TLSAllowInsecure = insecure
 
 		marathonClient = marathon.NewMarathonClientWithOpts(mc.HostUrl, mc.Username, mc.Password, opts)
 

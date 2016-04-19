@@ -2,6 +2,7 @@
 package httpclient
 
 import (
+	"crypto/tls"
 	"errors"
 	"github.com/gondor/depcon/pkg/encoding"
 	"github.com/gondor/depcon/pkg/logger"
@@ -10,7 +11,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"crypto/tls"
 )
 
 var log = logger.GetLogger("client")
@@ -61,9 +61,8 @@ var (
 	ErrorMessage = errors.New("Unknown error message was captured")
 	// Not Authorized
 	ErrorNotAuthorized = errors.New("Not Authorized to perform this action - Status: 403")
-    // Not Authenticated
+	// Not Authenticated
 	ErrorNotAuthenticated = errors.New("Not Authenticated to perform this action - Status: 401")
-
 )
 
 func NewDefaultConfig() *HttpClientConfig {
