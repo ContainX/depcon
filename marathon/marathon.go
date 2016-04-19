@@ -206,6 +206,7 @@ type MarathonClient struct {
 
 type MarathonOptions struct {
 	WaitTimeout time.Duration
+	TLSAllowInsecure bool
 }
 
 func NewMarathonClient(host, username, password string) Marathon {

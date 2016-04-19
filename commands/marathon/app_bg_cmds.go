@@ -45,7 +45,9 @@ func init() {
 }
 
 func deployBlueGreenCmd(cmd *cobra.Command, args []string) {
-
+	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		return
+	}
 	a, err := bgc(cmd).DeployBlueGreenFromFile(args[0])
 	if err != nil {
 		cli.Output(nil, err)

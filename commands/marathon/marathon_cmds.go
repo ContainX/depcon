@@ -15,6 +15,7 @@ const (
 	PARAMS_FLAG    string = "param"
 	ENV_FILE_FLAG  string = "env-file"
 	IGNORE_MISSING string = "ignore"
+	INSECURE_FLAG  string = "insecure"
 )
 
 var (
@@ -45,17 +46,22 @@ func AddJailedMarathonToCmd(rc *cobra.Command, c *cliconfig.ConfigFile) {
 
 // Associates all marathon service commands to specified parent
 func associateServiceCommands(parent *cobra.Command) {
+	parent.PersistentFlags().Bool(INSECURE_FLAG, false, "Skips Insecure TLS/HTTPS Certificate checks")
+	viper.BindPFlag(INSECURE_FLAG, parent.PersistentFlags().Lookup(INSECURE_FLAG))
+
 	parent.AddCommand(appCmd, groupCmd, deployCmd, taskCmd, eventCmd, serverCmd)
 }
 
 func client(c *cobra.Command) marathon.Marathon {
 	if marathonClient == nil {
 		envName := viper.GetString("env_name")
+		insecure := viper.GetBool(INSECURE_FLAG)
 		mc := *configFile.Environments[envName].Marathon
 		opts := &marathon.MarathonOptions{}
 		if timeout, err := c.Flags().GetDuration(TIMEOUT_FLAG); err == nil {
 			opts.WaitTimeout = timeout
 		}
+		opts.TLSAllowInsecure = insecure;
 
 		marathonClient = marathon.NewMarathonClientWithOpts(mc.HostUrl, mc.Username, mc.Password, opts)
 

@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"crypto/tls"
 )
 
 var log = logger.GetLogger("client")
@@ -42,6 +43,8 @@ type HttpClientConfig struct {
 	HttpPass string
 	// Request timeout
 	RequestTimeout int
+	// TLS Insecure Skip Verify
+	TLSInsecureSkipVerify bool
 }
 
 type HttpClient struct {
@@ -56,10 +59,15 @@ var (
 	ErrorNotFound = errors.New("The resource does not exist")
 	// Generic Error Message
 	ErrorMessage = errors.New("Unknown error message was captured")
+	// Not Authorized
+	ErrorNotAuthorized = errors.New("Not Authorized to perform this action - Status: 403")
+    // Not Authenticated
+	ErrorNotAuthenticated = errors.New("Not Authenticated to perform this action - Status: 401")
+
 )
 
 func NewDefaultConfig() *HttpClientConfig {
-	return &HttpClientConfig{RequestTimeout: 30}
+	return &HttpClientConfig{RequestTimeout: 30, TLSInsecureSkipVerify: false}
 }
 
 func DefaultHttpClient() *HttpClient {
@@ -67,12 +75,19 @@ func DefaultHttpClient() *HttpClient {
 }
 
 func NewHttpClient(config HttpClientConfig) *HttpClient {
-	return &HttpClient{
+	hc := &HttpClient{
 		config: config,
 		http: &http.Client{
 			Timeout: (time.Duration(config.RequestTimeout) * time.Second),
 		},
 	}
+	if config.TLSInsecureSkipVerify {
+		tr := &http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		hc.http.Transport = tr
+	}
+	return hc
 }
 
 func NewResponse(status int, elapsed time.Duration, content string, err error) *Response {
@@ -108,6 +123,7 @@ func (h *HttpClient) invoke(r *Request) *Response {
 	log.Debug("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
 
 	request, err := http.NewRequest(r.method.String(), r.url, strings.NewReader(r.data))
+
 	if err != nil {
 		return &Response{Error: err}
 	}
@@ -148,6 +164,10 @@ func (h *HttpClient) invoke(r *Request) *Response {
 		return NewResponse(status, req_elapsed, content, ErrorInvalidResponse)
 	case 404:
 		return NewResponse(status, req_elapsed, content, ErrorNotFound)
+	case 403:
+		return NewResponse(status, req_elapsed, content, ErrorNotAuthorized)
+	case 401:
+		return NewResponse(status, req_elapsed, content, ErrorNotAuthenticated)
 	}
 
 	return NewResponse(status, req_elapsed, content, ErrorMessage)
