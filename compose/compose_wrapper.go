@@ -105,7 +105,7 @@ func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 func (c *ComposeWrapper) PS(quiet bool) error {
 	allInfo := project.InfoSet{}
 
-	for name := range c.project.Configs {
+	for _, name := range c.project.Configs.Keys() {
 		service, err := c.project.CreateService(name)
 		if err != nil {
 			return err
