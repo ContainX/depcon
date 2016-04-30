@@ -4,6 +4,10 @@
 
 An advanced deployment tool for docker containers against Mesos/Marathon, Kubernetes and Amazon ECS
 
+For full up to date documentation and usage please see: 
+
+### [http://depcon.containx.io](http://depcon.containx.io)
+
 ## Overview
 
 Depcon makes managing clusters that run docker containers a breeze.  It offers the ability to define environments such as test, pre-prod, production against Marathon (initial release), Kubernetes and Amazon ECS.  
