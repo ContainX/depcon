@@ -4,7 +4,7 @@
 
 An advanced deployment tool for docker containers against Mesos/Marathon, Kubernetes and Amazon ECS
 
-For full up to date documentation and usage please see: 
+For full up to date documentation and usage please see:
 
 ### [http://depcon.containx.io](http://depcon.containx.io)
 
@@ -35,8 +35,7 @@ Binaries are available through GitHub releases.  You can download the appropriat
 ### Build and Install the Binaries from Source
 
 **Pre-Requisites**
-* GOLANG 1.5+
-* Vendor support enabled.  You **MUST** add env variable `GO15VENDOREXPERIMENT=1` to enable
+* GOLANG 1.6+
 
 Add Depcon and its package dependencies to your go `src` directory
 
@@ -51,7 +50,7 @@ To update Depcon's dependencies, use `go get` with the `-u` option.
 
 ### Running Depcon in Docker
 
-With each release we publish a very small docker image containing depcon. 
+With each release we publish a very small docker image containing depcon.
 
 **Quick Example**
 ```
