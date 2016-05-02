@@ -3,9 +3,9 @@ package commands
 import (
 	"errors"
 	"fmt"
-	"github.com/gondor/depcon/cliconfig"
-	"github.com/gondor/depcon/pkg/cli"
-	"github.com/gondor/depcon/utils"
+	"github.com/ContainX/depcon/cliconfig"
+	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/utils"
 	"github.com/spf13/cobra"
 	"io"
 )

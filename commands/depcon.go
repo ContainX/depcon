@@ -3,10 +3,10 @@ package commands
 
 import (
 	"fmt"
-	"github.com/gondor/depcon/cliconfig"
-	"github.com/gondor/depcon/commands/compose"
-	"github.com/gondor/depcon/commands/marathon"
-	"github.com/gondor/depcon/pkg/logger"
+	"github.com/ContainX/depcon/cliconfig"
+	"github.com/ContainX/depcon/commands/compose"
+	"github.com/ContainX/depcon/commands/marathon"
+	"github.com/ContainX/depcon/pkg/logger"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"

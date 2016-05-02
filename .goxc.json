@@ -10,7 +10,7 @@
    "subject": "pacesys"
   },
   "publish-github": {
-      "owner": "gondor",
+      "owner": "ContainX",
       "repository": "depcon"
   },
   "debs": {

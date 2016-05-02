@@ -7,7 +7,7 @@ package envsubst
 import (
 	"bufio"
 	"bytes"
-	"github.com/gondor/depcon/pkg/logger"
+	"github.com/ContainX/depcon/pkg/logger"
 	"io"
 	"os"
 	"unicode"

@@ -2,8 +2,8 @@ package compose
 
 import (
 	"errors"
-	"github.com/gondor/depcon/compose"
-	"github.com/gondor/depcon/pkg/cli"
+	"github.com/ContainX/depcon/compose"
+	"github.com/ContainX/depcon/pkg/cli"
 	"github.com/spf13/cobra"
 )
 

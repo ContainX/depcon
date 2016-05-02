@@ -1,8 +1,8 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/cliconfig"
-	"github.com/gondor/depcon/marathon"
+	"github.com/ContainX/depcon/cliconfig"
+	"github.com/ContainX/depcon/marathon"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

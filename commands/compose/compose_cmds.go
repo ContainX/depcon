@@ -1,8 +1,8 @@
 package compose
 
 import (
-	"github.com/gondor/depcon/cliconfig"
-	"github.com/gondor/depcon/compose"
+	"github.com/ContainX/depcon/cliconfig"
+	"github.com/ContainX/depcon/compose"
 	"github.com/spf13/cobra"
 )
 

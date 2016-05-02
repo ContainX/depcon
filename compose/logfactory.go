@@ -2,7 +2,7 @@ package compose
 
 import (
 	"github.com/docker/libcompose/logger"
-	depconLog "github.com/gondor/depcon/pkg/logger"
+	depconLog "github.com/ContainX/depcon/pkg/logger"
 )
 
 var log = depconLog.GetLogger("depcon.compose")

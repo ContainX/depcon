@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gondor/depcon/pkg/userdir"
+	"github.com/ContainX/depcon/pkg/userdir"
 	"io"
 	"os"
 	"path/filepath"

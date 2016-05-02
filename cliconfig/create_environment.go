@@ -3,7 +3,7 @@ package cliconfig
 import (
 	"fmt"
 	"github.com/bgentry/speakeasy"
-	"github.com/gondor/depcon/utils"
+	"github.com/ContainX/depcon/utils"
 	"net/url"
 	"os"
 	"regexp"

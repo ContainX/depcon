@@ -2,7 +2,7 @@ package marathon
 
 import (
 	"fmt"
-	"github.com/gondor/depcon/pkg/cli"
+	"github.com/ContainX/depcon/pkg/cli"
 	"github.com/spf13/cobra"
 )
 

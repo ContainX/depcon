@@ -1,8 +1,8 @@
 package bluegreen
 
 import (
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/pkg/httpclient"
+	"github.com/ContainX/depcon/marathon"
+	"github.com/ContainX/depcon/pkg/httpclient"
 	"time"
 )
 

@@ -1,7 +1,7 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/pkg/mockrest"
+	"github.com/ContainX/depcon/pkg/mockrest"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -4,8 +4,8 @@ package httpclient
 import (
 	"crypto/tls"
 	"errors"
-	"github.com/gondor/depcon/pkg/encoding"
-	"github.com/gondor/depcon/pkg/logger"
+	"github.com/ContainX/depcon/pkg/encoding"
+	"github.com/ContainX/depcon/pkg/logger"
 	"io/ioutil"
 	"net/http"
 	"strings"
