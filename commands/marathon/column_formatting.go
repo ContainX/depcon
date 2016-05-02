@@ -2,9 +2,9 @@ package marathon
 
 import (
 	"fmt"
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/pkg/cli"
-	"github.com/gondor/depcon/utils"
+	"github.com/ContainX/depcon/marathon"
+	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/utils"
 	"io"
 	"strconv"
 	"text/tabwriter"

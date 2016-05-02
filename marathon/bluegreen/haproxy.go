@@ -3,8 +3,8 @@ package bluegreen
 import (
 	"encoding/csv"
 	"fmt"
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/utils"
+	"github.com/ContainX/depcon/marathon"
+	"github.com/ContainX/depcon/utils"
 	"io"
 	"math"
 	"net"

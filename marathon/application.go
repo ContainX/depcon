@@ -3,10 +3,10 @@ package marathon
 import (
 	"errors"
 	"fmt"
-	"github.com/gondor/depcon/pkg/encoding"
-	"github.com/gondor/depcon/pkg/envsubst"
-	"github.com/gondor/depcon/pkg/httpclient"
-	"github.com/gondor/depcon/utils"
+	"github.com/ContainX/depcon/pkg/encoding"
+	"github.com/ContainX/depcon/pkg/envsubst"
+	"github.com/ContainX/depcon/pkg/httpclient"
+	"github.com/ContainX/depcon/utils"
 	"os"
 	"time"
 )

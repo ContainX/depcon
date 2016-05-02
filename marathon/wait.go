@@ -1,8 +1,8 @@
 package marathon
 
 import (
-	"github.com/gondor/depcon/pkg/logger"
-	"github.com/gondor/depcon/utils"
+	"github.com/ContainX/depcon/pkg/logger"
+	"github.com/ContainX/depcon/utils"
 	"time"
 )
 

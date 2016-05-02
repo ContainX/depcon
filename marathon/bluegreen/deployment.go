@@ -3,8 +3,8 @@ package bluegreen
 import (
 	"errors"
 	"fmt"
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/pkg/logger"
+	"github.com/ContainX/depcon/marathon"
+	"github.com/ContainX/depcon/pkg/logger"
 	"os"
 	"strconv"
 	"time"

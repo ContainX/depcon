@@ -3,9 +3,9 @@ package marathon
 import (
 	"errors"
 	"fmt"
-	"github.com/gondor/depcon/marathon"
-	"github.com/gondor/depcon/pkg/cli"
-	"github.com/gondor/depcon/pkg/encoding"
+	"github.com/ContainX/depcon/marathon"
+	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"

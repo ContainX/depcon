@@ -2,7 +2,7 @@ package bluegreen
 
 import (
 	"fmt"
-	"github.com/gondor/depcon/marathon"
+	"github.com/ContainX/depcon/marathon"
 	"strconv"
 	"strings"
 )

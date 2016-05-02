@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
-	"github.com/gondor/depcon/pkg/envsubst"
+	"github.com/ContainX/depcon/pkg/envsubst"
 	"io/ioutil"
 	"os"
 	"strings"

@@ -1,6 +1,6 @@
 # Depcon (*Container Deployment*)
 
-[![Build Status](https://travis-ci.org/gondor/depcon.svg)](https://travis-ci.org/gondor/depcon)  [![release](http://github-release-version.herokuapp.com/github/gondor/depcon/release.svg?style=flat)](https://github.com/gondor/depcon/releases/latest)  [![GoDoc](https://godoc.org/github.com/gondor/depcon?status.svg)](https://godoc.org/github.com/gondor/depcon) [![Join the chat at https://gitter.im/gondor/depcon](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/gondor/depcon?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/ContainX/depcon.svg)](https://travis-ci.org/ContainX/depcon)  [![release](http://github-release-version.herokuapp.com/github/ContainX/depcon/release.svg?style=flat)](https://github.com/ContainX/depcon/releases/latest)  [![GoDoc](https://godoc.org/github.com/ContainX/depcon?status.svg)](https://godoc.org/github.com/ContainX/depcon) [![Join the chat at https://gitter.im/ContainX/community](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ContainX/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 An advanced deployment tool for docker containers against Mesos/Marathon, Kubernetes and Amazon ECS
 
@@ -30,7 +30,7 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 
 ### Binary Installation
 
-Binaries are available through GitHub releases.  You can download the appropriate binary, package and version from the [Releases](https://github.com/gondor/depcon/releases) page
+Binaries are available through GitHub releases.  You can download the appropriate binary, package and version from the [Releases](https://github.com/ContainX/depcon/releases) page
 
 ### Build and Install the Binaries from Source
 
@@ -39,13 +39,13 @@ Binaries are available through GitHub releases.  You can download the appropriat
 
 Add Depcon and its package dependencies to your go `src` directory
 
-    go get -v github.com/gondor/depcon
+    go get -v github.com/ContainX/depcon
 
 Once the `get` has completed, you should find your new `depcon` (or `depcon.exe`) executable sitting inside the `$GOPATH/bin/`
 
 To update Depcon's dependencies, use `go get` with the `-u` option.
 
-    go get -u -v github.com/gondor/depcon
+    go get -u -v github.com/ContainX/depcon
 
 
 ### Running Depcon in Docker

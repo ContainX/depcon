@@ -14,7 +14,7 @@
 package main
 
 import (
-	"github.com/gondor/depcon/commands"
+	"github.com/ContainX/depcon/commands"
 )
 
 var VERSION string = ""

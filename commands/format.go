@@ -2,9 +2,9 @@ package commands
 
 import (
 	"fmt"
-	"github.com/gondor/depcon/pkg/cli"
-	"github.com/gondor/depcon/pkg/encoding"
-	"github.com/gondor/depcon/pkg/logger"
+	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/pkg/encoding"
+	"github.com/ContainX/depcon/pkg/logger"
 	"os"
 )
 
