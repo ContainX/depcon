@@ -2,8 +2,8 @@ package cliconfig
 
 import (
 	"fmt"
-	"github.com/bgentry/speakeasy"
 	"github.com/ContainX/depcon/utils"
+	"github.com/bgentry/speakeasy"
 	"net/url"
 	"os"
 	"regexp"

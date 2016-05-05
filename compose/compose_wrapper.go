@@ -3,9 +3,9 @@ package compose
 import (
 	"errors"
 	"fmt"
+	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
-	"github.com/ContainX/depcon/pkg/envsubst"
 	"io/ioutil"
 	"os"
 	"strings"
