@@ -13,7 +13,6 @@ const (
 
 	/* --- api related constants --- */
 	API_VERSION      = "v2"
-	API_SUBSCRIPTION = API_VERSION + "/eventSubscriptions"
 	API_APPS         = API_VERSION + "/apps"
 	API_TASKS        = API_VERSION + "/tasks"
 	API_TASKS_DELETE = API_VERSION + "/tasks/delete"
@@ -23,9 +22,6 @@ const (
 	API_INFO         = API_VERSION + "/info"
 	API_LEADER       = API_VERSION + "/leader"
 	API_PING         = "ping"
-	API_LOGGING      = "logging"
-	API_HELP         = "help"
-	API_METRICS      = "metrics"
 
 	DefaultTimeout = time.Duration(90) * time.Second
 )
