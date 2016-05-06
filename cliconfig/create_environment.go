@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	AlphaNumDash string = `^[a-zA-Z0-9_]*$`
+	AlphaNumDash string = `^[a-zA-Z0-9_-]*$`
 )
 
 var (
