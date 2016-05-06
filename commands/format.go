@@ -53,7 +53,7 @@ func PrintFormat(formatter cli.Formatter) {
 
 func printEncodedType(formatter cli.Formatter, encoder encoding.EncoderType) {
 	e, _ := encoding.NewEncoder(encoder)
-	str, _ := e.MarshalIndent(formatter)
+	str, _ := e.MarshalIndent(formatter.Data().Data)
 	fmt.Println(str)
 }
 
@@ -63,3 +63,4 @@ func printColumn(formatter cli.Formatter) {
 		log.Error("Error: %s", err.Error())
 	}
 }
+

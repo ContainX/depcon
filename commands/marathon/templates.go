@@ -1,13 +1,10 @@
 package marathon
 
 import (
-	"fmt"
 	"github.com/ContainX/depcon/marathon"
 	"github.com/ContainX/depcon/utils"
-	"strconv"
 	"text/template"
 	"github.com/ContainX/depcon/pkg/cli"
-	"time"
 	"io"
 )
 
@@ -112,43 +109,30 @@ const (
 )
 
 type Templated struct {
-	Data     interface{}
-	Template string
+	cli.FormatData
+}
+
+func templateFor(template string, data interface{}) Templated {
+	return Templated{cli.FormatData{ Template: template, Data: data, Funcs: buildFuncMap() }}
 }
 
 func (d Templated) ToColumns(output io.Writer) error {
-	w := cli.NewTabWriter(output)
-	t := template.New("output").Funcs(buildFuncMap())
-	t, _ = t.Parse(d.Template)
-	if err := t.Execute(w, d.Data); err != nil {
-		return err
-	}
-	cli.FlushWriter(w)
-	return nil
+	return d.FormatData.ToColumns(output)
 }
+
+func (d Templated) Data() cli.FormatData {
+	return d.FormatData
+}
+
 
 func buildFuncMap() template.FuncMap {
 	funcMap := template.FuncMap{
 		"intConcat":     utils.ConcatInts,
 		"idConcat":	 utils.ConcatIdentifiers,
 		"dockerImage":   dockerImageOrEmpty,
-		"floatToString": floatToString,
-		"intToString":   strconv.Itoa,
-		"valString":	 valueToString,
-		"pad":           padString,
 		"hasDocker":     hasDocker,
-		"fdate":	 cli.FormatDate,
-		"msDur":	 durationToMilliseconds,
 	}
 	return funcMap
-}
-
-func durationToMilliseconds(t time.Duration) string {
-	return fmt.Sprintf("%d ms", (t.Nanoseconds() / int64(time.Millisecond)))
-}
-
-func padString(s string) string {
-	return fmt.Sprintf("%-25s:", s)
 }
 
 func hasDocker(c *marathon.Container) bool {
@@ -160,12 +144,4 @@ func dockerImageOrEmpty(c *marathon.Container) string {
 		return c.Docker.Image
 	}
 	return ""
-}
-
-func floatToString(f float64) string {
-	return fmt.Sprintf("%.2f", f)
-}
-
-func valueToString(v interface{}) string {
-	return fmt.Sprintf("%v", v)
 }

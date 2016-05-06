@@ -72,7 +72,7 @@ func listGroups(cmd *cobra.Command, args []string) {
 		arr = flattenGroup(group, arr)
 	}
 
-	cli.Output(Templated{Template: T_GROUPS, Data: arr}, e)
+	cli.Output(templateFor(T_GROUPS, arr), e)
 }
 
 func getGroup(cmd *cobra.Command, args []string) {
@@ -82,7 +82,7 @@ func getGroup(cmd *cobra.Command, args []string) {
 
 	v, e := client(cmd).GetGroup(args[0])
 	arr := flattenGroup(v, []*marathon.Group{})
-	cli.Output(Templated{Template: T_GROUPS, Data: arr}, e)
+	cli.Output(templateFor(T_GROUPS, arr), e)
 }
 
 func destroyGroup(cmd *cobra.Command, args []string) {
@@ -90,7 +90,7 @@ func destroyGroup(cmd *cobra.Command, args []string) {
 		return
 	}
 	v, e := client(cmd).DestroyGroup(args[0])
-	cli.Output(Templated{Template: T_DEPLOYMENT_ID, Data: v}, e)
+	cli.Output(templateFor(T_DEPLOYMENT_ID, v), e)
 }
 
 func createGroup(cmd *cobra.Command, args []string) {
@@ -121,7 +121,7 @@ func createGroup(cmd *cobra.Command, args []string) {
 		return
 	}
 	arr := flattenGroup(result, []*marathon.Group{})
-	cli.Output(Templated{Template: T_GROUPS, Data: arr}, e)
+	cli.Output(templateFor(T_GROUPS, arr), e)
 }
 
 func flattenGroup(g *marathon.Group, arr []*marathon.Group) []*marathon.Group {

@@ -18,7 +18,7 @@ var deployListCmd = &cobra.Command{
 	Short: "List all deployments",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).ListDeployments()
-		cli.Output(Templated{Template: T_DEPLOYMENTS, Data: v}, e)
+		cli.Output(templateFor(T_DEPLOYMENTS, v), e)
 	},
 }
 
@@ -30,7 +30,7 @@ var deployDeleteCmd = &cobra.Command{
 			return
 		}
 		v, e := client(cmd).DeleteDeployment(args[0])
-		cli.Output(Templated{Template: T_DEPLOYMENT_ID, Data: v}, e)
+		cli.Output(templateFor(T_DEPLOYMENT_ID, v), e)
 	},
 }
 

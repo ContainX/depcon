@@ -19,7 +19,7 @@ var taskListCmd = &cobra.Command{
 	Short: "List all tasks",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).ListTasks()
-		cli.Output(Templated{Template: T_TASKS, Data: v}, e)
+		cli.Output(templateFor(T_TASKS, v), e)
 	},
 }
 
@@ -28,7 +28,7 @@ var taskQueueCmd = &cobra.Command{
 	Short: "List all queued tasks",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).ListQueue()
-		cli.Output(Templated{Template: T_QUEUED_TASKS, Data: v}, e)
+		cli.Output(templateFor(T_QUEUED_TASKS, v), e)
 	},
 }
 
@@ -74,10 +74,10 @@ func appTasks(cmd *cobra.Command, args []string) {
 		fmt.Println("")
 		for _, t := range v {
 			fmt.Printf("::: Task: %s\n\n", t.ID)
-			cli.Output(Templated{Template: T_TASKS, Data: v}, e)
+			cli.Output(templateFor(T_TASKS, v), e)
 		}
 	} else {
-		cli.Output(Templated{Template: T_TASKS, Data: v}, e)
+		cli.Output(templateFor(T_TASKS, v), e)
 	}
 
 }
@@ -91,7 +91,7 @@ func appKillAllTasks(cmd *cobra.Command, args []string) {
 	scale, _ := cmd.Flags().GetBool(SCALE_FLAG)
 
 	v, e := client(cmd).KillAppTasks(args[0], host, scale)
-	cli.Output(Templated{Template: T_TASKS, Data: v}, e)
+	cli.Output(templateFor(T_TASKS, v), e)
 }
 
 func appKillTask(cmd *cobra.Command, args []string) {
@@ -100,5 +100,5 @@ func appKillTask(cmd *cobra.Command, args []string) {
 	}
 	scale, _ := cmd.Flags().GetBool(SCALE_FLAG)
 	v, e := client(cmd).KillAppTask(args[0], scale)
-	cli.Output(Templated{Template: T_TASK, Data: v}, e)
+	cli.Output(templateFor(T_TASK, v), e)
 }
