@@ -66,7 +66,13 @@ func init() {
 
 func listGroups(cmd *cobra.Command, args []string) {
 	v, e := client(cmd).ListGroups()
-	cli.Output(AppGroups{v}, e)
+	arr := []*marathon.Group{}
+
+	for _, group := range v.Groups {
+		arr = flattenGroup(group, arr)
+	}
+
+	cli.Output(Templated{Template: T_GROUPS, Data: arr}, e)
 }
 
 func getGroup(cmd *cobra.Command, args []string) {
@@ -75,7 +81,8 @@ func getGroup(cmd *cobra.Command, args []string) {
 	}
 
 	v, e := client(cmd).GetGroup(args[0])
-	cli.Output(AppGroup{v}, e)
+	arr := flattenGroup(v, []*marathon.Group{})
+	cli.Output(Templated{Template: T_GROUPS, Data: arr}, e)
 }
 
 func destroyGroup(cmd *cobra.Command, args []string) {
@@ -83,7 +90,7 @@ func destroyGroup(cmd *cobra.Command, args []string) {
 		return
 	}
 	v, e := client(cmd).DestroyGroup(args[0])
-	cli.Output(DeploymentId{v}, e)
+	cli.Output(Templated{Template: T_DEPLOYMENT_ID, Data: v}, e)
 }
 
 func createGroup(cmd *cobra.Command, args []string) {
@@ -113,7 +120,16 @@ func createGroup(cmd *cobra.Command, args []string) {
 		cli.Output(nil, fmt.Errorf("%s, consider using the --force flag to update when group exists", e.Error()))
 		return
 	}
-	cli.Output(AppGroup{result}, e)
+	arr := flattenGroup(result, []*marathon.Group{})
+	cli.Output(Templated{Template: T_GROUPS, Data: arr}, e)
+}
+
+func flattenGroup(g *marathon.Group, arr []*marathon.Group) []*marathon.Group {
+	arr = append(arr, g)
+	for _, cg := range g.Groups {
+		arr = flattenGroup(cg, arr)
+	}
+	return arr
 }
 
 func convertGroupFile(cmd *cobra.Command, args []string) {

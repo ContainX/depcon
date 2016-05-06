@@ -14,8 +14,7 @@ import (
 const (
 	STDERR_FLAG = "stderr"
 	FOLLOW_FLAG = "follow"
-	POLL_FLAG = "poll"
-
+	POLL_FLAG   = "poll"
 )
 
 var logCmd = &cobra.Command{

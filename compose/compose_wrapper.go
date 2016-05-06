@@ -6,10 +6,10 @@ import (
 	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
+	"github.com/docker/libcompose/project/options"
 	"io/ioutil"
 	"os"
 	"strings"
-	"github.com/docker/libcompose/project/options"
 )
 
 const (
@@ -37,7 +37,7 @@ func NewCompose(context *Context) Compose {
 }
 
 func (c *ComposeWrapper) Up(services ...string) error {
-	options := options.Up{ Create: options.Create{} }
+	options := options.Up{Create: options.Create{}}
 	return c.project.Up(options, services...)
 }
 
@@ -60,8 +60,7 @@ func (c *ComposeWrapper) Pull(services ...string) error {
 }
 
 func (c *ComposeWrapper) Delete(services ...string) error {
-	options := options.Delete{
-	}
+	options := options.Delete{}
 	return c.project.Delete(options, services...)
 }
 
@@ -81,8 +80,7 @@ func (c *ComposeWrapper) execStartStop(start bool, services ...string) error {
 	if start {
 		return c.project.Start(services...)
 	}
-	options := options.Down{
-	}
+	options := options.Down{}
 	return c.project.Down(options, services...)
 }
 

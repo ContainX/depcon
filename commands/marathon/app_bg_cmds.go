@@ -53,8 +53,7 @@ func deployBlueGreenCmd(cmd *cobra.Command, args []string) {
 		cli.Output(nil, err)
 		os.Exit(1)
 	}
-	cli.Output(Application{a}, err)
-
+	cli.Output(Templated{Template: T_APPLICATIONS, Data: a}, err)
 }
 
 func bgc(c *cobra.Command) bluegreen.BlueGreen {

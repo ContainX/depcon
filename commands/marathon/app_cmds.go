@@ -55,7 +55,7 @@ var appListCmd = &cobra.Command{
 	Short: "List all applications",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).ListApplications()
-		cli.Output(Applications{v}, e)
+		cli.Output(Templated{Template: T_APPLICATIONS, Data: v}, e)
 	},
 }
 
@@ -68,7 +68,7 @@ var appGetCmd = &cobra.Command{
 			return
 		}
 		v, e := client(cmd).GetApplication(args[0])
-		cli.Output(Application{v}, e)
+		cli.Output(Templated{Template: T_APPLICATION, Data: v}, e)
 	},
 }
 
@@ -81,7 +81,7 @@ var appVersionsCmd = &cobra.Command{
 			return
 		}
 		v, e := client(cmd).ListVersions(args[0])
-		cli.Output(Versions{v}, e)
+		cli.Output(Templated{Template: T_VERSIONS, Data: v}, e)
 	},
 }
 
@@ -175,7 +175,7 @@ func createApp(cmd *cobra.Command, args []string) {
 		}
 		os.Exit(1)
 	}
-	cli.Output(Application{result}, e)
+	cli.Output(Templated{Template: T_APPLICATIONS, Data: result}, e)
 }
 
 func parseParamsFile(filename string) (map[string]string, error) {
@@ -208,7 +208,7 @@ func restartApp(cmd *cobra.Command, args []string) {
 	force, _ := cmd.Flags().GetBool(FORCE_FLAG)
 
 	v, e := client(cmd).RestartApplication(args[0], force)
-	cli.Output(DeploymentId{v}, e)
+	cli.Output(Templated{Template: T_DEPLOYMENT_ID, Data: v}, e)
 	waitForDeploymentIfFlagged(cmd, v.DeploymentID)
 }
 
@@ -218,7 +218,7 @@ func destroyApp(cmd *cobra.Command, args []string) {
 	}
 
 	v, e := client(cmd).DestroyApplication(args[0])
-	cli.Output(DeploymentId{v}, e)
+	cli.Output(Templated{Template: T_DEPLOYMENT_ID, Data: v}, e)
 	waitForDeploymentIfFlagged(cmd, v.DeploymentID)
 }
 
@@ -233,7 +233,7 @@ func scaleApp(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	v, e := client(cmd).ScaleApplication(args[0], instances)
-	cli.Output(DeploymentId{v}, e)
+	cli.Output(Templated{Template: T_DEPLOYMENT_ID, Data: v}, e)
 	waitForDeploymentIfFlagged(cmd, v.DeploymentID)
 }
 
@@ -251,7 +251,7 @@ func updateAppCPU(cmd *cobra.Command, args []string) {
 	}
 	update := marathon.NewApplication(args[0]).CPU(cpu)
 	v, e := client(cmd).UpdateApplication(update, wait)
-	cli.Output(Application{v}, e)
+	cli.Output(Templated{Template: T_APPLICATIONS, Data: v}, e)
 }
 
 func updateAppMemory(cmd *cobra.Command, args []string) {
@@ -268,7 +268,7 @@ func updateAppMemory(cmd *cobra.Command, args []string) {
 	}
 	update := marathon.NewApplication(args[0]).Memory(mem)
 	v, e := client(cmd).UpdateApplication(update, wait)
-	cli.Output(Application{v}, e)
+	cli.Output(Templated{Template: T_APPLICATIONS, Data: v}, e)
 }
 
 func rollbackAppVersion(cmd *cobra.Command, args []string) {
@@ -289,7 +289,7 @@ func rollbackAppVersion(cmd *cobra.Command, args []string) {
 	}
 	update := marathon.NewApplication(args[0]).RollbackVersion(version)
 	v, e := client(cmd).UpdateApplication(update, wait)
-	cli.Output(Application{v}, e)
+	cli.Output(Templated{Template: T_APPLICATIONS, Data: v}, e)
 }
 
 func convertFile(cmd *cobra.Command, args []string) {
