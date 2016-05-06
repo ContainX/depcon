@@ -103,23 +103,6 @@ func (c *ComposeWrapper) PS(quiet bool) error {
 
 func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 
-	clientFactory, err := docker.NewDefaultClientFactory(docker.ClientOpts{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tlsVerify := os.Getenv(DOCKER_TLS_VERIFY)
-
-	if tlsVerify == "1" {
-		clientFactory, err = docker.NewDefaultClientFactory(docker.ClientOpts{
-			TLS:       true,
-			TLSVerify: true,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	if c.context.EnvParams != nil && len(c.context.EnvParams) > 0 {
 		file, err := os.Open(c.context.ComposeFile)
 		if err != nil {
@@ -146,6 +129,5 @@ func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 			ComposeFiles: strings.Split(c.context.ComposeFile, ","),
 			ProjectName:  c.context.ProjectName,
 		},
-		ClientFactory: clientFactory,
 	})
 }
