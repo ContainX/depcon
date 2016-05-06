@@ -18,7 +18,7 @@ var serverInfoCmd = &cobra.Command{
 	Short: "Get info about the Marathon Instance",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).GetMarathonInfo()
-		cli.Output(MarInfo{v}, e)
+		cli.Output(templateFor(T_MARATHON_INFO, v), e)
 	},
 }
 
@@ -32,7 +32,7 @@ var serverLeaderGetCmd = &cobra.Command{
 	Short: "Show the current leader",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).GetCurrentLeader()
-		cli.Output(MarLeaderInfo{v}, e)
+		cli.Output(templateFor(T_LEADER_INFO, v), e)
 	},
 }
 
@@ -41,7 +41,7 @@ var serverPingCmd = &cobra.Command{
 	Short: "Ping the current marathon host",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).Ping()
-		cli.Output(MarPing{v}, e)
+		cli.Output(templateFor(T_PING, v), e)
 	},
 }
 
@@ -50,7 +50,7 @@ var serverLeaderAbdicateCmd = &cobra.Command{
 	Short: "Force the current leader to relinquish control (elect a new leader)",
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).AbdicateLeader()
-		cli.Output(Message{v}, e)
+		cli.Output(templateFor(T_MESSAGE, v), e)
 	},
 }
 

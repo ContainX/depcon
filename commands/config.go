@@ -8,11 +8,28 @@ import (
 	"github.com/ContainX/depcon/utils"
 	"github.com/spf13/cobra"
 	"io"
+	"text/template"
 )
+
+const (
+	T_CONFIG_ENV = `
+{{ "NAME" }}	{{ "TYPE" }}	{{ "ENDPOINT" }}	{{ "AUTH" }}	{{ "DEFAULT" }}
+{{ range . }}{{ .Name }}	{{ .EnvType }}	{{ .HostURL }}	{{ .Auth | boolToYesNo }}	{{ .Default | defaultEnvToStr }}
+{{end}}`
+)
+
 
 type ConfigEnvironments struct {
 	DefaultEnv string
 	Envs       map[string]*cliconfig.ConfigEnvironment
+}
+
+type EnvironmentSummary struct {
+	Name string
+	EnvType string
+	HostURL string
+	Auth	bool
+	Default bool
 }
 
 var ValidOutputs []string = []string{"json", "yaml", "column"}
@@ -66,7 +83,9 @@ var configListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List current environments",
 	Run: func(cmd *cobra.Command, args []string) {
-		cli.Output(&ConfigEnvironments{DefaultEnv: configFile.DefaultEnv, Envs: configFile.Environments}, nil)
+		ce := &ConfigEnvironments{DefaultEnv: configFile.DefaultEnv, Envs: configFile.Environments}
+		template := templateFor(T_CONFIG_ENV, ce.toEnvironmentMap())
+		cli.Output(template, nil)
 	},
 }
 
@@ -149,17 +168,53 @@ func init() {
 	configCmd.AddCommand(configEnvCmd, configOutputCmd, configRootServiceCmd)
 }
 
-func (e ConfigEnvironments) ToColumns(output io.Writer) error {
-	w := cli.NewTabWriter(output)
-	fmt.Fprintln(w, "\nNAME\tTYPE\tURI\tAUTH\tDEFAULT")
+type ConfigTemplate struct {
+	cli.FormatData
+}
+
+func templateFor(template string, data interface{}) ConfigTemplate {
+	return ConfigTemplate{cli.FormatData{ Template: template, Data: data, Funcs: buildFuncMap() }}
+}
+
+func (d ConfigTemplate) ToColumns(output io.Writer) error {
+	return d.FormatData.ToColumns(output)
+}
+
+func (d ConfigTemplate) Data() cli.FormatData {
+	return d.FormatData
+}
+
+func (e ConfigEnvironments) toEnvironmentMap() []*EnvironmentSummary {
+
+	arr := []*EnvironmentSummary{}
+
 	for k, v := range e.Envs {
 		var sc cliconfig.ServiceConfig
 		switch v.EnvironmentType() {
 		case cliconfig.TypeMarathon:
 			sc = *v.Marathon
 		}
-		fmt.Fprintf(w, "%s\t%s\t%s\t%v\t%v\n", k, v.EnvironmentType(), sc.HostUrl, sc.Username != "", k == e.DefaultEnv)
+		arr = append(arr, &EnvironmentSummary{
+			Name: k,
+			EnvType: v.EnvironmentType(),
+			HostURL: sc.HostUrl,
+			Auth: sc.Username != "",
+			Default: k == e.DefaultEnv,
+		})
 	}
-	cli.FlushWriter(w)
-	return nil
+	return arr
+}
+
+func buildFuncMap() template.FuncMap {
+	funcMap := template.FuncMap{
+		"defaultEnvToStr":     defaultEnvToStr,
+	}
+	return funcMap
+}
+
+func defaultEnvToStr(b bool) string {
+	if b {
+		return "true"
+	}
+	return "-"
 }

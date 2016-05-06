@@ -6,10 +6,10 @@ import (
 	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
+	"github.com/docker/libcompose/project/options"
 	"io/ioutil"
 	"os"
 	"strings"
-	"github.com/docker/libcompose/project/options"
 )
 
 const (
@@ -37,7 +37,7 @@ func NewCompose(context *Context) Compose {
 }
 
 func (c *ComposeWrapper) Up(services ...string) error {
-	options := options.Up{ Create: options.Create{} }
+	options := options.Up{Create: options.Create{}}
 	return c.project.Up(options, services...)
 }
 
@@ -60,8 +60,7 @@ func (c *ComposeWrapper) Pull(services ...string) error {
 }
 
 func (c *ComposeWrapper) Delete(services ...string) error {
-	options := options.Delete{
-	}
+	options := options.Delete{}
 	return c.project.Delete(options, services...)
 }
 
@@ -81,8 +80,7 @@ func (c *ComposeWrapper) execStartStop(start bool, services ...string) error {
 	if start {
 		return c.project.Start(services...)
 	}
-	options := options.Down{
-	}
+	options := options.Down{}
 	return c.project.Down(options, services...)
 }
 
@@ -104,23 +102,6 @@ func (c *ComposeWrapper) PS(quiet bool) error {
 }
 
 func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
-
-	clientFactory, err := docker.NewDefaultClientFactory(docker.ClientOpts{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	tlsVerify := os.Getenv(DOCKER_TLS_VERIFY)
-
-	if tlsVerify == "1" {
-		clientFactory, err = docker.NewDefaultClientFactory(docker.ClientOpts{
-			TLS:       true,
-			TLSVerify: true,
-		})
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
 
 	if c.context.EnvParams != nil && len(c.context.EnvParams) > 0 {
 		file, err := os.Open(c.context.ComposeFile)
@@ -148,6 +129,5 @@ func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 			ComposeFiles: strings.Split(c.context.ComposeFile, ","),
 			ProjectName:  c.context.ProjectName,
 		},
-		ClientFactory: clientFactory,
 	})
 }
