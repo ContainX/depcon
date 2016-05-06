@@ -2,15 +2,15 @@ package cliconfig
 
 import (
 	"fmt"
-	"github.com/bgentry/speakeasy"
 	"github.com/ContainX/depcon/utils"
+	"github.com/bgentry/speakeasy"
 	"net/url"
 	"os"
 	"regexp"
 )
 
 const (
-	AlphaNumDash string = `^[a-zA-Z0-9_]*$`
+	AlphaNumDash string = `^[a-zA-Z0-9_-]*$`
 )
 
 var (

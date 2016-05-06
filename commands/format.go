@@ -15,6 +15,8 @@ const (
 	TypeColumn  string = "column"
 )
 
+var log = logger.GetLogger("depcon")
+
 func init() {
 	cli.Register(&cli.CLIWriter{FormatWriter: PrintFormat, ErrorWriter: PrintError})
 	rootCmd.PersistentFlags().StringP(FLAG_FORMAT, "o", "column", "Specifies the output format [column | json | yaml]")
@@ -34,7 +36,7 @@ func getFormatType() string {
 }
 
 func PrintError(err error) {
-	logger.Logger().Error("%v", err.Error())
+	log.Error("%v", err.Error())
 	os.Exit(1)
 }
 
@@ -58,6 +60,6 @@ func printEncodedType(formatter cli.Formatter, encoder encoding.EncoderType) {
 func printColumn(formatter cli.Formatter) {
 	err := formatter.ToColumns(os.Stdout)
 	if err != nil {
-		logger.Logger().Error("Error: %s", err.Error())
+		log.Error("Error: %s", err.Error())
 	}
 }

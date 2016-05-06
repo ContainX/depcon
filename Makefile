@@ -1,4 +1,4 @@
-VERSION = 0.8.3
+VERSION = 0.8.5
 
 GO_FMT = gofmt -s -w -l .
 GO_XC = goxc -os="linux darwin windows" -tasks-="rmbin"
@@ -17,10 +17,12 @@ goxc:
 	$(shell echo '  "publish-github": {' >> $(GOXC_FILE))
 	$(shell echo '     "apikey": "$(GITHUB_APIKEY)",' >> $(GOXC_FILE))
 	$(shell echo '     "body": "",' >> $(GOXC_FILE))
-	$(shell echo '     "include": "*.zip,*.tar.gz,*.deb,depcon_$(VERSION)_linux_amd64-bin"' >> $(GOXC_FILE))
+	$(shell echo '     "include": "*.tar.gz,*.deb,depcon-linux64,depcon-osx64,depcon-win64.exe"' >> $(GOXC_FILE))
 	$(shell echo '  }\n } \n}' >> $(GOXC_FILE))
 	$(GO_XC)
-	cp build/$(VERSION)/linux_amd64/depcon build/$(VERSION)/depcon_$(VERSION)_linux_amd64-bin
+	cp build/$(VERSION)/linux_amd64/depcon build/$(VERSION)/depcon-linux64
+	cp build/$(VERSION)/darwin_amd64/depcon build/$(VERSION)/depcon-osx64
+	cp build/$(VERSION)/windows_amd64/depcon.exe build/$(VERSION)/depcon-win64.exe
 
 deps:
 	go get

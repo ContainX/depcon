@@ -27,6 +27,7 @@ type Application struct {
 	Labels                map[string]string   `json:"labels,omitempty"`
 	Executor              string              `json:"executor,omitempty"`
 	HealthChecks          []*HealthCheck      `json:"healthChecks,omitempty"`
+	ReadinessChecks       []*ReadinessCheck   `json:"readinessChecks,omitempty"`
 	Instances             int                 `json:"instances,omitempty"`
 	Mem                   float64             `json:"mem,omitempty"`
 	Tasks                 []*Task             `json:"tasks,omitempty"`
@@ -34,16 +35,23 @@ type Application struct {
 	ServicePorts          []int               `json:"servicePorts,omitempty"`
 	RequirePorts          bool                `json:"requirePorts,omitempty"`
 	BackoffFactor         float64             `json:"backoffFactor,omitempty"`
+	BackoffSeconds        int                 `json:"backoffSeconds,omitempty"`
 	DeploymentID          []map[string]string `json:"deployments,omitempty"`
 	Dependencies          []string            `json:"dependencies,omitempty"`
 	TasksRunning          int                 `json:"tasksRunning,omitempty"`
 	TasksStaged           int                 `json:"tasksStaged,omitempty"`
 	TasksHealthy          int                 `json:"tasksHealthy,omitempty"`
 	TasksUnHealthy        int                 `json:"tasksUnHealthy,omitempty"`
+	TaskIPAddress         *TaskIPAddress      `json:"ipAddress,omitempty"`
 	User                  string              `json:"user,omitempty"`
 	UpgradeStrategy       *UpgradeStrategy    `json:"upgradeStrategy,omitempty"`
 	Uris                  []string            `json:"uris,omitempty"`
 	Version               string              `json:"version,omitempty"`
+	VersionInfo           *VersionInfo        `json:"versionInfo,omitempty"`
+	LastTaskFailure       *LastTaskFailure    `json:"lastTaskFailure,omitempty"`
+	Fetch                 []Fetch             `json:"fetch"`
+	Residency             *Residency          `json:"residency,omitempty"`
+	StoreURLs             []string            `json:"storeUrls,omitempty"`
 }
 
 type KillTasksScale struct {
@@ -59,6 +67,11 @@ type Versions struct {
 	Versions []string
 }
 
+type VersionInfo struct {
+	LastScalingAt      string `json:"lastScalingAt,omitempty"`
+	LastConfigChangeAt string `json:"lastConfigChangeAt,omitempty"`
+}
+
 type DeploymentID struct {
 	DeploymentID string `json:"deploymentId"`
 	Version      string `json:"version"`
@@ -69,11 +82,31 @@ type Container struct {
 	Docker  *Docker   `json:"docker,omitempty"`
 	Volumes []*Volume `json:"volumes,omitempty"`
 }
+
+type Fetch struct {
+	URI        string `json:"uri"`
+	Executable bool   `json:"executable"`
+	Extract    bool   `json:"extract"`
+	Cache      bool   `json:"cache"`
+}
+
+type LastTaskFailure struct {
+	AppID     string `json:"appId,omitempty"`
+	Host      string `json:"host,omitempty"`
+	Message   string `json:"message,omitempty"`
+	State     string `json:"state,omitempty"`
+	TaskID    string `json:"taskId,omitempty"`
+	Timestamp string `json:"timestamp,omitempty"`
+	Version   string `json:"version,omitempty"`
+}
+
 type PortMapping struct {
-	ContainerPort int    `json:"containerPort,omitempty"`
-	HostPort      int    `json:"hostPort"`
-	ServicePort   int    `json:"servicePort,omitempty"`
-	Protocol      string `json:"protocol"`
+	Name          string            `json:"name,omitempty"`
+	ContainerPort int               `json:"containerPort,omitempty"`
+	HostPort      int               `json:"hostPort"`
+	ServicePort   int               `json:"servicePort,omitempty"`
+	Protocol      string            `json:"protocol"`
+	Labels        map[string]string `json:"labels,omitempty"`
 }
 
 type Parameters struct {
@@ -82,9 +115,22 @@ type Parameters struct {
 }
 
 type Volume struct {
-	ContainerPath string `json:"containerPath,omitempty"`
-	HostPath      string `json:"hostPath,omitempty"`
-	Mode          string `json:"mode,omitempty"`
+	ContainerPath string            `json:"containerPath,omitempty"`
+	HostPath      string            `json:"hostPath,omitempty"`
+	Mode          string            `json:"mode,omitempty"`
+	Persistent    *PersistentVolume `json:"persistent,omitempty"`
+	External      *ExternalVolume   `json:"external,omitempty"`
+}
+
+type PersistentVolume struct {
+	Size int `json:"size,omitempty"`
+}
+
+type ExternalVolume struct {
+	Name     string            `json:"name,omitempty"`
+	Size     int               `json:"size,omitempty"`
+	Provider string            `json:"provider,omitempty"`
+	Options  map[string]string `json:"options,omitempty"`
 }
 
 type Docker struct {
@@ -97,8 +143,8 @@ type Docker struct {
 }
 
 type UpgradeStrategy struct {
-	MinimumHealthCapacity float64 `json:"minimumHealthCapacity,omitempty"`
-	MaximumOverCapacity   float64 `json:"maximumOverCapacity,omitempty"`
+	MinimumHealthCapacity float64 `json:"minimumHealthCapacity"`
+	MaximumOverCapacity   float64 `json:"maximumOverCapacity"`
 }
 
 type HealthCheck struct {
@@ -109,6 +155,38 @@ type HealthCheck struct {
 	PortIndex              int    `json:"portIndex,omitempty"`
 	MaxConsecutiveFailures int    `json:"maxConsecutiveFailures,omitempty"`
 	TimeoutSeconds         int    `json:"timeoutSeconds,omitempty"`
+}
+
+type TaskIPAddress struct {
+	Discovery *Discovery        `json:"discovery,omitempty"`
+	Groups    []string          `json:"groups,omitempty"`
+	Labels    map[string]string `json:"labels,omitempty"`
+}
+
+type Discovery struct {
+	Ports []*DiscoveryPorts `json:"ports,omitempty"`
+}
+
+type DiscoveryPorts struct {
+	Name       string `json:"name,omitempty"`
+	Protocol   string `json:"protocol,omitempty"`
+	PortNumber int    `json:"number,omitempty"`
+}
+
+type ReadinessCheck struct {
+	Name                 string `json:"name,omitempty"`
+	Protocol             string `json:"protocol,omitempty"`
+	Path                 string `json:"path,omitempty"`
+	PortName             string `json:"portName,omitempty"`
+	IntervalSeconds      int    `json:"intervalSeconds,omitempty"`
+	TimeoutSeconds       int    `json:"timeoutSeconds,omitempty"`
+	HttpStatusCodesReady int    `json:"httpStatusCodesForReady,omitempty"`
+	PreserveLastResponse bool   `json:"preserveLastResponse,omitempty"`
+}
+
+type Residency struct {
+	RelaunchEscalationTimeoutSeconds int    `json:"relaunchEscalationTimeoutSeconds,omitempty"`
+	TaskLostBehaviour                string `json:"taskLostBehavior,omitempty"`
 }
 
 type HealthCheckResult struct {

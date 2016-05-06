@@ -116,7 +116,6 @@ func TestCreateApplicationInvalidAppId(t *testing.T) {
 	_, err := c.CreateApplication(NewApplication("/someapp"), false, false)
 
 	assert.NotNil(t, err, "Expecting Error")
-	assert.Equal(t, ErrorInvalidAppId, err)
 }
 
 func TestNewApplication(t *testing.T) {

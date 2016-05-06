@@ -78,7 +78,7 @@ func (c *MarathonClient) CreateApplication(app *Application, wait, force bool) (
 				return nil, ErrorAppExists
 			}
 			if resp.Status == 422 {
-				return nil, ErrorInvalidAppId
+				return nil, fmt.Errorf("Error occurred: %s", resp.Content)
 			}
 			return nil, fmt.Errorf("Error occurred (Status %v) Body -> %s", resp.Status, resp.Content)
 		}

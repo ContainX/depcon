@@ -3,12 +3,13 @@ package compose
 import (
 	"errors"
 	"fmt"
+	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
-	"github.com/ContainX/depcon/pkg/envsubst"
 	"io/ioutil"
 	"os"
 	"strings"
+	"github.com/docker/libcompose/project/options"
 )
 
 const (
@@ -21,7 +22,7 @@ var (
 
 type ComposeWrapper struct {
 	context *Context
-	project *project.Project
+	project project.APIProject
 }
 
 func NewCompose(context *Context) Compose {
@@ -36,19 +37,22 @@ func NewCompose(context *Context) Compose {
 }
 
 func (c *ComposeWrapper) Up(services ...string) error {
-	return c.project.Up(services...)
+	options := options.Up{ Create: options.Create{} }
+	return c.project.Up(options, services...)
 }
 
 func (c *ComposeWrapper) Kill(services ...string) error {
-	return c.project.Kill(services...)
+	return c.project.Kill("SIGKILL", services...)
 }
 
 func (c *ComposeWrapper) Build(services ...string) error {
-	return c.project.Build(services...)
+	options := options.Build{}
+	return c.project.Build(options, services...)
 }
 
 func (c *ComposeWrapper) Restart(services ...string) error {
-	return c.project.Restart(services...)
+	timeout := 10
+	return c.project.Restart(timeout, services...)
 }
 
 func (c *ComposeWrapper) Pull(services ...string) error {
@@ -56,11 +60,13 @@ func (c *ComposeWrapper) Pull(services ...string) error {
 }
 
 func (c *ComposeWrapper) Delete(services ...string) error {
-	return c.project.Delete(services...)
+	options := options.Delete{
+	}
+	return c.project.Delete(options, services...)
 }
 
 func (c *ComposeWrapper) Logs(services ...string) error {
-	return c.project.Log(services...)
+	return c.project.Log(true, services...)
 }
 
 func (c *ComposeWrapper) Start(services ...string) error {
@@ -75,26 +81,14 @@ func (c *ComposeWrapper) execStartStop(start bool, services ...string) error {
 	if start {
 		return c.project.Start(services...)
 	}
-	return c.project.Down(services...)
+	options := options.Down{
+	}
+	return c.project.Down(options, services...)
 }
 
 func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 
-	s, err := c.project.CreateService(service)
-	if err != nil {
-		return err
-	}
-
-	containers, err := s.Containers()
-	if err != nil {
-		return err
-	}
-
-	if index < 1 || index > len(containers) {
-		fmt.Errorf("Invalid index %d", index)
-	}
-
-	output, err := containers[index-1].Port(fmt.Sprintf("%s/%s", port, proto))
+	output, err := c.project.Port(index, proto, service, port)
 	if err != nil {
 		return err
 	}
@@ -103,26 +97,13 @@ func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 }
 
 func (c *ComposeWrapper) PS(quiet bool) error {
-	allInfo := project.InfoSet{}
-
-	for _, name := range c.project.Configs.Keys() {
-		service, err := c.project.CreateService(name)
-		if err != nil {
-			return err
-		}
-
-		info, err := service.Info(quiet)
-		if err != nil {
-			return err
-		}
-
-		allInfo = append(allInfo, info...)
+	if allInfo, err := c.project.Ps(quiet); err == nil {
+		os.Stdout.WriteString(allInfo.String(!quiet))
 	}
-	os.Stdout.WriteString(allInfo.String(!quiet))
 	return nil
 }
 
-func (c *ComposeWrapper) createDockerContext() (*project.Project, error) {
+func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 
 	clientFactory, err := docker.NewDefaultClientFactory(docker.ClientOpts{})
 	if err != nil {

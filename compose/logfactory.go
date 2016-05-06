@@ -1,8 +1,8 @@
 package compose
 
 import (
-	"github.com/docker/libcompose/logger"
 	depconLog "github.com/ContainX/depcon/pkg/logger"
+	"github.com/docker/libcompose/logger"
 )
 
 var log = depconLog.GetLogger("depcon.compose")
