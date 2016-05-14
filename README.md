@@ -24,7 +24,7 @@ Depcon makes managing clusters that run docker containers a breeze.  It offers t
 - **Docker compose support**
   - Supports all major operating systems
   - Works with Docker Machine aka Boot2Docker
-  - Adds param support -- `${PARAMS}` can be placed in compose files
+  - Parameter support -- `${PARAMS}` can be placed in compose files
 - Future releases will offer a proposed Open Deployment Descriptor format which will allow Depcon to deploy a common descriptor against Marathon, Kubernetes, ECS and Docker Swarm.
 - Ability to wait until a new or updated container deployment is healthy
 
