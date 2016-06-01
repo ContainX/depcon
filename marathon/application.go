@@ -20,7 +20,6 @@ const (
 var (
 	ErrorAppExists        = errors.New("The application already exists")
 	ErrorGroupExists      = errors.New("The group already exists")
-	ErrorInvalidAppId     = errors.New("The application identifier is invalid")
 	ErrorInvalidGroupId   = errors.New("The group identifier is invalid")
 	ErrorNoAppExists      = errors.New("The application does not exist.  Create an application before updating")
 	ErrorGropAppExists    = errors.New("The group does not exist.  Create a group before updating")
