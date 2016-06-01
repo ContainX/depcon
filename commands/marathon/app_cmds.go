@@ -17,6 +17,7 @@ import (
 const (
 	HOST_FLAG  = "host"
 	SCALE_FLAG = "scale"
+	FORMAT_FLAG = "format"
 )
 
 var appCmd = &cobra.Command{
@@ -56,7 +57,7 @@ var appListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		v, e := client(cmd).ListApplications()
 
-		cli.Output(templateFor(T_APPLICATIONS, v), e)
+		cli.Output(templateFor(templateFormat(T_APPLICATIONS, cmd), v), e)
 	},
 }
 
@@ -65,11 +66,8 @@ var appGetCmd = &cobra.Command{
 	Short: "Gets an application details by Id",
 	Long:  `Retrieves the specified [appliationId] application`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
-			return
-		}
 		v, e := client(cmd).GetApplication(args[0])
-		cli.Output(templateFor(T_APPLICATION, v), e)
+		cli.Output(templateFor(templateFormat(T_APPLICATION, cmd), v), e)
 	},
 }
 
@@ -133,6 +131,8 @@ func init() {
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
 
+	appListCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{range .Apps}}{{ .Container.Docker.Image }}{{end}}'")
+	appGetCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{ .ID }}'")
 	applyCommonAppFlags(appCreateCmd, appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd)
 }
 
@@ -316,3 +316,13 @@ func applyCommonAppFlags(cmd ...*cobra.Command) {
 		c.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
 	}
 }
+
+func templateFormat(template string, cmd *cobra.Command) string {
+	t := template
+	tv, _ := cmd.Flags().GetString(FORMAT_FLAG)
+	if len(tv) > 0 {
+		t = tv
+	}
+	return t
+}
+
