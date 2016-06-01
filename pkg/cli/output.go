@@ -3,8 +3,8 @@ package cli
 import (
 	"fmt"
 	"io"
-	"text/tabwriter"
 	"strconv"
+	"text/tabwriter"
 	"text/template"
 	"time"
 )
@@ -18,9 +18,8 @@ type Formatter interface {
 type FormatData struct {
 	Data     interface{}
 	Template string
-	Funcs template.FuncMap
+	Funcs    template.FuncMap
 }
-
 
 // Handles writing the formatted type into the desired output and global formatting
 type CLIWriter struct {
@@ -68,10 +67,10 @@ func buildFuncMap(userFuncs template.FuncMap) template.FuncMap {
 	funcMap := template.FuncMap{
 		"floatToString": floatToString,
 		"intToString":   strconv.Itoa,
-		"valString":	 valueToString,
+		"valString":     valueToString,
 		"pad":           padString,
-		"fdate":	 FormatDate,
-		"msDur":	 durationToMilliseconds,
+		"fdate":         FormatDate,
+		"msDur":         durationToMilliseconds,
 		"boolToYesNo":   boolToYesNo,
 	}
 
