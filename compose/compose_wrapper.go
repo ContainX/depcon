@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"github.com/docker/distribution/context"
 )
 
 const (
@@ -38,34 +39,34 @@ func NewCompose(context *Context) Compose {
 
 func (c *ComposeWrapper) Up(services ...string) error {
 	options := options.Up{Create: options.Create{}}
-	return c.project.Up(options, services...)
+	return c.project.Up(context.Background(), options, services...)
 }
 
 func (c *ComposeWrapper) Kill(services ...string) error {
-	return c.project.Kill("SIGKILL", services...)
+	return c.project.Kill(context.Background(), "SIGKILL", services...)
 }
 
 func (c *ComposeWrapper) Build(services ...string) error {
 	options := options.Build{}
-	return c.project.Build(options, services...)
+	return c.project.Build(context.Background(), options, services...)
 }
 
 func (c *ComposeWrapper) Restart(services ...string) error {
 	timeout := 10
-	return c.project.Restart(timeout, services...)
+	return c.project.Restart(context.Background(), timeout, services...)
 }
 
 func (c *ComposeWrapper) Pull(services ...string) error {
-	return c.project.Pull(services...)
+	return c.project.Pull(context.Background(), services...)
 }
 
 func (c *ComposeWrapper) Delete(services ...string) error {
 	options := options.Delete{}
-	return c.project.Delete(options, services...)
+	return c.project.Delete(context.Background(), options, services...)
 }
 
 func (c *ComposeWrapper) Logs(services ...string) error {
-	return c.project.Log(true, services...)
+	return c.project.Log(context.Background(), true, services...)
 }
 
 func (c *ComposeWrapper) Start(services ...string) error {
@@ -78,15 +79,15 @@ func (c *ComposeWrapper) Stop(services ...string) error {
 
 func (c *ComposeWrapper) execStartStop(start bool, services ...string) error {
 	if start {
-		return c.project.Start(services...)
+		return c.project.Start(context.Background(), services...)
 	}
 	options := options.Down{}
-	return c.project.Down(options, services...)
+	return c.project.Down(context.Background(), options, services...)
 }
 
 func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 
-	output, err := c.project.Port(index, proto, service, port)
+	output, err := c.project.Port(context.Background(), index, proto, service, port)
 	if err != nil {
 		return err
 	}
@@ -95,7 +96,7 @@ func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 }
 
 func (c *ComposeWrapper) PS(quiet bool) error {
-	if allInfo, err := c.project.Ps(quiet); err == nil {
+	if allInfo, err := c.project.Ps(context.Background(), quiet); err == nil {
 		os.Stdout.WriteString(allInfo.String(!quiet))
 	}
 	return nil
@@ -124,10 +125,11 @@ func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 		}
 		c.context.ComposeFile = file.Name()
 	}
+
 	return docker.NewProject(&docker.Context{
 		Context: project.Context{
 			ComposeFiles: strings.Split(c.context.ComposeFile, ","),
 			ProjectName:  c.context.ProjectName,
 		},
-	})
+	}, nil)
 }
