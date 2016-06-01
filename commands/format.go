@@ -63,4 +63,3 @@ func printColumn(formatter cli.Formatter) {
 		log.Error("Error: %s", err.Error())
 	}
 }
-

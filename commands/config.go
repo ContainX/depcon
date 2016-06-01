@@ -18,17 +18,16 @@ const (
 {{end}}`
 )
 
-
 type ConfigEnvironments struct {
 	DefaultEnv string
 	Envs       map[string]*cliconfig.ConfigEnvironment
 }
 
 type EnvironmentSummary struct {
-	Name string
+	Name    string
 	EnvType string
 	HostURL string
-	Auth	bool
+	Auth    bool
 	Default bool
 }
 
@@ -173,7 +172,7 @@ type ConfigTemplate struct {
 }
 
 func templateFor(template string, data interface{}) ConfigTemplate {
-	return ConfigTemplate{cli.FormatData{ Template: template, Data: data, Funcs: buildFuncMap() }}
+	return ConfigTemplate{cli.FormatData{Template: template, Data: data, Funcs: buildFuncMap()}}
 }
 
 func (d ConfigTemplate) ToColumns(output io.Writer) error {
@@ -195,10 +194,10 @@ func (e ConfigEnvironments) toEnvironmentMap() []*EnvironmentSummary {
 			sc = *v.Marathon
 		}
 		arr = append(arr, &EnvironmentSummary{
-			Name: k,
+			Name:    k,
 			EnvType: v.EnvironmentType(),
 			HostURL: sc.HostUrl,
-			Auth: sc.Username != "",
+			Auth:    sc.Username != "",
 			Default: k == e.DefaultEnv,
 		})
 	}
@@ -207,7 +206,7 @@ func (e ConfigEnvironments) toEnvironmentMap() []*EnvironmentSummary {
 
 func buildFuncMap() template.FuncMap {
 	funcMap := template.FuncMap{
-		"defaultEnvToStr":     defaultEnvToStr,
+		"defaultEnvToStr": defaultEnvToStr,
 	}
 	return funcMap
 }

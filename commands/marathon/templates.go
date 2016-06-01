@@ -2,10 +2,10 @@ package marathon
 
 import (
 	"github.com/ContainX/depcon/marathon"
-	"github.com/ContainX/depcon/utils"
-	"text/template"
 	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/utils"
 	"io"
+	"text/template"
 )
 
 const (
@@ -113,7 +113,7 @@ type Templated struct {
 }
 
 func templateFor(template string, data interface{}) Templated {
-	return Templated{cli.FormatData{ Template: template, Data: data, Funcs: buildFuncMap() }}
+	return Templated{cli.FormatData{Template: template, Data: data, Funcs: buildFuncMap()}}
 }
 
 func (d Templated) ToColumns(output io.Writer) error {
@@ -124,13 +124,12 @@ func (d Templated) Data() cli.FormatData {
 	return d.FormatData
 }
 
-
 func buildFuncMap() template.FuncMap {
 	funcMap := template.FuncMap{
-		"intConcat":     utils.ConcatInts,
-		"idConcat":	 utils.ConcatIdentifiers,
-		"dockerImage":   dockerImageOrEmpty,
-		"hasDocker":     hasDocker,
+		"intConcat":   utils.ConcatInts,
+		"idConcat":    utils.ConcatIdentifiers,
+		"dockerImage": dockerImageOrEmpty,
+		"hasDocker":   hasDocker,
 	}
 	return funcMap
 }
