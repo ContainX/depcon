@@ -134,6 +134,24 @@ func (configFile *ConfigFile) AddEnvironment() {
 	configFile.Save()
 }
 
+func (configFile *ConfigFile) AddMarathonEnvironment(name, host, user, pass string) {
+	service := &ServiceConfig{}
+	service.Name = name
+	service.HostUrl = host
+	service.Username = user
+	service.Password = pass
+
+	configEnv := &ConfigEnvironment{
+		Marathon: service,
+	}
+	if len(configFile.Environments) == 0 {
+		configFile.DefaultEnv = name
+		configFile.RootService = true
+	}
+	configFile.Environments[name] = configEnv
+	configFile.Save()
+}
+
 // Removes the specified environment from the configuration
 // {name}  - name of the environment
 // {force} - if true will not prompt for confirmation

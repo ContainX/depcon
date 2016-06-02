@@ -16,6 +16,11 @@ const (
 {{ "NAME" }}	{{ "TYPE" }}	{{ "ENDPOINT" }}	{{ "AUTH" }}	{{ "DEFAULT" }}
 {{ range . }}{{ .Name }}	{{ .EnvType }}	{{ .HostURL }}	{{ .Auth | boolToYesNo }}	{{ .Default | defaultEnvToStr }}
 {{end}}`
+
+	NAME_FLAG     = "name"
+	URL_FLAG      = "url"
+	USER_FLAG     = "user"
+	PASSWORD_FLAG = "pass"
 )
 
 type ConfigEnvironments struct {
@@ -72,9 +77,77 @@ var configRemoveCmd = &cobra.Command{
 
 var configAddCmd = &cobra.Command{
 	Use:   "add",
-	Short: "Adds a new environment",
+	Short: "Adds a new environment (cli prompts)",
 	Run: func(cmd *cobra.Command, args []string) {
 		configFile.AddEnvironment()
+	},
+}
+
+var configAddMarathonCmd = &cobra.Command{
+	Use:   "add-marathon [name]",
+	Short: "Adds a new marathon environment using flags",
+	Long: `Adds a new Marathon environment with given name.  Name is a shortname to quickly switch environemnts in depcon.  Typical examples are
+qa, stage, prod, etc.  Name argument only accepts: ^[a-zA-Z0-9_-]*$
+
+NOTE: If this is the first environment then chrooting and column output are the default global options`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+			return
+		}
+		name := args[0]
+
+		if name == "" || !cliconfig.RegExAlphaNumDash.MatchString(name) {
+			cli.Output(nil, fmt.Errorf("'%s' must contain valid characters within %s\n", name, cliconfig.AlphaNumDash))
+		}
+
+		url, _ := cmd.Flags().GetString(URL_FLAG)
+		user, _ := cmd.Flags().GetString(USER_FLAG)
+		pass, _ := cmd.Flags().GetString(PASSWORD_FLAG)
+
+		if err := cliconfig.ValidateMarathonURL(url); err != nil {
+			cli.Output(nil, err)
+		}
+
+		configFile.AddMarathonEnvironment(name, url, user, pass)
+		fmt.Printf("\nEnvironment: %s - was added successfully\n", name)
+	},
+}
+
+var configUpdateCmd = &cobra.Command{
+	Use:   "update [name]",
+	Short: "Updates an existing environment",
+	Long:  `Every flag is option and only set flags will be updated wit the flag value`,
+	Run: func(cmd *cobra.Command, args []string) {
+		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+			return
+		}
+
+		ce, err := configFile.GetEnvironment(args[0])
+		if err != nil {
+			cli.Output(nil, err)
+		}
+
+		url, _ := cmd.Flags().GetString(URL_FLAG)
+		user, _ := cmd.Flags().GetString(USER_FLAG)
+		pass, _ := cmd.Flags().GetString(PASSWORD_FLAG)
+
+		if url != "" {
+			if err := cliconfig.ValidateMarathonURL(url); err != nil {
+				cli.Output(nil, err)
+			}
+			ce.Marathon.HostUrl = url
+		}
+		if user != "" {
+			ce.Marathon.Username = user
+		}
+		if pass != "" {
+			ce.Marathon.Password = pass
+		}
+		if err := configFile.Save(); err != nil {
+			cli.Output(nil, err)
+		}
+
+		fmt.Printf("\nEnvironment: %s - was updated successfully\n", args[0])
 	},
 }
 
@@ -163,7 +236,15 @@ var configRenameCmd = &cobra.Command{
 }
 
 func init() {
-	configEnvCmd.AddCommand(configListCmd, configDefaultCmd, configRenameCmd, configAddCmd, configRemoveCmd)
+	configAddMarathonCmd.Flags().String(URL_FLAG, "http://localhost:8080", "Marathon URL (eg. http://host:port)")
+	configAddMarathonCmd.Flags().String(USER_FLAG, "", "Optional: username if authentication is enabled")
+	configAddMarathonCmd.Flags().String(PASSWORD_FLAG, "", "Optional: password if authentication is enabled")
+
+	configUpdateCmd.Flags().String(URL_FLAG, "", "Marathon URL (eg. http://host:port)")
+	configUpdateCmd.Flags().String(USER_FLAG, "", "Optional: username if authentication is enabled")
+	configUpdateCmd.Flags().String(PASSWORD_FLAG, "", "Optional: password if authentication is enabled")
+
+	configEnvCmd.AddCommand(configAddCmd, configAddMarathonCmd, configListCmd, configDefaultCmd, configRenameCmd, configUpdateCmd, configRemoveCmd)
 	configCmd.AddCommand(configEnvCmd, configOutputCmd, configRootServiceCmd)
 }
 

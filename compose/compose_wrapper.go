@@ -4,13 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ContainX/depcon/pkg/envsubst"
+	"github.com/docker/distribution/context"
 	"github.com/docker/libcompose/docker"
 	"github.com/docker/libcompose/project"
 	"github.com/docker/libcompose/project/options"
 	"io/ioutil"
 	"os"
 	"strings"
-	"github.com/docker/distribution/context"
 )
 
 const (

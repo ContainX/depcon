@@ -14,7 +14,7 @@ const (
 )
 
 var (
-	rxAlphaNumDash *regexp.Regexp = regexp.MustCompile(AlphaNumDash)
+	RegExAlphaNumDash *regexp.Regexp = regexp.MustCompile(AlphaNumDash)
 )
 
 func getAlpaNumDash(question string) string {
@@ -23,7 +23,7 @@ func getAlpaNumDash(question string) string {
 	fmt.Printf("%s: ", question)
 	fmt.Scanf("%s", &response)
 
-	if rxAlphaNumDash.MatchString(response) {
+	if RegExAlphaNumDash.MatchString(response) {
 		return response
 	}
 
@@ -60,13 +60,21 @@ func getMarathonURL(count int) string {
 	fmt.Print("Marathon URL (eg. http://hostname:8080)  : ")
 	fmt.Scanf("%s", &response)
 
-	_, err := url.ParseRequestURI(response)
-	if err == nil && utils.HasURLScheme(response) {
+	err := ValidateMarathonURL(response)
+	if err == nil {
 		return response
 	}
 
-	fmt.Printf("\nERROR: '%s' must be a valid URL\n", response)
+	fmt.Printf("\n%s", err.Error())
 	return getMarathonURL(count + 1)
+}
+
+func ValidateMarathonURL(marathonURL string) error {
+	_, err := url.ParseRequestURI(marathonURL)
+	if err != nil || !utils.HasURLScheme(marathonURL) {
+		return fmt.Errorf("ERROR: '%s' must be a valid URL", marathonURL)
+	}
+	return nil
 }
 
 func createEnvironment() *ServiceConfig {
