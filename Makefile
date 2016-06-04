@@ -1,4 +1,4 @@
-VERSION = 0.8.7
+VERSION = 0.8.8
 
 GO_FMT = gofmt -s -w -l .
 GO_XC = goxc -os="linux darwin windows" -tasks-="rmbin"

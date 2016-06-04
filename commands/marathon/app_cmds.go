@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	HOST_FLAG  = "host"
-	SCALE_FLAG = "scale"
+	HOST_FLAG   = "host"
+	SCALE_FLAG  = "scale"
 	FORMAT_FLAG = "format"
 )
 
@@ -325,4 +325,3 @@ func templateFormat(template string, cmd *cobra.Command) string {
 	}
 	return t
 }
-

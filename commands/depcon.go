@@ -80,6 +80,12 @@ func Execute() {
 			configFile = marathonConfigFromEnv()
 			executeWithExistingConfig()
 		} else {
+			if len(os.Args) >= 4 && os.Args[1] == "config" && os.Args[2] == "env" && os.Args[3] == "add-marathon" {
+				configFile, _ = cliconfig.Load("")
+				rootCmd.AddCommand(configCmd)
+				rootCmd.Execute()
+				return
+			}
 			logger.Logger().Error("%s file not found.  Generating initial configuration", file.Filename())
 			configFile = cliconfig.CreateNewConfigFromUserInput()
 		}
