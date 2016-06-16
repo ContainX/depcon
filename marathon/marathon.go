@@ -73,6 +73,9 @@ type Marathon interface {
 	// List all applications on a Marathon cluster
 	ListApplications() (*Applications, error)
 
+	// List all applications on a Marathon cluster with filtering Options
+	ListApplicationsWithFilters(filter string) (*Applications, error)
+
 	// Get an Application by Id
 	// {id} - application identifier
 	GetApplication(id string) (*Application, error)

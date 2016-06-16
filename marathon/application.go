@@ -126,11 +126,19 @@ func (c *MarathonClient) UpdateApplication(app *Application, wait bool) (*Applic
 }
 
 func (c *MarathonClient) ListApplications() (*Applications, error) {
+	return c.ListApplicationsWithFilters("")
+}
+
+func (c *MarathonClient) ListApplicationsWithFilters(filter string) (*Applications, error) {
 	log.Debug("Enter: ListApplications")
 
 	apps := new(Applications)
 
-	resp := c.http.HttpGet(c.marathonUrl(API_APPS), apps)
+	url := c.marathonUrl(API_APPS)
+	if len(filter) > 0 {
+		url = fmt.Sprintf("%s?%s", url, filter)
+	}
+	resp := c.http.HttpGet(url, apps)
 	if resp.Error != nil {
 		return nil, resp.Error
 	}

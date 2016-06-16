@@ -33,7 +33,11 @@ const (
 {{- end}}
 {{ "Environment:" }}
 {{ range $key, $value := .Env }}		{{ $key | pad }} {{ $value }}
-{{end}}`
+{{end}}
+{{ "Labels:" }}
+{{ range $key, $value := .Labels }}		{{ $key | pad }} {{ $value }}
+{{end}}
+`
 
 	T_VERSIONS = `
 {{ "VERSIONS" }}

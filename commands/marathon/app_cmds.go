@@ -52,10 +52,14 @@ var appUpdateMemoryCmd = &cobra.Command{
 }
 
 var appListCmd = &cobra.Command{
-	Use:   "list",
+	Use:   "list (optional filtering - label=mylabel | id=/services | cmd=java ...)",
 	Short: "List all applications",
 	Run: func(cmd *cobra.Command, args []string) {
-		v, e := client(cmd).ListApplications()
+		filter := ""
+		if len(args) > 0 {
+			filter = args[0]
+		}
+		v, e := client(cmd).ListApplicationsWithFilters(filter)
 
 		cli.Output(templateFor(templateFormat(T_APPLICATIONS, cmd), v), e)
 	},
