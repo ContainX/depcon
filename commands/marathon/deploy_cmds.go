@@ -1,8 +1,16 @@
 package marathon
 
 import (
+	"bytes"
+	"errors"
+	"fmt"
+	"github.com/ContainX/depcon/marathon"
 	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/cobra"
+	"io/ioutil"
+	"os"
+	"strings"
 )
 
 var deployCmd = &cobra.Command{
@@ -65,8 +73,7 @@ This command has a small penalty of unmarshalling the descriptor twice. One for 
 the other for delegation to the origin (app or group)
 	`,
 
-	Run: func(cmd *cobra.Command, args []string) {
-	},
+	Run: deployAppOrGroup,
 }
 
 func init() {
@@ -83,5 +90,98 @@ func init() {
                   These take precidence over env vars`)
 
 	deployDeleteCmd.Flags().BoolP(FORCE_FLAG, "f", false, "If set to true, then the deployment is still canceled but no rollback deployment is created.")
-	deployCmd.AddCommand(deployListCmd, deployDeleteCmd, deleteIfDeployingCmd)
+	deployCmd.AddCommand(deployCreateCmd, deployListCmd, deployDeleteCmd, deleteIfDeployingCmd)
+}
+
+func deployAppOrGroup(cmd *cobra.Command, args []string) {
+
+	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		return
+	}
+
+	filename := args[0]
+	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
+	force, _ := cmd.Flags().GetBool(FORCE_FLAG)
+	paramsFile, _ := cmd.Flags().GetString(ENV_FILE_FLAG)
+	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
+	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
+	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
+	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
+	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
+
+	descriptor := parseDescriptor(tempctx, filename)
+
+	et, err := encoding.NewEncoderFromFileExt(filename)
+	if err != nil {
+		exitWithError(err)
+	}
+
+	ag := &marathon.AppOrGroup{}
+	if err := et.UnMarshalStr(descriptor, ag); err != nil {
+		exitWithError(err)
+	}
+
+	if paramsFile != "" {
+		envParams, _ := parseParamsFile(paramsFile)
+		options.EnvParams = envParams
+	} else {
+		options.EnvParams = make(map[string]string)
+	}
+
+	if params != nil {
+		for _, p := range params {
+			if strings.Contains(p, "=") {
+				v := strings.Split(p, "=")
+				options.EnvParams[v[0]] = v[1]
+			}
+		}
+	}
+
+	if ag.IsApplication() {
+		result, e := client(cmd).CreateApplicationFromString(filename, descriptor, options)
+		outputDeployment(result, e)
+		cli.Output(templateFor(T_APPLICATION, result), e)
+	} else {
+		result, e := client(cmd).CreateGroupFromString(filename, descriptor, options)
+		outputDeployment(result, e)
+		arr := flattenGroup(result, []*marathon.Group{})
+		cli.Output(templateFor(T_GROUPS, arr), e)
+	}
+}
+
+func outputDeployment(result interface{}, e error) {
+	if e != nil && e == marathon.ErrorAppExists {
+		exitWithError(errors.New(fmt.Sprintf("%s, consider using the --force flag to update when an application exists", e.Error())))
+	}
+
+	if result == nil {
+		if e != nil {
+			exitWithError(e)
+		}
+		os.Exit(1)
+	}
+}
+
+func parseDescriptor(tempctx, filename string) string {
+	if len(tempctx) > 0 {
+		b := &bytes.Buffer{}
+
+		r, err := LoadTemplateContext(tempctx)
+		if err != nil {
+			exitWithError(err)
+		}
+
+		if err := r.Transform(b, filename); err != nil {
+			exitWithError(err)
+		}
+		return b.String()
+	} else {
+		if b, err := ioutil.ReadFile(filename); err != nil {
+			exitWithError(err)
+		} else {
+			return string(b)
+
+		}
+	}
+	return ""
 }
