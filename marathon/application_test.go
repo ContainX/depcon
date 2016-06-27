@@ -19,7 +19,7 @@ func TestCreateApplicationFromFile(t *testing.T) {
 	opts := &CreateOptions{Wait: false, Force: true, ErrorOnMissingParams: true, EnvParams: envParams}
 
 	c := MarathonClient{}
-	app, _, err := c.ParseApplicationFromFile(AppsFolder+"app_params.json", opts)
+	app, err := c.ParseApplicationFromFile(AppsFolder+"app_params.json", opts)
 	if err != nil {
 		log.Panic("Expected success %v", err)
 	}

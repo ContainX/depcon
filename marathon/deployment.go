@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ContainX/depcon/pkg/httpclient"
+	"strings"
 )
 
 func (c *MarathonClient) ListDeployments() ([]*Deploy, error) {
@@ -28,9 +29,10 @@ func (c *MarathonClient) HasDeployment(id string) (bool, error) {
 	return false, nil
 }
 
-func (c *MarathonClient) DeleteDeployment(id string) (*DeploymentID, error) {
+func (c *MarathonClient) DeleteDeployment(id string, force bool) (*DeploymentID, error) {
 	deploymentID := new(DeploymentID)
-	resp := c.http.HttpDelete(c.marathonUrl(API_DEPLOYMENTS, id), nil, deploymentID)
+	uri := fmt.Sprintf("%s?force=%s", c.marathonUrl(API_DEPLOYMENTS, id), force)
+	resp := c.http.HttpDelete(uri, nil, deploymentID)
 	if resp.Error != nil {
 		if resp.Error == httpclient.ErrorNotFound {
 			return nil, errors.New(fmt.Sprintf("Deployment '%s' was not found", id))
@@ -38,5 +40,27 @@ func (c *MarathonClient) DeleteDeployment(id string) (*DeploymentID, error) {
 		return nil, resp.Error
 	}
 	return deploymentID, nil
+}
 
+func (c *MarathonClient) CancelAppDeployment(appId string, matchPrefix bool) (*DeploymentID, error) {
+	if deployments, err := c.ListDeployments(); err == nil {
+		for _, value := range deployments {
+			for _, id := range value.AffectedApps {
+				if doesIDMatch(appId, id, matchPrefix) {
+					log.Info("Removing matched deployment: %s for app: %s", value.DeployID, id)
+					return c.DeleteDeployment(value.DeployID, true)
+				}
+			}
+		}
+	} else {
+		return nil, err
+	}
+	return nil, nil
+}
+
+func doesIDMatch(appId, otherId string, matchPrefix bool) bool {
+	if matchPrefix {
+		return strings.HasPrefix(otherId, appId)
+	}
+	return appId == otherId
 }

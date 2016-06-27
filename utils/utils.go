@@ -60,7 +60,7 @@ func ConcatIdentifiers(ids []string) string {
 		if idx > 0 {
 			b.WriteString(" ,")
 		}
-		b.WriteString(TrimRootPath(id))
+		b.WriteString(id)
 	}
 	return b.String()
 }

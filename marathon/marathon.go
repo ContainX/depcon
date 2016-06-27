@@ -41,18 +41,32 @@ type CreateOptions struct {
 	// Additional environment params - looks at this map for token substitution which takes
 	// priority over matching environment variables
 	EnvParams map[string]string
+
+	// If an existing deployment for this group/app is in progress then remove it and let this revision
+	// take its place
+	StopDeploy bool
+
+	TemplateMap map[string]string
 }
 
 type Marathon interface {
 
 	/** Application API */
 
-	// Creates a new Application from a file and replaces tokenized variables
+	// Creates a new Application from a file and replaces the tokenized variables
 	// with resolved environment values
 	//
 	// {filename} - the application file of type [ json | yaml ]
 	// {opts}     - create application options
 	CreateApplicationFromFile(filename string, opts *CreateOptions) (*Application, error)
+
+	// Creates a new Application from a file and replaces the tokenized variables
+	// with the resolved environment values
+	//
+	// {filename} - the original filename used to determine the format
+	// {appstr}   - the application in yml or json form
+	// {opts}     - the create application options
+	CreateApplicationFromString(filename string, appstr string, opts *CreateOptions) (*Application, error)
 
 	// Creates a new Application
 	// {app}   - the application structure containing configuration
@@ -63,7 +77,7 @@ type Marathon interface {
 
 	// Responsible for parsing an application [ json | yaml ] and susbstituting variables.
 	// This method is called as part of the CreateApplicationFromFile method.
-	ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, *CreateOptions, error)
+	ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, error)
 
 	// Updates an Application
 	// {app} - the application structure containing configuration
@@ -72,6 +86,9 @@ type Marathon interface {
 
 	// List all applications on a Marathon cluster
 	ListApplications() (*Applications, error)
+
+	// List all applications on a Marathon cluster with filtering Options
+	ListApplicationsWithFilters(filter string) (*Applications, error)
 
 	// Get an Application by Id
 	// {id} - application identifier
@@ -120,7 +137,13 @@ type Marathon interface {
 
 	// Deletes a deployment
 	// {id} - deployment identifier
-	DeleteDeployment(id string) (*DeploymentID, error)
+	// {force} - If set to true, then the deployment is still canceled but no rollback deployment is created.
+	DeleteDeployment(id string, force bool) (*DeploymentID, error)
+
+	// Cancels an active deployment matching the specified application id (conditional match)
+	// {appId} - the application identifier to match the request on
+	// {matchPrefix} - if true only the prefix will be matched, false the whole id must be matched
+	CancelAppDeployment(appId string, matchPrefix bool) (*DeploymentID, error)
 
 	// Waits for a deployment to finish for max timeout duration
 	WaitForDeployment(id string, timeout time.Duration) error
@@ -133,6 +156,14 @@ type Marathon interface {
 	// {filename} - the group file of type [ json | yaml ]
 	// {opts}     - create application options
 	CreateGroupFromFile(filename string, opts *CreateOptions) (*Group, error)
+
+	// Creates a new Group from a string and replaces the tokenized variables
+	// with the resolved environment values
+	//
+	// {filename} - the original filename used to determine the format
+	// {grpstr}   - the group in yml or json form
+	// {opts}     - the create application options
+	CreateGroupFromString(filename string, grpstr string, opts *CreateOptions) (*Group, error)
 
 	// Creates a new Group
 	// {group} - the group structure containing configuration

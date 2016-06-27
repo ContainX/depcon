@@ -192,13 +192,13 @@ func Substitute(in io.Reader, preserveUndef bool, resolver func(string) string) 
 	return buf.String()
 }
 
-func SubstFileTokens(in io.Reader, filename string, params map[string]string) (parsed string, missing bool) {
+func SubstFileTokens(in io.Reader, params map[string]string) (parsed string, missing bool) {
 	parsed = Substitute(in, true, func(s string) string {
 		if params != nil && params[s] != "" {
 			return params[s]
 		}
 		if os.Getenv(s) == "" {
-			log.Warning("Cannot find a value for varible ${%s} which was defined in %s", s, filename)
+			log.Warning("Cannot find a value for varible ${%s} in template", s)
 			missing = true
 		}
 		return os.Getenv(s)

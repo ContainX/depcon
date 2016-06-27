@@ -37,7 +37,7 @@ func (c *BGClient) DeployBlueGreenFromFile(filename string) (*marathon.Applicati
 		ErrorOnMissingParams: c.opts.ErrorOnMissingParams,
 		EnvParams:            c.opts.EnvParams,
 	}
-	app, _, err := c.marathon.ParseApplicationFromFile(filename, parseOpts)
+	app, err := c.marathon.ParseApplicationFromFile(filename, parseOpts)
 	if err != nil {
 		return nil, err
 	}

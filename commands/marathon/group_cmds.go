@@ -1,6 +1,7 @@
 package marathon
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ContainX/depcon/marathon"
 	"github.com/ContainX/depcon/pkg/cli"
@@ -54,7 +55,9 @@ func init() {
 	// Destroy Flags
 	groupDestroyCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for destroy to complete")
 	// Create Flags
+	groupCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, "", "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
 	groupCreateCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for group to become healthy")
+	groupCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this group (if exists) and use this revision")
 	groupCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates group if it already exists)")
 	groupCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
@@ -102,7 +105,10 @@ func createGroup(cmd *cobra.Command, args []string) {
 	force, _ := cmd.Flags().GetBool(FORCE_FLAG)
 	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
 	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
-	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore}
+	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
+
+	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
+	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
 
 	if params != nil {
 		envmap := make(map[string]string)
@@ -115,10 +121,33 @@ func createGroup(cmd *cobra.Command, args []string) {
 		options.EnvParams = envmap
 	}
 
-	result, e := client(cmd).CreateGroupFromFile(args[0], options)
-	if e != nil && e == marathon.ErrorGroupExists {
-		cli.Output(nil, fmt.Errorf("%s, consider using the --force flag to update when group exists", e.Error()))
+	var result *marathon.Group = nil
+	var e error
+
+	if len(tempctx) > 0 {
+		b := &bytes.Buffer{}
+
+		r, err := LoadTemplateContext(tempctx)
+		if err != nil {
+			exitWithError(err)
+		}
+
+		if err := r.Transform(b, args[0]); err != nil {
+			exitWithError(err)
+		}
+		result, e = client(cmd).CreateGroupFromString(args[0], b.String(), options)
+	} else {
+		result, e = client(cmd).CreateGroupFromFile(args[0], options)
+	}
+
+	if e != nil {
+		if e == marathon.ErrorGroupExists {
+			cli.Output(nil, fmt.Errorf("%s, consider using the --force flag to update when group exists", e.Error()))
+		} else {
+			cli.Output(nil, e)
+		}
 		return
+
 	}
 	arr := flattenGroup(result, []*marathon.Group{})
 	cli.Output(templateFor(T_GROUPS, arr), e)

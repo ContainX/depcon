@@ -40,13 +40,23 @@ func NewEncoder(encoder EncoderType) (Encoder, error) {
 }
 
 func NewEncoderFromFileExt(filename string) (Encoder, error) {
+
+	if et, err := EncoderTypeFromExt(filename); err != nil {
+		return nil, err
+	} else {
+		return NewEncoder(et)
+	}
+}
+
+func EncoderTypeFromExt(filename string) (EncoderType, error) {
 	switch filepath.Ext(filename) {
 	case ".yml", ".yaml":
-		return NewEncoder(YAML)
+		return YAML, nil
 	case ".json":
-		return NewEncoder(JSON)
+		return JSON, nil
 	}
-	return nil, ErrorInvalidExtension
+	return JSON, ErrorInvalidExtension
+
 }
 
 func ConvertFile(infile, outfile string, dataType interface{}) error {

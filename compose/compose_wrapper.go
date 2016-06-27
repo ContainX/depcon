@@ -109,7 +109,7 @@ func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Error opening filename %s, %s", c.context.ComposeFile, err.Error())
 		}
-		parsed, missing := envsubst.SubstFileTokens(file, c.context.ComposeFile, c.context.EnvParams)
+		parsed, missing := envsubst.SubstFileTokens(file, c.context.EnvParams)
 		log.Debug("Map: %v\nParsed: %s\n", c.context.EnvParams, parsed)
 
 		if c.context.ErrorOnMissingParams && missing {
