@@ -7,7 +7,9 @@ import (
 	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/ContainX/depcon/pkg/httpclient"
 	"github.com/ContainX/depcon/utils"
+	"io"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -27,40 +29,82 @@ var (
 )
 
 func (c *MarathonClient) CreateApplicationFromFile(filename string, opts *CreateOptions) (*Application, error) {
-	app, options, err := c.ParseApplicationFromFile(filename, opts)
+	app, err := c.ParseApplicationFromFile(filename, opts)
 	if err != nil {
 		return app, err
 	}
-	return c.CreateApplication(app, options.Wait, options.Force)
+
+	if opts.StopDeploy {
+		if deployment, err := c.CancelAppDeployment(app.ID, false); err == nil && deployment != nil {
+			log.Info("Previous deployment found..  cancelling and waiting until complete.")
+			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
+		}
+	}
+
+	return c.CreateApplication(app, opts.Wait, opts.Force)
 }
 
-func (c *MarathonClient) ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, *CreateOptions, error) {
+func (c *MarathonClient) CreateApplicationFromString(filename string, appstr string, opts *CreateOptions) (*Application, error) {
+	et, err := encoding.EncoderTypeFromExt(filename)
+	if err != nil {
+		return nil, err
+	}
+	app, err := c.ParseApplicationFromString(strings.NewReader(appstr), et, opts)
+
+	if err != nil {
+		return app, err
+	}
+
+	if opts.StopDeploy {
+		if deployment, err := c.CancelAppDeployment(app.ID, false); err == nil && deployment != nil {
+			log.Info("Previous deployment found..  cancelling and waiting until complete.")
+			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
+		}
+	}
+
+	return c.CreateApplication(app, opts.Wait, opts.Force)
+
+}
+
+func (c *MarathonClient) ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, error) {
 	log.Info("Creating Application from file: %s", filename)
-	options := initCreateOptions(opts)
 
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, nil, fmt.Errorf("Error opening filename %s, %s", filename, err.Error())
+		return nil, fmt.Errorf("Error opening filename %s, %s", filename, err.Error())
 	}
+
+	if et, err := encoding.EncoderTypeFromExt(filename); err != nil {
+		return nil, err
+	} else {
+		return c.ParseApplicationFromString(file, et, opts)
+	}
+}
+
+func (c *MarathonClient) ParseApplicationFromString(r io.Reader, et encoding.EncoderType, opts *CreateOptions) (*Application, error) {
+
+	options := initCreateOptions(opts)
 
 	var encoder encoding.Encoder
-	encoder, err = encoding.NewEncoderFromFileExt(filename)
+	var err error
+
+	encoder, err = encoding.NewEncoder(et)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
-	parsed, missing := envsubst.SubstFileTokens(file, filename, options.EnvParams)
+	parsed, missing := envsubst.SubstFileTokens(r, options.EnvParams)
 
-	if options.ErrorOnMissingParams && missing {
-		return nil, nil, ErrorAppParamsMissing
+	if opts.ErrorOnMissingParams && missing {
+		return nil, ErrorAppParamsMissing
 	}
 
 	app := new(Application)
 	err = encoder.UnMarshalStr(parsed, &app)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return app, options, nil
+	return app, nil
 }
 
 func (c *MarathonClient) CreateApplication(app *Application, wait, force bool) (*Application, error) {

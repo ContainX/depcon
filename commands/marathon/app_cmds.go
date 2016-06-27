@@ -1,23 +1,27 @@
 package marathon
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
-	"github.com/ContainX/depcon/marathon"
-	"github.com/ContainX/depcon/pkg/cli"
-	"github.com/ContainX/depcon/pkg/encoding"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ContainX/depcon/marathon"
+	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/ContainX/depcon/pkg/encoding"
+	"github.com/spf13/cobra"
 )
 
 const (
-	HOST_FLAG   = "host"
-	SCALE_FLAG  = "scale"
-	FORMAT_FLAG = "format"
+	HOST_FLAG         = "host"
+	SCALE_FLAG        = "scale"
+	FORMAT_FLAG       = "format"
+	TEMPLATE_CTX_FLAG = "tempctx"
+	STOP_DEPLOYS_FLAG = "stop-deploys"
 )
 
 var appCmd = &cobra.Command{
@@ -126,7 +130,9 @@ func init() {
 	appCmd.AddCommand(appListCmd, appGetCmd, logCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, bgCmd, appRestartCmd, appScaleCmd, appVersionsCmd, appConvertFileCmd)
 
 	// Create Flags
+	appCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, "", "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
 	appCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
+	appCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this app (if exists) and use this revision")
 	appCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
 	appCreateCmd.Flags().StringP(ENV_FILE_FLAG, "c", "", `Adds a file with a param(s) that can be used for substitution.
@@ -150,7 +156,9 @@ func createApp(cmd *cobra.Command, args []string) {
 	paramsFile, _ := cmd.Flags().GetString(ENV_FILE_FLAG)
 	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
 	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
-	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore}
+	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
+	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
+	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
 
 	if paramsFile != "" {
 		envParams, _ := parseParamsFile(paramsFile)
@@ -168,19 +176,40 @@ func createApp(cmd *cobra.Command, args []string) {
 		}
 	}
 
-	result, e := client(cmd).CreateApplicationFromFile(args[0], options)
-	if e != nil && e == marathon.ErrorAppExists {
-		cli.Output(nil, errors.New(fmt.Sprintf("%s, consider using the --force flag to update when an application exists", e.Error())))
-		os.Exit(1)
+	var result *marathon.Application = nil
+	var e error
+
+	if len(tempctx) > 0 {
+		b := &bytes.Buffer{}
+
+		r, err := LoadTemplateContext(tempctx)
+		if err != nil {
+			exitWithError(err)
+		}
+
+		if err := r.Transform(b, args[0]); err != nil {
+			exitWithError(err)
+		}
+		result, e = client(cmd).CreateApplicationFromString(args[0], b.String(), options)
+	} else {
+		result, e = client(cmd).CreateApplicationFromFile(args[0], options)
 	}
+	if e != nil && e == marathon.ErrorAppExists {
+		exitWithError(errors.New(fmt.Sprintf("%s, consider using the --force flag to update when an application exists", e.Error())))
+	}
+
 	if result == nil {
 		if e != nil {
-
 			fmt.Printf("[ERROR] %s\n", e.Error())
 		}
 		os.Exit(1)
 	}
 	cli.Output(templateFor(T_APPLICATION, result), e)
+}
+
+func exitWithError(err error) {
+	cli.Output(nil, err)
+	os.Exit(1)
 }
 
 func parseParamsFile(filename string) (map[string]string, error) {

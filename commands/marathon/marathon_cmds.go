@@ -16,6 +16,7 @@ const (
 	ENV_FILE_FLAG  string = "env-file"
 	IGNORE_MISSING string = "ignore"
 	INSECURE_FLAG  string = "insecure"
+	ENV_NAME       string = "env_name"
 )
 
 var (
@@ -54,7 +55,7 @@ func associateServiceCommands(parent *cobra.Command) {
 
 func client(c *cobra.Command) marathon.Marathon {
 	if marathonClient == nil {
-		envName := viper.GetString("env_name")
+		envName := viper.GetString(ENV_NAME)
 		insecure := viper.GetBool(INSECURE_FLAG)
 		mc := *configFile.Environments[envName].Marathon
 		opts := &marathon.MarathonOptions{}

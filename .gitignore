@@ -31,3 +31,5 @@ tests/
 build/
 .goxc.local.json
 .DS_Store
+samples/*
+.vscode

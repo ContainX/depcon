@@ -1,0 +1,25 @@
+{
+  "environments": {
+    "-": {
+      "apps": {
+        "appa": {
+          "mem": 200,
+          "instances": 1,
+          "cpus": 0.1
+        },
+        "appb": {
+          "mem": 850,
+          "instances": 1
+        }
+      }
+    },
+    "prod": {
+      "apps": {
+        "appa": {
+          "mem": 300,
+          "instances": 3
+        }
+      }
+    }
+  }
+}

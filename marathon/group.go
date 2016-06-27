@@ -5,29 +5,81 @@ import (
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/ContainX/depcon/pkg/httpclient"
+	"io"
 	"os"
+	"strings"
 	"time"
 )
+
+func (c *MarathonClient) CreateGroupFromString(filename string, grpstr string, opts *CreateOptions) (*Group, error) {
+	et, err := encoding.EncoderTypeFromExt(filename)
+	if err != nil {
+		return nil, err
+	}
+	group, err := c.ParseGroupFromString(strings.NewReader(grpstr), et, opts)
+
+	if err != nil {
+		return group, err
+	}
+
+	if opts.StopDeploy {
+		if deployment, err := c.CancelAppDeployment(group.GroupID, true); err == nil && deployment != nil {
+			log.Info("Previous deployment found..  cancelling and waiting until complete.")
+			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
+		}
+	}
+
+	return c.CreateGroup(group, opts.Wait, opts.Force)
+}
 
 func (c *MarathonClient) CreateGroupFromFile(filename string, opts *CreateOptions) (*Group, error) {
 	log.Info("Creating Group from file: %s", filename)
 
-	options := initCreateOptions(opts)
+	group, err := c.ParseGroupFromFile(filename, opts)
+	if err != nil {
+		return group, err
+	}
+
+	if opts.StopDeploy {
+		if deployment, err := c.CancelAppDeployment(group.GroupID, true); err == nil && deployment != nil {
+			log.Info("Previous deployment found..  cancelling and waiting until complete.")
+			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
+		}
+	}
+
+	return c.CreateGroup(group, opts.Wait, opts.Force)
+}
+
+func (c *MarathonClient) ParseGroupFromFile(filename string, opts *CreateOptions) (*Group, error) {
+	log.Info("Creating Group from file: %s", filename)
 
 	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("Error opening filename %s, %s", filename, err.Error())
 	}
 
+	if et, err := encoding.EncoderTypeFromExt(filename); err != nil {
+		return nil, err
+	} else {
+		return c.ParseGroupFromString(file, et, opts)
+	}
+}
+
+func (c *MarathonClient) ParseGroupFromString(r io.Reader, et encoding.EncoderType, opts *CreateOptions) (*Group, error) {
+
+	options := initCreateOptions(opts)
+
 	var encoder encoding.Encoder
-	encoder, err = encoding.NewEncoderFromFileExt(filename)
+	var err error
+
+	encoder, err = encoding.NewEncoder(et)
 	if err != nil {
 		return nil, err
 	}
 
-	parsed, missing := envsubst.SubstFileTokens(file, filename, options.EnvParams)
+	parsed, missing := envsubst.SubstFileTokens(r, options.EnvParams)
 
-	if options.ErrorOnMissingParams && missing {
+	if opts.ErrorOnMissingParams && missing {
 		return nil, ErrorAppParamsMissing
 	}
 
@@ -36,7 +88,7 @@ func (c *MarathonClient) CreateGroupFromFile(filename string, opts *CreateOption
 	if err != nil {
 		return nil, err
 	}
-	return c.CreateGroup(group, options.Wait, options.Force)
+	return group, nil
 }
 
 func (c *MarathonClient) CreateGroup(group *Group, wait, force bool) (*Group, error) {
