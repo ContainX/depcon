@@ -244,6 +244,16 @@ type Step struct {
 	App    string `json:"app"`
 }
 
+type AppOrGroup struct {
+	ID     string         `json:"id"`
+	Apps   []*Application `json:"apps,omitempty"`
+	Groups []*Group       `json:"groups,omitempty"`
+}
+
+func (ag *AppOrGroup) IsApplication() bool {
+	return ag.Apps == nil && ag.Groups == nil
+}
+
 type Group struct {
 	GroupID      string         `json:"id"`
 	Version      string         `json:"version,omitempty"`
