@@ -78,6 +78,7 @@ the other for delegation to the origin (app or group)
 
 func init() {
 
+	deployCreateCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for group to become healthy")
 	deployCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, "", "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
 	deployCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
 	deployCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this app (if exists) and use this revision")
@@ -110,7 +111,6 @@ func deployAppOrGroup(cmd *cobra.Command, args []string) {
 	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
 
 	descriptor := parseDescriptor(tempctx, filename)
-
 	et, err := encoding.NewEncoderFromFileExt(filename)
 	if err != nil {
 		exitWithError(err)

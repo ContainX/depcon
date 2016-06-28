@@ -9,6 +9,8 @@ import (
 
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/viper"
+	"strings"
+	"path/filepath"
 )
 
 const (
@@ -43,6 +45,13 @@ var Funcs = template.FuncMap{
 
 		return value
 	},
+	"isEnv": func(value string) bool {
+		if len(value) > 0 {
+			current := strings.ToLower(viper.GetString(ENV_NAME))
+			return current == strings.ToLower(value)
+		}
+		return false
+	},
 }
 
 type TemplateContext struct {
@@ -60,13 +69,21 @@ func (ctx *TemplateContext) Transform(writer io.Writer, descriptor string) error
 		return err
 	} else {
 		var e error
-		t = template.New("output").Funcs(Funcs)
+		t = template.New(descriptor).Funcs(Funcs)
 		t, e = t.Parse(string(b))
 		if e != nil {
 			return e
 		}
+		if matches, err := filepath.Glob("./**/*.tmpl"); err == nil && len(matches) > 0 {
+			if t, e = t.ParseFiles(matches...); err != nil {
+				return err
+			}
+		}
 	}
-	if err := t.Execute(writer, ctx.mergeAppWithDefault(string(viper.GetString(ENV_NAME)))); err != nil {
+	environment := viper.GetString(ENV_NAME)
+	m := ctx.mergeAppWithDefault(environment)
+
+	if err := t.Execute(writer, m); err != nil {
 		return err
 	}
 	return nil
