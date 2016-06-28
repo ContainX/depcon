@@ -9,8 +9,8 @@ import (
 
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/viper"
-	"strings"
 	"path/filepath"
+	"strings"
 )
 
 const (
