@@ -180,6 +180,9 @@ func (c *MarathonClient) ListApplicationsWithFilters(filter string) (*Applicatio
 
 	url := c.marathonUrl(API_APPS)
 	if len(filter) > 0 {
+		if strings.Contains(filter, "=") == false {
+			filter = fmt.Sprintf("id=%s", filter)
+		}
 		url = fmt.Sprintf("%s?%s", url, filter)
 	}
 	resp := c.http.HttpGet(url, apps)

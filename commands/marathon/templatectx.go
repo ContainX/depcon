@@ -9,8 +9,8 @@ import (
 
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/viper"
-	"strings"
 	"path/filepath"
+	"strings"
 )
 
 const (
@@ -130,6 +130,16 @@ func (ctx *TemplateContext) mergeAppWithDefault(env string) map[string]map[strin
 
 func recovery() {
 	recover()
+}
+
+func TemplateExists(filename string) bool {
+
+	if len(filename) > 0 {
+		if _, err := os.Stat(filename); err == nil {
+			return true
+		}
+	}
+	return false
 }
 
 func LoadTemplateContext(filename string) (*TemplateContext, error) {
