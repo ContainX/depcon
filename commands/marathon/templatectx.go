@@ -132,6 +132,16 @@ func recovery() {
 	recover()
 }
 
+func TemplateExists(filename string) bool {
+
+	if len(filename) > 0 {
+		if _, err := os.Stat(filename); err == nil {
+			return true
+		}
+	}
+	return false
+}
+
 func LoadTemplateContext(filename string) (*TemplateContext, error) {
 	ctx, err := os.Open(filename)
 	if err != nil {

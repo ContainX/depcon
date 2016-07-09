@@ -21,6 +21,7 @@ const (
 	SCALE_FLAG        = "scale"
 	FORMAT_FLAG       = "format"
 	TEMPLATE_CTX_FLAG = "tempctx"
+	DEFAULT_CTX       = "template-context.json"
 	STOP_DEPLOYS_FLAG = "stop-deploys"
 )
 
@@ -179,7 +180,7 @@ func createApp(cmd *cobra.Command, args []string) {
 	var result *marathon.Application = nil
 	var e error
 
-	if len(tempctx) > 0 {
+	if TemplateExists(tempctx) {
 		b := &bytes.Buffer{}
 
 		r, err := LoadTemplateContext(tempctx)

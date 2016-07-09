@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"os"
 	"strings"
+	"time"
 )
 
 var groupCmd = &cobra.Command{
@@ -55,10 +56,12 @@ func init() {
 	// Destroy Flags
 	groupDestroyCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for destroy to complete")
 	// Create Flags
-	groupCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, "", "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
+	groupCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, DEFAULT_CTX, "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
 	groupCreateCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for group to become healthy")
 	groupCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this group (if exists) and use this revision")
 	groupCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates group if it already exists)")
+	groupCreateCmd.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
+
 	groupCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
 	groupCreateCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
@@ -124,7 +127,7 @@ func createGroup(cmd *cobra.Command, args []string) {
 	var result *marathon.Group = nil
 	var e error
 
-	if len(tempctx) > 0 {
+	if TemplateExists(tempctx) {
 		b := &bytes.Buffer{}
 
 		r, err := LoadTemplateContext(tempctx)

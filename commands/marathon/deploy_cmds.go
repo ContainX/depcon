@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 )
 
 var deployCmd = &cobra.Command{
@@ -79,7 +80,7 @@ the other for delegation to the origin (app or group)
 func init() {
 
 	deployCreateCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for group to become healthy")
-	deployCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, "", "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
+	deployCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, DEFAULT_CTX, "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
 	deployCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
 	deployCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this app (if exists) and use this revision")
 	deployCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
@@ -90,6 +91,7 @@ func init() {
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
 
+	deployCreateCmd.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
 	deployDeleteCmd.Flags().BoolP(FORCE_FLAG, "f", false, "If set to true, then the deployment is still canceled but no rollback deployment is created.")
 	deployCmd.AddCommand(deployCreateCmd, deployListCmd, deployDeleteCmd, deleteIfDeployingCmd)
 }
@@ -137,6 +139,8 @@ func deployAppOrGroup(cmd *cobra.Command, args []string) {
 		}
 	}
 
+	log.Debug("Composed Descriptor: %s", descriptor)
+
 	if ag.IsApplication() {
 		result, e := client(cmd).CreateApplicationFromString(filename, descriptor, options)
 		outputDeployment(result, e)
@@ -144,6 +148,11 @@ func deployAppOrGroup(cmd *cobra.Command, args []string) {
 	} else {
 		result, e := client(cmd).CreateGroupFromString(filename, descriptor, options)
 		outputDeployment(result, e)
+
+		if e != nil {
+			cli.Output(nil, e)
+		}
+
 		arr := flattenGroup(result, []*marathon.Group{})
 		cli.Output(templateFor(T_GROUPS, arr), e)
 	}
@@ -163,7 +172,7 @@ func outputDeployment(result interface{}, e error) {
 }
 
 func parseDescriptor(tempctx, filename string) string {
-	if len(tempctx) > 0 {
+	if TemplateExists(tempctx) {
 		b := &bytes.Buffer{}
 
 		r, err := LoadTemplateContext(tempctx)
