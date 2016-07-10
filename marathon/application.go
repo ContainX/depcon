@@ -99,6 +99,11 @@ func (c *MarathonClient) ParseApplicationFromString(r io.Reader, et encoding.Enc
 		return nil, ErrorAppParamsMissing
 	}
 
+	if opts.DryRun {
+		fmt.Printf("Create Application :: DryRun :: Template Output\n\n%s", parsed)
+		os.Exit(0)
+	}
+
 	app := new(Application)
 	err = encoder.UnMarshalStr(parsed, &app)
 	if err != nil {

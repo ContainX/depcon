@@ -17,6 +17,7 @@ const (
 	IGNORE_MISSING string = "ignore"
 	INSECURE_FLAG  string = "insecure"
 	ENV_NAME       string = "env_name"
+	DRYRUN_FLAG    string = "dry-run"
 )
 
 var (

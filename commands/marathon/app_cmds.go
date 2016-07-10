@@ -142,6 +142,7 @@ func init() {
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
 
+	appCreateCmd.Flags().Bool(DRYRUN_FLAG, false, "Preview the parsed template - don't actually deploy")
 	appListCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{range .Apps}}{{ .Container.Docker.Image }}{{end}}'")
 	appGetCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{ .ID }}'")
 	applyCommonAppFlags(appCreateCmd, appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd)
@@ -159,7 +160,9 @@ func createApp(cmd *cobra.Command, args []string) {
 	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
 	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
 	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
-	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
+	dryrun, _ := cmd.Flags().GetBool(DRYRUN_FLAG)
+
+	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy, DryRun: dryrun}
 
 	if paramsFile != "" {
 		envParams, _ := parseParamsFile(paramsFile)

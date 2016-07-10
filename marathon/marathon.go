@@ -47,6 +47,9 @@ type CreateOptions struct {
 	StopDeploy bool
 
 	TemplateMap map[string]string
+
+	// Do not actually create - output final parsed payload which would be POSTED and then exit
+	DryRun bool
 }
 
 type Marathon interface {

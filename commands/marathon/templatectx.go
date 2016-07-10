@@ -20,7 +20,6 @@ const (
 // Templated based Functions
 var Funcs = template.FuncMap{
 	"default": func(args ...interface{}) interface{} {
-
 		arg := args[0]
 		if len(args) < 2 {
 			return arg
@@ -81,7 +80,7 @@ func (ctx *TemplateContext) Transform(writer io.Writer, descriptor string) error
 		}
 	}
 	environment := viper.GetString(ENV_NAME)
-	m := ctx.mergeAppWithDefault(environment)
+	m := ctx.mergeAppWithDefault(strings.ToLower(environment))
 
 	if err := t.Execute(writer, m); err != nil {
 		return err
