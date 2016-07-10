@@ -31,7 +31,7 @@ func (c *MarathonClient) HasDeployment(id string) (bool, error) {
 
 func (c *MarathonClient) DeleteDeployment(id string, force bool) (*DeploymentID, error) {
 	deploymentID := new(DeploymentID)
-	uri := fmt.Sprintf("%s?force=%s", c.marathonUrl(API_DEPLOYMENTS, id), force)
+	uri := fmt.Sprintf("%s?force=%v", c.marathonUrl(API_DEPLOYMENTS, id), force)
 	resp := c.http.HttpDelete(uri, nil, deploymentID)
 	if resp.Error != nil {
 		if resp.Error == httpclient.ErrorNotFound {
