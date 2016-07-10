@@ -36,8 +36,6 @@ func (c *MarathonClient) WaitForApplication(id string, timeout time.Duration) er
 		logWaitApplication(id)
 		time.Sleep(time.Duration(2) * time.Second)
 	}
-
-	return nil
 }
 
 func (c *MarathonClient) WaitForApplicationHealthy(id string, timeout time.Duration) error {
@@ -61,8 +59,6 @@ func (c *MarathonClient) WaitForApplicationHealthy(id string, timeout time.Durat
 		logWait.Info("%v healthy instances.  Waiting for %v total instances. Retrying check in %v seconds", app.TasksHealthy, total, duration)
 		time.Sleep(duration)
 	}
-
-	return nil
 }
 
 func (c *MarathonClient) WaitForDeployment(id string, timeout time.Duration) error {
@@ -83,7 +79,6 @@ func (c *MarathonClient) WaitForDeployment(id string, timeout time.Duration) err
 		logWaitDeployment(id)
 		time.Sleep(time.Duration(2) * time.Second)
 	}
-	return ErrorDeploymentNotfound
 }
 
 func logWaitDeployment(id string) {

@@ -91,6 +91,8 @@ func init() {
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
 
+	deployCreateCmd.Flags().Bool(DRYRUN_FLAG, false, "Preview the parsed template - don't actually deploy")
+
 	deployCreateCmd.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
 	deployDeleteCmd.Flags().BoolP(FORCE_FLAG, "f", false, "If set to true, then the deployment is still canceled but no rollback deployment is created.")
 	deployCmd.AddCommand(deployCreateCmd, deployListCmd, deployDeleteCmd, deleteIfDeployingCmd)
@@ -110,7 +112,8 @@ func deployAppOrGroup(cmd *cobra.Command, args []string) {
 	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
 	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
 	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
-	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
+	dryrun, _ := cmd.Flags().GetBool(DRYRUN_FLAG)
+	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy, DryRun: dryrun}
 
 	descriptor := parseDescriptor(tempctx, filename)
 	et, err := encoding.NewEncoderFromFileExt(filename)
@@ -138,8 +141,6 @@ func deployAppOrGroup(cmd *cobra.Command, args []string) {
 			}
 		}
 	}
-
-	log.Debug("Composed Descriptor: %s", descriptor)
 
 	if ag.IsApplication() {
 		result, e := client(cmd).CreateApplicationFromString(filename, descriptor, options)

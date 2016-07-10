@@ -68,6 +68,8 @@ func init() {
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars and params in file`)
 
+	groupCreateCmd.Flags().Bool(DRYRUN_FLAG, false, "Preview the parsed template - don't actually deploy")
+
 }
 
 func listGroups(cmd *cobra.Command, args []string) {
@@ -109,9 +111,10 @@ func createGroup(cmd *cobra.Command, args []string) {
 	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
 	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
 	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
+	dryrun, _ := cmd.Flags().GetBool(DRYRUN_FLAG)
 
 	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
-	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy}
+	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy, DryRun: dryrun}
 
 	if params != nil {
 		envmap := make(map[string]string)

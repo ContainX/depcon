@@ -83,6 +83,11 @@ func (c *MarathonClient) ParseGroupFromString(r io.Reader, et encoding.EncoderTy
 		return nil, ErrorAppParamsMissing
 	}
 
+	if opts.DryRun {
+		fmt.Printf("Create Group :: DryRun :: Template Output\n\n%s", parsed)
+		os.Exit(0)
+	}
+
 	group := new(Group)
 	err = encoder.UnMarshalStr(parsed, &group)
 	if err != nil {

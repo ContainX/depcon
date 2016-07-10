@@ -60,7 +60,7 @@ type KillTasksScale struct {
 
 type AppKillTasksOptions struct {
 	Host  string `json:"host"`
-	Scale bool   `json:bool`
+	Scale bool   `json:"scale"`
 }
 
 type Versions struct {
