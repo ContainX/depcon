@@ -84,7 +84,7 @@ func listGroups(cmd *cobra.Command, args []string) {
 }
 
 func getGroup(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 
@@ -94,7 +94,7 @@ func getGroup(cmd *cobra.Command, args []string) {
 }
 
 func destroyGroup(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 	v, e := client(cmd).DestroyGroup(args[0])
@@ -102,7 +102,7 @@ func destroyGroup(cmd *cobra.Command, args []string) {
 }
 
 func createGroup(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 
@@ -168,7 +168,7 @@ func flattenGroup(g *marathon.Group, arr []*marathon.Group) []*marathon.Group {
 }
 
 func convertGroupFile(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 2) {
 		os.Exit(1)
 	}
 	if err := encoding.ConvertFile(args[0], args[1], &marathon.Groups{}); err != nil {

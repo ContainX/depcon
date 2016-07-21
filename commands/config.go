@@ -60,7 +60,7 @@ var configRemoveCmd = &cobra.Command{
 	Use:   "delete [name]",
 	Short: "Remove a defined environment by it's [name]",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		_, err := configFile.GetEnvironment(args[0])
@@ -91,7 +91,7 @@ qa, stage, prod, etc.  Name argument only accepts: ^[a-zA-Z0-9_-]*$
 
 NOTE: If this is the first environment then chrooting and column output are the default global options`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		name := args[0]
@@ -118,7 +118,7 @@ var configUpdateCmd = &cobra.Command{
 	Short: "Updates an existing environment",
 	Long:  `Every flag is option and only set flags will be updated wit the flag value`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 
@@ -165,7 +165,7 @@ var configDefaultCmd = &cobra.Command{
 	Use:   "default [name]",
 	Short: "Sets the default environment [name] to use (eg. -e envname can be eliminated when set and using default)",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		err := configFile.SetDefaultEnvironment(args[0])
@@ -181,7 +181,7 @@ var configOutputCmd = &cobra.Command{
 	Use:   "output [json | column]",
 	Short: "Sets the default output to use when -o flag is not specified.  Values are 'json, 'yaml' or 'column'",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		format := args[0]
@@ -200,7 +200,7 @@ var configRootServiceCmd = &cobra.Command{
 	Use:   "chroot [true | false]",
 	Short: "If true DepCon will root the service based on the current configuration environment. (eg. ./depcon mar app would be ./depcon app)",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		chroot := args[0]
@@ -223,7 +223,7 @@ var configRenameCmd = &cobra.Command{
 	Use:   "rename [oldName] [newName]",
 	Short: "Renames an environment from specified [oldName] to the [newName]",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 2) {
 			return
 		}
 		err := configFile.RenameEnvironment(args[0], args[1])
@@ -297,4 +297,11 @@ func defaultEnvToStr(b bool) string {
 		return "true"
 	}
 	return "-"
+}
+
+func Usage(c *cobra.Command) func() error {
+
+	return func() error {
+		return c.UsageFunc()(c)
+	}
 }

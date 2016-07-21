@@ -33,7 +33,7 @@ func init() {
 }
 
 func showLogCmd(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 
