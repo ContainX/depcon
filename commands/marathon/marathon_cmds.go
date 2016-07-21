@@ -70,3 +70,10 @@ func client(c *cobra.Command) marathon.Marathon {
 	}
 	return marathonClient
 }
+
+func Usage(c *cobra.Command) func() error {
+
+	return func() error {
+		return c.UsageFunc()(c)
+	}
+}

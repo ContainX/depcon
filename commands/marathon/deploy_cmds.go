@@ -35,7 +35,7 @@ var deployDeleteCmd = &cobra.Command{
 	Use:   "delete [deploymentId]",
 	Short: "Delete a deployment by [deploymentID]",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		force, _ := cmd.Flags().GetBool(FORCE_FLAG)
@@ -49,7 +49,7 @@ var deleteIfDeployingCmd = &cobra.Command{
 	Use:   "cancel-app [appid]",
 	Short: "Conditional Match: Delete a deployment based on the specified [appid]",
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		v, e := client(cmd).CancelAppDeployment(args[0], false)
@@ -100,7 +100,7 @@ func init() {
 
 func deployAppOrGroup(cmd *cobra.Command, args []string) {
 
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 

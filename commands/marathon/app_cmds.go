@@ -75,6 +75,9 @@ var appGetCmd = &cobra.Command{
 	Short: "Gets an application details by Id",
 	Long:  `Retrieves the specified [appliationId] application`,
 	Run: func(cmd *cobra.Command, args []string) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
+			return
+		}
 		v, e := client(cmd).GetApplication(args[0])
 		cli.Output(templateFor(templateFormat(T_APPLICATION, cmd), v), e)
 	},
@@ -85,7 +88,7 @@ var appVersionsCmd = &cobra.Command{
 	Short: "Gets the versions that have been deployed with Marathon for [applicationId]",
 	Long:  `Retrieves the list of versions for [appliationId] application`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+		if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 			return
 		}
 		v, e := client(cmd).ListVersions(args[0])
@@ -149,7 +152,7 @@ func init() {
 }
 
 func createApp(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 
@@ -239,7 +242,7 @@ func parseParamsFile(filename string) (map[string]string, error) {
 }
 
 func restartApp(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		os.Exit(1)
 	}
 
@@ -251,7 +254,7 @@ func restartApp(cmd *cobra.Command, args []string) {
 }
 
 func destroyApp(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		os.Exit(1)
 	}
 
@@ -261,7 +264,7 @@ func destroyApp(cmd *cobra.Command, args []string) {
 }
 
 func scaleApp(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 2) {
 		os.Exit(1)
 	}
 
@@ -276,7 +279,7 @@ func scaleApp(cmd *cobra.Command, args []string) {
 }
 
 func updateAppCPU(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 2) {
 		os.Exit(1)
 	}
 
@@ -293,7 +296,7 @@ func updateAppCPU(cmd *cobra.Command, args []string) {
 }
 
 func updateAppMemory(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 2) {
 		os.Exit(1)
 	}
 
@@ -310,7 +313,7 @@ func updateAppMemory(cmd *cobra.Command, args []string) {
 }
 
 func rollbackAppVersion(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		os.Exit(1)
 	}
 
@@ -331,7 +334,7 @@ func rollbackAppVersion(cmd *cobra.Command, args []string) {
 }
 
 func convertFile(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 2) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 2) {
 		os.Exit(1)
 	}
 	if err := encoding.ConvertFile(args[0], args[1], &marathon.Application{}); err != nil {

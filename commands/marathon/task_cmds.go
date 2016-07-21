@@ -62,7 +62,7 @@ func init() {
 }
 
 func appTasks(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 
@@ -83,7 +83,7 @@ func appTasks(cmd *cobra.Command, args []string) {
 }
 
 func appKillAllTasks(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 
@@ -95,7 +95,7 @@ func appKillAllTasks(cmd *cobra.Command, args []string) {
 }
 
 func appKillTask(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(cmd.Usage, args, 1) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
 		return
 	}
 	scale, _ := cmd.Flags().GetBool(SCALE_FLAG)
