@@ -5,6 +5,7 @@ import (
 	"github.com/ContainX/depcon/pkg/httpclient"
 	"github.com/ContainX/depcon/pkg/logger"
 	"github.com/ContainX/depcon/utils"
+	"sync"
 	"time"
 )
 
@@ -21,6 +22,7 @@ const (
 	API_QUEUE        = API_VERSION + "/queue"
 	API_INFO         = API_VERSION + "/info"
 	API_LEADER       = API_VERSION + "/leader"
+	API_EVENTS       = API_VERSION + "/events"
 	API_PING         = "ping"
 
 	DefaultTimeout = time.Duration(90) * time.Second
@@ -213,6 +215,15 @@ type Marathon interface {
 	// List Queue - tasks currently pending
 	ListQueue() (*Queue, error)
 
+	/** Event API */
+
+	// Creates an event stream listener which will filter based on the specified
+	// filter mask
+	CreateEventStreamListener(channel EventsChannel, filter int) error
+
+	// Removes the channel from the event stream listener
+	CloseEventStreamListener(channel EventsChannel)
+
 	/** Marathon Server Info API */
 
 	// Pings the Marathon host via the /ping endpoint
@@ -229,9 +240,16 @@ type Marathon interface {
 }
 
 type MarathonClient struct {
-	http httpclient.HttpClient
-	host string
-	opts *MarathonOptions
+	sync.RWMutex
+	http             httpclient.HttpClient
+	host             string
+	opts             *MarathonOptions
+	eventStreamState *EventStreamState
+}
+
+type EventStreamState struct {
+	channel EventsChannel
+	filter  int
 }
 
 type MarathonOptions struct {
