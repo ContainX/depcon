@@ -163,6 +163,11 @@ type TaskIPAddress struct {
 	Labels    map[string]string `json:"labels,omitempty"`
 }
 
+type IPAddress struct {
+	IPAddress string `json:"ipAddress"`
+	Protocol  string `json:"protocol"`
+}
+
 type Discovery struct {
 	Ports []*DiscoveryPorts `json:"ports,omitempty"`
 }
@@ -237,6 +242,21 @@ type Deploy struct {
 	Version        string   `json:"version"`
 	CurrentStep    int      `json:"currentStep"`
 	TotalSteps     int      `json:"totalSteps"`
+}
+
+type StepActions struct {
+	Actions []struct {
+		Type string `json:"type"`
+		App  string `json:"app"`
+	}
+}
+
+type DeploymentPlan struct {
+	ID       string  `json:"id"`
+	Version  string  `json:"version"`
+	Original *Group  `json:"original"`
+	Target   *Group  `json:"target"`
+	Steps    []*Step `json:"steps"`
 }
 
 type Step struct {

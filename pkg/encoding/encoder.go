@@ -16,7 +16,11 @@ const (
 	YAML
 )
 
-var ErrorInvalidExtension = errors.New("File extension must be [.json | .yml | .yaml]")
+var (
+	ErrorInvalidExtension = errors.New("File extension must be [.json | .yml | .yaml]")
+	defaultJSONEncoder    = newJSONEncoder()
+	defaultYAMLEncoder    = newYAMLEncoder()
+)
 
 type Encoder interface {
 	MarshalIndent(data interface{}) (string, error)
@@ -37,6 +41,14 @@ func NewEncoder(encoder EncoderType) (Encoder, error) {
 	default:
 		panic(fmt.Errorf("Unsupported encoder type"))
 	}
+}
+
+func DefaultJSONEncoder() Encoder {
+	return defaultJSONEncoder
+}
+
+func DefaultYAMLEncoder() Encoder {
+	return defaultYAMLEncoder
 }
 
 func NewEncoderFromFileExt(filename string) (Encoder, error) {

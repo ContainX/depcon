@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/ContainX/depcon/pkg/logger"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -114,21 +115,40 @@ func (h *HttpClient) httpCall(method Method, url string, data interface{}, resul
 	if data != nil {
 		body = h.convertBody(data)
 	}
-	return h.invoke(&Request{method: method, url: url, data: body, result: result})
+
+	r := &Request{
+		method: method,
+		url:    url,
+		data:   body,
+		result: result,
+	}
+
+	return h.invoke(r)
+}
+
+// Creates a net/http Request and associates default headers and authentication
+// parameters
+func (h *HttpClient) CreateHttpRequest(method, urlStr string, body io.Reader) (*http.Request, error) {
+	request, err := http.NewRequest(method, urlStr, body)
+	if err != nil {
+		return nil, err
+	}
+
+	AddDefaultHeaders(request)
+	AddAuthentication(h.config, request)
+
+	return request, nil
 }
 
 func (h *HttpClient) invoke(r *Request) *Response {
 
 	log.Debug("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
 
-	request, err := http.NewRequest(r.method.String(), r.url, strings.NewReader(r.data))
+	request, err := h.CreateHttpRequest(r.method.String(), r.url, strings.NewReader(r.data))
 
 	if err != nil {
 		return &Response{Error: err}
 	}
-
-	addHeaders(request)
-	addAuthentication(h.config, request)
 
 	req_start := time.Now()
 	response, err := h.http.Do(request)
@@ -191,13 +211,21 @@ func (h *HttpClient) convert(r *Request, content string) error {
 
 }
 
-func addHeaders(req *http.Request) {
+func AddDefaultHeaders(req *http.Request) {
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 }
 
-func addAuthentication(c HttpClientConfig, req *http.Request) {
+func AddAuthentication(c HttpClientConfig, req *http.Request) {
 	if c.HttpUser != "" {
 		req.SetBasicAuth(c.HttpUser, c.HttpPass)
 	}
+}
+
+func (h *HttpClient) Unwrap() *http.Client {
+	return h.http
+}
+
+func (h *HttpClient) Configuration() HttpClientConfig {
+	return h.config
 }
