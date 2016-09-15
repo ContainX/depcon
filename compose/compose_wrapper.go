@@ -6,6 +6,7 @@ import (
 	"github.com/ContainX/depcon/pkg/envsubst"
 	"github.com/docker/distribution/context"
 	"github.com/docker/libcompose/docker"
+	"github.com/docker/libcompose/docker/ctx"
 	"github.com/docker/libcompose/project"
 	"github.com/docker/libcompose/project/options"
 	"io/ioutil"
@@ -96,8 +97,8 @@ func (c *ComposeWrapper) Port(index int, proto, service, port string) error {
 }
 
 func (c *ComposeWrapper) PS(quiet bool) error {
-	if allInfo, err := c.project.Ps(context.Background(), quiet); err == nil {
-		os.Stdout.WriteString(allInfo.String(!quiet))
+	if allInfo, err := c.project.Ps(context.Background()); err == nil {
+		os.Stdout.WriteString(allInfo.String([]string{"Name", "Command", "State", "Ports"}, !quiet))
 	}
 	return nil
 }
@@ -125,8 +126,7 @@ func (c *ComposeWrapper) createDockerContext() (project.APIProject, error) {
 		}
 		c.context.ComposeFile = file.Name()
 	}
-
-	return docker.NewProject(&docker.Context{
+	return docker.NewProject(&ctx.Context{
 		Context: project.Context{
 			ComposeFiles: strings.Split(c.context.ComposeFile, ","),
 			ProjectName:  c.context.ProjectName,
