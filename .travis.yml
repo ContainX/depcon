@@ -1,9 +1,22 @@
 language: go
 go:
   - 1.7
+env:
+  - "PATH=$HOME/gopath/bin:$PATH"
+before_install:
+  - go get github.com/mitchellh/gox
+  - go get github.com/tcnksm/ghr
+  - go get github.com/stretchr/testify
+install:
+  - go get -v ./...
 script:
   - go test ./...
   - go build
-install:
-  - go get github.com/stretchr/testify
-  - go get -v ./...
+after_success:
+  - gox -osarch "darwin/amd64 linux/amd64 windows/amd64" -ldflags "-X main.VERSION=0.9.2-$TRAVIS_BUILD_NUMBER -X 'main.BUILD_DATE=$(date -u '+%Y-%m-%d %H:%M:%S')'" -output "dist/{{.Dir}}-{{.OS}}_{{.Arch}}"
+  - ghr --username ContainX --token $GITHUB_TOKEN --replace --prerelease --debug pre-release dist/
+
+# whitelist
+branches:
+  only:
+    - master

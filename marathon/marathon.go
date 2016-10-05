@@ -242,9 +242,13 @@ type Marathon interface {
 type MarathonClient struct {
 	sync.RWMutex
 	http             httpclient.HttpClient
-	host             string
+	hosts            []string
 	opts             *MarathonOptions
 	eventStreamState *EventStreamState
+}
+
+type MarathonHAClient struct {
+	*MarathonClient
 }
 
 type EventStreamState struct {
@@ -258,10 +262,20 @@ type MarathonOptions struct {
 }
 
 func NewMarathonClient(host, username, password string) Marathon {
-	return NewMarathonClientWithOpts(host, username, password, nil)
+	return createMarathonClient(username, password, nil, host)
 }
 
 func NewMarathonClientWithOpts(host, username, password string, opts *MarathonOptions) Marathon {
+	return createMarathonClient(username, password, opts, host)
+}
+
+// NewHAMarathonClientWithOpts creates a new Marathon client setup for HA mode.  All the specified
+// hosts will be healthchecked and healthy ones will be returned when this library requests a host
+func NewHAMarathonClientWithOpts(username, password string, opts *MarathonOptions, hosts ...string) Marathon {
+	return &MarathonHAClient{createMarathonClient(username, password, opts, hosts...)}
+}
+
+func createMarathonClient(username, password string, opts *MarathonOptions, hosts ...string) *MarathonClient {
 	httpConfig := httpclient.NewDefaultConfig()
 	httpConfig.HttpUser = username
 	httpConfig.HttpPass = password
@@ -270,13 +284,17 @@ func NewMarathonClientWithOpts(host, username, password string, opts *MarathonOp
 
 	c := new(MarathonClient)
 	c.http = *httpClient
-	c.host = host
+	c.hosts = hosts
 	c.opts = opts
 	return c
 }
 
+func (c *MarathonClient) getHost() string {
+	return c.hosts[0]
+}
+
 func (c *MarathonClient) marathonUrl(elements ...string) string {
-	return utils.BuildPath(c.host, elements)
+	return utils.BuildPath(c.getHost(), elements)
 }
 
 func initCreateOptions(opts *CreateOptions) *CreateOptions {

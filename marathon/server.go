@@ -36,8 +36,8 @@ func (c *MarathonClient) Ping() (*MarathonPing, error) {
 	if resp.Error != nil {
 		return nil, resp.Error
 	}
-	host := c.host
-	if u, err := url.Parse(c.host); err == nil {
+	host := c.getHost()
+	if u, err := url.Parse(host); err == nil {
 		host = u.Host
 	}
 
