@@ -78,24 +78,28 @@ the other for delegation to the origin (app or group)
 }
 
 func init() {
+	addDeployCreateFlags(deployCreateCmd)
+	deployDeleteCmd.Flags().BoolP(FORCE_FLAG, "f", false, "If set to true, then the deployment is still canceled but no rollback deployment is created.")
+	deployCmd.AddCommand(deployCreateCmd, deployListCmd, deployDeleteCmd, deleteIfDeployingCmd)
+}
 
-	deployCreateCmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for group to become healthy")
-	deployCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, DEFAULT_CTX, "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
-	deployCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
-	deployCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this app (if exists) and use this revision")
-	deployCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
+func addDeployCreateFlags(cmd *cobra.Command) {
+	cmd.Flags().BoolP(WAIT_FLAG, "w", false, "Wait for deployment to become healthy")
+	cmd.Flags().String(TEMPLATE_CTX_FLAG, DEFAULT_CTX, "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
+	cmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
+	cmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this app (if exists) and use this revision")
+	cmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
                         CAUTION: This can be dangerous if some params define versions or other required information.`)
-	deployCreateCmd.Flags().StringP(ENV_FILE_FLAG, "c", "", `Adds a file with a param(s) that can be used for substitution.
+	cmd.Flags().StringP(ENV_FILE_FLAG, "c", "", `Adds a file with a param(s) that can be used for substitution.
 						These take precidence over env vars`)
-	deployCreateCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
+	cmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
                   eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
                   These take precidence over env vars`)
 
-	deployCreateCmd.Flags().Bool(DRYRUN_FLAG, false, "Preview the parsed template - don't actually deploy")
+	cmd.Flags().Bool(DRYRUN_FLAG, false, "Preview the parsed template - don't actually deploy")
 
-	deployCreateCmd.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
-	deployDeleteCmd.Flags().BoolP(FORCE_FLAG, "f", false, "If set to true, then the deployment is still canceled but no rollback deployment is created.")
-	deployCmd.AddCommand(deployCreateCmd, deployListCmd, deployDeleteCmd, deleteIfDeployingCmd)
+	cmd.Flags().DurationP(TIMEOUT_FLAG, "t", time.Duration(0), "Max duration to wait for application health (ex. 90s | 2m). See docs for ordering")
+
 }
 
 func deployAppOrGroup(cmd *cobra.Command, args []string) {

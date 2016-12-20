@@ -12,9 +12,11 @@ import (
 )
 
 const (
-	STDERR_FLAG = "stderr"
-	FOLLOW_FLAG = "follow"
-	POLL_FLAG   = "poll"
+	STDERR_FLAG    = "stderr"
+	FOLLOW_FLAG    = "follow"
+	POLL_FLAG      = "poll"
+	COMPLETED_FLAG = "completed"
+	LATEST_FLAG    = "latest"
 )
 
 var logCmd = &cobra.Command{
@@ -30,6 +32,9 @@ func init() {
 	logCmd.Flags().BoolP(STDERR_FLAG, "s", false, "Show StdErr vs default StdOut log")
 	logCmd.Flags().BoolP(FOLLOW_FLAG, "f", false, "Tail/Follow log")
 	logCmd.Flags().IntP(POLL_FLAG, "p", 5, "Log poll time (duration) in seconds")
+	logCmd.Flags().BoolP(COMPLETED_FLAG, "c", false, "Use completed tasks (default: running tasks)")
+	logCmd.Flags().BoolP(LATEST_FLAG, "l", false, "Use latest task (single) (default: all tasks)")
+
 }
 
 func showLogCmd(cmd *cobra.Command, args []string) {
@@ -39,12 +44,17 @@ func showLogCmd(cmd *cobra.Command, args []string) {
 
 	host := getMesosHost()
 	logType := ml.STDOUT
+	completedTasks, _ := cmd.Flags().GetBool(COMPLETED_FLAG)
+	latestTasks, _ := cmd.Flags().GetBool(LATEST_FLAG)
 
 	if stderr, _ := cmd.Flags().GetBool(STDERR_FLAG); stderr {
 		logType = ml.STDERR
 	}
 
-	c, _ := ml.NewMesosClient(host, 5050)
+	c, _ := ml.NewMesosClientWithOptions(host, 5050, &ml.MesosClientOptions{
+		SearchCompletedTasks: completedTasks,
+		ShowLatestOnly:       latestTasks,
+	})
 	appId := getMesosAppIdentifier(cmd, c, args[0])
 
 	if follow, _ := cmd.Flags().GetBool(FOLLOW_FLAG); follow {
@@ -77,21 +87,7 @@ func showLogCmd(cmd *cobra.Command, args []string) {
 }
 
 func getMesosAppIdentifier(cmd *cobra.Command, c *ml.MesosClient, appId string) string {
-	tasks, err := client(cmd).GetTasks(appId)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if len(tasks) > 0 {
-		name, err := c.GetAppNameForTaskID(tasks[0].ID)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return name
-	}
-
-	log.Fatal("Currently no tasks found for application: %s\n", appId)
-	return ""
+	return c.GetAppNameForPath(appId)
 }
 
 func getMesosHost() string {

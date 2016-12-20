@@ -33,3 +33,4 @@ build/
 .DS_Store
 samples/*
 .vscode
+dist/

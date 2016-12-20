@@ -47,6 +47,8 @@ const (
 	EventIDDeploymentStepFailed
 	// EventIDAppTerminated is the event listener ID for the corresponding event.
 	EventIDAppTerminated
+	// EventIDUnHealthyTaskKilled
+	EventIDUnHealthyTaskKilled
 	// EventIIDDeployment is comprised of all deployment relayed events
 	EventIDDeployments = EventIDDeploymentSuccess | EventIDDeploymentFailed | EventIDDeploymentInfo | EventIDDeploymentStepSuccess | EventIDDeploymentStepFailed
 	//EventIDApplications comprises all listener IDs for application events.
@@ -88,6 +90,7 @@ func init() {
 		"deployment_step_success":     EventIDDeploymentStepSuccess,
 		"deployment_step_failure":     EventIDDeploymentStepFailed,
 		"app_terminated_event":        EventIDAppTerminated,
+		"unhealthy_task_kill_event":   EventIDUnHealthyTaskKilled,
 	}
 }
 
@@ -240,6 +243,17 @@ type EventHealthCheckChanged struct {
 	Alive     bool   `json:"alive"`
 }
 
+// EventHealthCheckChanged describes a 'unhealthy_task_kill_event' event.
+type EventUnHealthyTaskKilled struct {
+	EventType string `json:"eventType"`
+	Timestamp string `json:"timestamp,omitempty"`
+	AppID     string `json:"appId"`
+	TaskID    string `json:"taskId"`
+	Version   string `json:"version,omitempty"`
+	Host      string `json:"host"`
+	Reason    string `json:"reason"`
+}
+
 /* --- Deployments --- */
 
 // EventGroupChangeSuccess describes a 'group_change_success' event.
@@ -345,7 +359,10 @@ func (c *MarathonClient) GetEvent(eventType string) (*Event, error) {
 			event.Event = new(EventDeploymentStepFailure)
 		case "app_terminated_event":
 			event.Event = new(EventAppTerminated)
+		case "unhealthy_task_kill_event":
+			event.Event = new(EventUnHealthyTaskKilled)
 		}
+
 		return event, nil
 	}
 

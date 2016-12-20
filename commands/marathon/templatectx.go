@@ -4,7 +4,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"reflect"
 	"text/template"
 
 	"github.com/ContainX/depcon/pkg/encoding"
@@ -18,40 +17,7 @@ const (
 )
 
 // Templated based Functions
-var Funcs = template.FuncMap{
-	"default": func(args ...interface{}) interface{} {
-		arg := args[0]
-		if len(args) < 2 {
-			return arg
-		}
-		value := args[1]
-
-		defer recovery()
-
-		v := reflect.ValueOf(value)
-		switch v.Kind() {
-		case reflect.String, reflect.Slice, reflect.Array, reflect.Map:
-			if v.Len() == 0 {
-				return arg
-			}
-		case reflect.Bool:
-			if !v.Bool() {
-				return arg
-			}
-		default:
-			return value
-		}
-
-		return value
-	},
-	"isEnv": func(value string) bool {
-		if len(value) > 0 {
-			current := strings.ToLower(viper.GetString(ENV_NAME))
-			return current == strings.ToLower(value)
-		}
-		return false
-	},
-}
+var Funcs = FuncMap()
 
 type TemplateContext struct {
 	Environments map[string]*TemplateEnvironment `json:"environments,omitempty"`

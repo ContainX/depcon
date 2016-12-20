@@ -1,8 +1,6 @@
 package marathon
 
 import (
-	"bytes"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -36,7 +34,8 @@ var appCmd = &cobra.Command{
 var appCreateCmd = &cobra.Command{
 	Use:   "create [file(.json | .yaml)]",
 	Short: "Create a new application with the [file(.json | .yaml)]",
-	Run:   createApp,
+	Long:  "Creates a new App in the cluster.  This is an alias for the 'deploy create' command",
+	Run:   deployAppOrGroup,
 }
 
 var appUpdateCmd = &cobra.Command{
@@ -134,84 +133,11 @@ func init() {
 	appCmd.AddCommand(appListCmd, appGetCmd, logCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, bgCmd, appRestartCmd, appScaleCmd, appVersionsCmd, appConvertFileCmd)
 
 	// Create Flags
-	appCreateCmd.Flags().String(TEMPLATE_CTX_FLAG, "", "Provides data per environment in JSON form to do a first pass parse of descriptor as template")
-	appCreateCmd.Flags().BoolP(FORCE_FLAG, "f", false, "Force deployment (updates application if it already exists)")
-	appCreateCmd.Flags().Bool(STOP_DEPLOYS_FLAG, false, "Stop an existing deployment for this app (if exists) and use this revision")
-	appCreateCmd.Flags().BoolP(IGNORE_MISSING, "i", false, `Ignore missing ${PARAMS} that are declared in app config that could not be resolved
-                        CAUTION: This can be dangerous if some params define versions or other required information.`)
-	appCreateCmd.Flags().StringP(ENV_FILE_FLAG, "c", "", `Adds a file with a param(s) that can be used for substitution.
-						These take precidence over env vars`)
-	appCreateCmd.Flags().StringSliceP(PARAMS_FLAG, "p", nil, `Adds a param(s) that can be used for substitution.
-                  eg. -p MYVAR=value would replace ${MYVAR} with "value" in the application file.
-                  These take precidence over env vars`)
+	addDeployCreateFlags(appCreateCmd)
 
-	appCreateCmd.Flags().Bool(DRYRUN_FLAG, false, "Preview the parsed template - don't actually deploy")
 	appListCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{range .Apps}}{{ .Container.Docker.Image }}{{end}}'")
 	appGetCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{ .ID }}'")
-	applyCommonAppFlags(appCreateCmd, appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd)
-}
-
-func createApp(cmd *cobra.Command, args []string) {
-	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
-		return
-	}
-
-	wait, _ := cmd.Flags().GetBool(WAIT_FLAG)
-	force, _ := cmd.Flags().GetBool(FORCE_FLAG)
-	paramsFile, _ := cmd.Flags().GetString(ENV_FILE_FLAG)
-	params, _ := cmd.Flags().GetStringSlice(PARAMS_FLAG)
-	ignore, _ := cmd.Flags().GetBool(IGNORE_MISSING)
-	stop_deploy, _ := cmd.Flags().GetBool(STOP_DEPLOYS_FLAG)
-	tempctx, _ := cmd.Flags().GetString(TEMPLATE_CTX_FLAG)
-	dryrun, _ := cmd.Flags().GetBool(DRYRUN_FLAG)
-
-	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy, DryRun: dryrun}
-
-	if paramsFile != "" {
-		envParams, _ := parseParamsFile(paramsFile)
-		options.EnvParams = envParams
-	} else {
-		options.EnvParams = make(map[string]string)
-	}
-
-	if params != nil {
-		for _, p := range params {
-			if strings.Contains(p, "=") {
-				v := strings.Split(p, "=")
-				options.EnvParams[v[0]] = v[1]
-			}
-		}
-	}
-
-	var result *marathon.Application = nil
-	var e error
-
-	if TemplateExists(tempctx) {
-		b := &bytes.Buffer{}
-
-		r, err := LoadTemplateContext(tempctx)
-		if err != nil {
-			exitWithError(err)
-		}
-
-		if err := r.Transform(b, args[0]); err != nil {
-			exitWithError(err)
-		}
-		result, e = client(cmd).CreateApplicationFromString(args[0], b.String(), options)
-	} else {
-		result, e = client(cmd).CreateApplicationFromFile(args[0], options)
-	}
-	if e != nil && e == marathon.ErrorAppExists {
-		exitWithError(errors.New(fmt.Sprintf("%s, consider using the --force flag to update when an application exists", e.Error())))
-	}
-
-	if result == nil {
-		if e != nil {
-			fmt.Printf("[ERROR] %s\n", e.Error())
-		}
-		os.Exit(1)
-	}
-	cli.Output(templateFor(T_APPLICATION, result), e)
+	applyCommonAppFlags(appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd)
 }
 
 func exitWithError(err error) {
