@@ -8,7 +8,6 @@ import (
 	"github.com/ContainX/depcon/pkg/cli"
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/cobra"
-	"io/ioutil"
 	"os"
 	"strings"
 	"time"
@@ -177,25 +176,15 @@ func outputDeployment(result interface{}, e error) {
 }
 
 func parseDescriptor(tempctx, filename string) string {
-	if TemplateExists(tempctx) {
-		b := &bytes.Buffer{}
+	b := &bytes.Buffer{}
 
-		r, err := LoadTemplateContext(tempctx)
-		if err != nil {
-			exitWithError(err)
-		}
-
-		if err := r.Transform(b, filename); err != nil {
-			exitWithError(err)
-		}
-		return b.String()
-	} else {
-		if b, err := ioutil.ReadFile(filename); err != nil {
-			exitWithError(err)
-		} else {
-			return string(b)
-
-		}
+	r, err := LoadTemplateContext(tempctx)
+	if err != nil {
+		exitWithError(err)
 	}
-	return ""
+
+	if err := r.Transform(b, filename); err != nil {
+		exitWithError(err)
+	}
+	return b.String()
 }

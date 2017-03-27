@@ -6,6 +6,7 @@ import (
 	"os"
 	"text/template"
 
+	"fmt"
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/spf13/viper"
 	"path/filepath"
@@ -13,7 +14,8 @@ import (
 )
 
 const (
-	DefaultEnv = "-"
+	DefaultEnv    = "-"
+	ContextErrFmt = "Error parsing template context: %s - %s"
 )
 
 // Templated based Functions
@@ -108,6 +110,12 @@ func TemplateExists(filename string) bool {
 }
 
 func LoadTemplateContext(filename string) (*TemplateContext, error) {
+	// Return empty context if non-exists
+	if !TemplateExists(filename) {
+		fmt.Println("Ignoring context file (not found) - template-context.json")
+		return &TemplateContext{Environments: make(map[string]*TemplateEnvironment)}, nil
+	}
+
 	ctx, err := os.Open(filename)
 	if err != nil {
 		return nil, err
@@ -115,13 +123,13 @@ func LoadTemplateContext(filename string) (*TemplateContext, error) {
 
 	encoder, err := encoding.NewEncoder(encoding.JSON)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(ContextErrFmt, filename, err.Error())
 	}
 
 	result := &TemplateContext{Environments: make(map[string]*TemplateEnvironment)}
 
 	if err := encoder.UnMarshal(ctx, result); err != nil {
-		return nil, err
+		return nil, fmt.Errorf(ContextErrFmt, filename, err.Error())
 	}
 	return result, nil
 }
