@@ -39,6 +39,10 @@ func AddMarathonToCmd(rc *cobra.Command, c *cliconfig.ConfigFile) {
 	rc.AddCommand(marathonCmd)
 }
 
+func AddToMarathonCommand(child *cobra.Command) {
+	marathonCmd.AddCommand(child)
+}
+
 // Jails (chroots) marathon by including only it's sub commands
 // when we only have a single environment declared and already know the cluster type
 func AddJailedMarathonToCmd(rc *cobra.Command, c *cliconfig.ConfigFile) {

@@ -1,12 +1,13 @@
 package marathon
 
 import (
-	"github.com/ContainX/depcon/marathon/bluegreen"
-	"github.com/ContainX/depcon/pkg/cli"
-	"github.com/spf13/cobra"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/ContainX/depcon/marathon/bluegreen"
+	"github.com/ContainX/depcon/pkg/cli"
+	"github.com/spf13/cobra"
 )
 
 const (
