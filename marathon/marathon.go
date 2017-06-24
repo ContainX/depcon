@@ -117,6 +117,10 @@ type Marathon interface {
 	// {instances} - instances to scale to
 	ScaleApplication(id string, instances int) (*DeploymentID, error)
 
+	// Pause an Application by Id
+	// {id} - application identifier
+	PauseApplication(id string) (*DeploymentID, error)
+
 	// List application versions that have been deployed to Marathon
 	// {id} - the application identifier
 	ListVersions(id string) (*Versions, error)

@@ -115,6 +115,12 @@ var appScaleCmd = &cobra.Command{
 	Run:   scaleApp,
 }
 
+var appPauseCmd = &cobra.Command{
+	Use:   "pause [applicationId]",
+	Short: "Suspends the [applicationId",
+	Run:   pauseApp,
+}
+
 var appRollbackCmd = &cobra.Command{
 	Use:   "rollback [applicationId] (version)",
 	Short: "Rolls an [appliationId] to a specific (version : optional)",
@@ -130,14 +136,14 @@ var appConvertFileCmd = &cobra.Command{
 
 func init() {
 	appUpdateCmd.AddCommand(appUpdateCPUCmd, appUpdateMemoryCmd)
-	appCmd.AddCommand(appListCmd, appGetCmd, logCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, bgCmd, appRestartCmd, appScaleCmd, appVersionsCmd, appConvertFileCmd)
+	appCmd.AddCommand(appListCmd, appGetCmd, logCmd, appCreateCmd, appUpdateCmd, appDestroyCmd, appRollbackCmd, bgCmd, appRestartCmd, appScaleCmd, appPauseCmd, appVersionsCmd, appConvertFileCmd)
 
 	// Create Flags
 	addDeployCreateFlags(appCreateCmd)
 
 	appListCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{range .Apps}}{{ .Container.Docker.Image }}{{end}}'")
 	appGetCmd.Flags().String(FORMAT_FLAG, "", "Custom output format. Example: '{{ .ID }}'")
-	applyCommonAppFlags(appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd)
+	applyCommonAppFlags(appUpdateCPUCmd, appUpdateMemoryCmd, appRollbackCmd, appDestroyCmd, appRestartCmd, appScaleCmd, appPauseCmd)
 }
 
 func exitWithError(err error) {
@@ -200,6 +206,16 @@ func scaleApp(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	v, e := client(cmd).ScaleApplication(args[0], instances)
+	cli.Output(templateFor(T_DEPLOYMENT_ID, v), e)
+	waitForDeploymentIfFlagged(cmd, v.DeploymentID)
+}
+
+func pauseApp(cmd *cobra.Command, args []string) {
+	if cli.EvalPrintUsage(Usage(cmd), args, 1) {
+		os.Exit(1)
+	}
+
+	v, e := client(cmd).PauseApplication(args[0])
 	cli.Output(templateFor(T_DEPLOYMENT_ID, v), e)
 	waitForDeploymentIfFlagged(cmd, v.DeploymentID)
 }

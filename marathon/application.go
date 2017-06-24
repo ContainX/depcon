@@ -243,6 +243,18 @@ func (c *MarathonClient) RestartApplication(id string, force bool) (*DeploymentI
 	return deploymentId, nil
 }
 
+func (c *MarathonClient) PauseApplication(id string) (*DeploymentID, error) {
+	log.Info("Suspending Application '%s'", id)
+	deploymentId := new(DeploymentID)
+
+	uri := fmt.Sprintf("%s?scale=true&force=true", c.marathonUrl(API_APPS, id, "tasks"))
+	resp := c.http.HttpDelete(uri, nil, deploymentId)
+	if resp.Error != nil {
+		return nil, resp.Error
+	}
+	return deploymentId, nil
+}
+
 func (c *MarathonClient) ScaleApplication(id string, instances int) (*DeploymentID, error) {
 	log.Info("Scale Application '%s' to %v instances", id, instances)
 
