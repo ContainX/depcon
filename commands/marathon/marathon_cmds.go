@@ -69,7 +69,7 @@ func client(c *cobra.Command) marathon.Marathon {
 		}
 		opts.TLSAllowInsecure = insecure
 
-		marathonClient = marathon.NewMarathonClientWithOpts(mc.HostUrl, mc.Username, mc.Password, opts)
+		marathonClient = marathon.NewMarathonClientWithOpts(mc.HostUrl, mc.Username, mc.Password, mc.Token, opts)
 
 	}
 	return marathonClient

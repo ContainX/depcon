@@ -50,6 +50,16 @@ func getPasswordWithVerify() string {
 	return pass1
 }
 
+func getTokenWithVerify() string {
+	token := getPassword("Token: ")
+	token2 := getPassword("Verify Token: ")
+	if token != token2 {
+		fmt.Println("Token and Verify Token don't match\n")
+		return getTokenWithVerify()
+	}
+	return token
+}
+
 // Asks the user for the remote URI of the Marathon service
 func getMarathonURL(count int) string {
 	if count > 5 {
@@ -86,6 +96,11 @@ func createEnvironment() *ServiceConfig {
 		service.Username = getAlpaNumDash("Username")
 		service.Password = getPasswordWithVerify()
 	}
+
+	if getBoolAnswer("Token Required", false) {
+		service.Token = getTokenWithVerify()
+	}
+
 	fmt.Println("")
 	return &service
 }

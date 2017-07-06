@@ -4,6 +4,7 @@ package httpclient
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/ContainX/depcon/pkg/logger"
 	"io"
@@ -42,6 +43,8 @@ type HttpClientConfig struct {
 	HttpUser string
 	// Http Basic Auth Password
 	HttpPass string
+	// Http Authorization Token
+	HttpToken string
 	// Request timeout
 	RequestTimeout int
 	// TLS Insecure Skip Verify
@@ -217,6 +220,10 @@ func AddDefaultHeaders(req *http.Request) {
 }
 
 func AddAuthentication(c HttpClientConfig, req *http.Request) {
+	if c.HttpToken != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("token=%v", c.HttpToken))
+		return
+	}
 	if c.HttpUser != "" {
 		req.SetBasicAuth(c.HttpUser, c.HttpPass)
 	}

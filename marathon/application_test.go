@@ -36,7 +36,7 @@ func TestListApplications(t *testing.T) {
 	s := mockrest.StartNewWithFile(AppsFolder + "list_apps_response.json")
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	apps, err := c.ListApplications()
 
 	assert.Nil(t, err, "Error response was not expected")
@@ -47,7 +47,7 @@ func TestGetApplication(t *testing.T) {
 	s := mockrest.StartNewWithFile(AppsFolder + "get_app_response.json")
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	app, err := c.GetApplication("storage/redis-x")
 
 	assert.Nil(t, err, "Error response was not expected")
@@ -61,7 +61,7 @@ func TestHasApplication(t *testing.T) {
 	s := mockrest.StartNewWithFile(AppsFolder + "get_app_response.json")
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	ok, err := c.HasApplication("/storage/redis-x")
 
 	assert.Nil(t, err, "Error response was not expected")
@@ -72,7 +72,7 @@ func TestHasApplicationInvalid(t *testing.T) {
 	s := mockrest.StartNewWithStatusCode(404)
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	ok, _ := c.HasApplication("/storage/redis-invalid")
 
 	assert.Equal(t, false, ok)
@@ -82,7 +82,7 @@ func TestDestroyApplication(t *testing.T) {
 	s := mockrest.StartNewWithFile(CommonFolder + "deployid_response.json")
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	depId, err := c.DestroyApplication("/someapp")
 	assert.Nil(t, err, "Error response was not expected")
 	assert.Equal(t, "5ed4c0c5-9ff8-4a6f-a0cd-f57f59a34b43", depId.DeploymentID)
@@ -92,7 +92,7 @@ func TestRestartApplication(t *testing.T) {
 	s := mockrest.StartNewWithFile(CommonFolder + "deployid_response.json")
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	depId, err := c.DestroyApplication("/someapp")
 	assert.Nil(t, err, "Error response was not expected")
 	assert.Equal(t, "5ed4c0c5-9ff8-4a6f-a0cd-f57f59a34b43", depId.DeploymentID)
@@ -102,7 +102,7 @@ func TestScaleApplication(t *testing.T) {
 	s := mockrest.StartNewWithFile(CommonFolder + "deployid_response.json")
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	depId, err := c.ScaleApplication("/someapp", 5)
 	assert.Nil(t, err, "Error response was not expected")
 	assert.Equal(t, "5ed4c0c5-9ff8-4a6f-a0cd-f57f59a34b43", depId.DeploymentID)
@@ -112,7 +112,7 @@ func TestCreateApplicationInvalidAppId(t *testing.T) {
 	s := mockrest.StartNewWithStatusCode(422)
 	defer s.Stop()
 
-	c := NewMarathonClient(s.URL, "", "")
+	c := NewMarathonClient(s.URL, "", "", "")
 	_, err := c.CreateApplication(NewApplication("/someapp"), false, false)
 
 	assert.NotNil(t, err, "Expecting Error")

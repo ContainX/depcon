@@ -265,24 +265,25 @@ type MarathonOptions struct {
 	TLSAllowInsecure bool
 }
 
-func NewMarathonClient(host, username, password string) Marathon {
-	return createMarathonClient(username, password, nil, host)
+func NewMarathonClient(host, username, password, token string) Marathon {
+	return createMarathonClient(username, password, token, nil, host)
 }
 
-func NewMarathonClientWithOpts(host, username, password string, opts *MarathonOptions) Marathon {
-	return createMarathonClient(username, password, opts, host)
+func NewMarathonClientWithOpts(host, username, password, token string, opts *MarathonOptions) Marathon {
+	return createMarathonClient(username, password, token, opts, host)
 }
 
 // NewHAMarathonClientWithOpts creates a new Marathon client setup for HA mode.  All the specified
 // hosts will be healthchecked and healthy ones will be returned when this library requests a host
-func NewHAMarathonClientWithOpts(username, password string, opts *MarathonOptions, hosts ...string) Marathon {
-	return &MarathonHAClient{createMarathonClient(username, password, opts, hosts...)}
+func NewHAMarathonClientWithOpts(username, password, token string, opts *MarathonOptions, hosts ...string) Marathon {
+	return &MarathonHAClient{createMarathonClient(username, password, token, opts, hosts...)}
 }
 
-func createMarathonClient(username, password string, opts *MarathonOptions, hosts ...string) *MarathonClient {
+func createMarathonClient(username, password, token string, opts *MarathonOptions, hosts ...string) *MarathonClient {
 	httpConfig := httpclient.NewDefaultConfig()
 	httpConfig.HttpUser = username
 	httpConfig.HttpPass = password
+	httpConfig.HttpToken = token
 
 	if opts != nil && opts.TLSAllowInsecure {
 		httpConfig.TLSInsecureSkipVerify = opts.TLSAllowInsecure

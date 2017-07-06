@@ -21,6 +21,7 @@ const (
 	URL_FLAG      = "url"
 	USER_FLAG     = "user"
 	PASSWORD_FLAG = "pass"
+	TOKEN_FLAG    = "token"
 )
 
 type ConfigEnvironments struct {
@@ -103,12 +104,13 @@ NOTE: If this is the first environment then chrooting and column output are the 
 		url, _ := cmd.Flags().GetString(URL_FLAG)
 		user, _ := cmd.Flags().GetString(USER_FLAG)
 		pass, _ := cmd.Flags().GetString(PASSWORD_FLAG)
+		token, _ := cmd.Flags().GetString(TOKEN_FLAG)
 
 		if err := cliconfig.ValidateMarathonURL(url); err != nil {
 			cli.Output(nil, err)
 		}
 
-		configFile.AddMarathonEnvironment(name, url, user, pass)
+		configFile.AddMarathonEnvironment(name, url, user, pass, token)
 		fmt.Printf("\nEnvironment: %s - was added successfully\n", name)
 	},
 }
@@ -130,6 +132,7 @@ var configUpdateCmd = &cobra.Command{
 		url, _ := cmd.Flags().GetString(URL_FLAG)
 		user, _ := cmd.Flags().GetString(USER_FLAG)
 		pass, _ := cmd.Flags().GetString(PASSWORD_FLAG)
+		token, _ := cmd.Flags().GetString(TOKEN_FLAG)
 
 		if url != "" {
 			if err := cliconfig.ValidateMarathonURL(url); err != nil {
@@ -143,6 +146,10 @@ var configUpdateCmd = &cobra.Command{
 		if pass != "" {
 			ce.Marathon.Password = pass
 		}
+		if token != "" {
+			ce.Marathon.Token = token
+		}
+
 		if err := configFile.Save(); err != nil {
 			cli.Output(nil, err)
 		}
@@ -239,10 +246,12 @@ func init() {
 	configAddMarathonCmd.Flags().String(URL_FLAG, "http://localhost:8080", "Marathon URL (eg. http://host:port)")
 	configAddMarathonCmd.Flags().String(USER_FLAG, "", "Optional: username if authentication is enabled")
 	configAddMarathonCmd.Flags().String(PASSWORD_FLAG, "", "Optional: password if authentication is enabled")
+	configAddMarathonCmd.Flags().String(TOKEN_FLAG, "", "Optional: token if authorization is enabled")
 
 	configUpdateCmd.Flags().String(URL_FLAG, "", "Marathon URL (eg. http://host:port)")
 	configUpdateCmd.Flags().String(USER_FLAG, "", "Optional: username if authentication is enabled")
 	configUpdateCmd.Flags().String(PASSWORD_FLAG, "", "Optional: password if authentication is enabled")
+	configUpdateCmd.Flags().String(TOKEN_FLAG, "", "Optional: token if authorization is enabled")
 
 	configEnvCmd.AddCommand(configAddCmd, configAddMarathonCmd, configListCmd, configDefaultCmd, configRenameCmd, configUpdateCmd, configRemoveCmd)
 	configCmd.AddCommand(configEnvCmd, configOutputCmd, configRootServiceCmd)
@@ -278,7 +287,7 @@ func (e ConfigEnvironments) toEnvironmentMap() []*EnvironmentSummary {
 			Name:    k,
 			EnvType: v.EnvironmentType(),
 			HostURL: sc.HostUrl,
-			Auth:    sc.Username != "",
+			Auth:    sc.Username != "" || sc.Token != "",
 			Default: k == e.DefaultEnv,
 		})
 	}
