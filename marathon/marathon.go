@@ -284,6 +284,10 @@ func createMarathonClient(username, password string, opts *MarathonOptions, host
 	httpConfig.HttpUser = username
 	httpConfig.HttpPass = password
 
+	if opts != nil && opts.TLSAllowInsecure {
+		httpConfig.TLSInsecureSkipVerify = opts.TLSAllowInsecure
+	}
+
 	httpClient := httpclient.NewHttpClient(*httpConfig)
 
 	c := new(MarathonClient)
