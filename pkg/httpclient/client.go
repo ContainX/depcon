@@ -145,7 +145,7 @@ func (h *HttpClient) CreateHttpRequest(method, urlStr string, body io.Reader) (*
 
 func (h *HttpClient) invoke(r *Request) *Response {
 
-	log.Debug("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
+	log.Debugf("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
 
 	request, err := h.CreateHttpRequest(r.method.String(), r.url, strings.NewReader(r.data))
 
@@ -172,7 +172,7 @@ func (h *HttpClient) invoke(r *Request) *Response {
 		content = string(rc)
 	}
 
-	log.Debug("Status: %v, RAW: %s", status, content)
+	log.Debugf("Status: %v, RAW: %s", status, content)
 
 	if status >= 200 && status < 300 {
 		if r.result != nil {

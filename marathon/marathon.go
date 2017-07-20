@@ -87,7 +87,8 @@ type Marathon interface {
 	// Updates an Application
 	// {app} - the application structure containing configuration
 	// {wait} - if true will attempt to wait until the application updated is running
-	UpdateApplication(app *Application, wait bool) (*Application, error)
+	// {force} - if true and a application already exists an update will be performed.
+	UpdateApplication(app *Application, wait, force bool) (*Application, error)
 
 	// List all applications on a Marathon cluster
 	ListApplications() (*Applications, error)

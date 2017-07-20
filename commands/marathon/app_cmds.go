@@ -233,7 +233,7 @@ func updateAppCPU(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	update := marathon.NewApplication(args[0]).CPU(cpu)
-	v, e := client(cmd).UpdateApplication(update, wait)
+	v, e := client(cmd).UpdateApplication(update, wait, false)
 	cli.Output(templateFor(T_APPLICATION, v), e)
 }
 
@@ -250,7 +250,7 @@ func updateAppMemory(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 	update := marathon.NewApplication(args[0]).Memory(mem)
-	v, e := client(cmd).UpdateApplication(update, wait)
+	v, e := client(cmd).UpdateApplication(update, wait, false)
 	cli.Output(templateFor(T_APPLICATION, v), e)
 }
 
@@ -271,7 +271,7 @@ func rollbackAppVersion(cmd *cobra.Command, args []string) {
 		}
 	}
 	update := marathon.NewApplication(args[0]).RollbackVersion(version)
-	v, e := client(cmd).UpdateApplication(update, wait)
+	v, e := client(cmd).UpdateApplication(update, wait, false)
 	cli.Output(templateFor(T_APPLICATION, v), e)
 }
 
