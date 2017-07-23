@@ -15,7 +15,7 @@
   },
   "debs": {
       "metadata": {
-        "description": "Depcon - Mesos/Marathon, Kubernetes, Compose and ECS deployer",
+        "description": "Depcon - Mesos/Marathon deployer",
         "maintainer": "Jeremy Unruh (https://github.com/gondor)"
       }
     }
