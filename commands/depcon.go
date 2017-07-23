@@ -20,6 +20,7 @@ const (
 	EnvMarathonHost = "MARATHON_HOST"
 	EnvMarathonUser = "MARATHON_USER"
 	EnvMarathonPass = "MARATHON_PASS"
+	EnvMarathonToken = "MARATHON_TOKEN"
 	FlagEnv         = "env"
 	ViperEnv        = "env_name"
 	EnvHelp         = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
@@ -93,7 +94,7 @@ func Execute() {
 }
 
 func marathonConfigFromEnv() *cliconfig.ConfigFile {
-	return cliconfig.CreateMemoryMarathonConfig(os.Getenv(EnvMarathonHost), os.Getenv(EnvMarathonUser), os.Getenv(EnvMarathonPass))
+	return cliconfig.CreateMemoryMarathonConfig(os.Getenv(EnvMarathonHost), os.Getenv(EnvMarathonUser), os.Getenv(EnvMarathonPass), os.Getenv(EnvMarathonToken))
 }
 
 func determineEnvironment() string {

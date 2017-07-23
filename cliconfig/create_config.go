@@ -16,7 +16,7 @@ we are only dealing with a single service and know what it is.
 Root single environment`
 )
 
-func CreateMemoryMarathonConfig(host, user, password string) *ConfigFile {
+func CreateMemoryMarathonConfig(host, user, password, token string) *ConfigFile {
 	configFile, _ := Load("")
 	configFile.RootService = true
 	configFile.Format = "column"
@@ -25,6 +25,7 @@ func CreateMemoryMarathonConfig(host, user, password string) *ConfigFile {
 		HostUrl:  host,
 		Username: user,
 		Password: password,
+		Token: token,
 	}
 	configEnv := &ConfigEnvironment{
 		Marathon: serviceEnv,

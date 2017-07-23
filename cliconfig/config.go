@@ -60,6 +60,7 @@ type ConfigEnvironment struct {
 type ServiceConfig struct {
 	Username string            `json:"username,omitempty"`
 	Password string            `json:"password,omitempty"`
+	Token    string            `json:"token"`
 	HostUrl  string            `json:"serveraddress,omitempty"`
 	Features map[string]string `json:"features,omitempty"`
 	Name     string            `json:"-"`
@@ -134,12 +135,13 @@ func (configFile *ConfigFile) AddEnvironment() {
 	configFile.Save()
 }
 
-func (configFile *ConfigFile) AddMarathonEnvironment(name, host, user, pass string) {
+func (configFile *ConfigFile) AddMarathonEnvironment(name, host, user, pass, token string) {
 	service := &ServiceConfig{}
 	service.Name = name
 	service.HostUrl = host
 	service.Username = user
 	service.Password = pass
+	service.Token = token
 
 	configEnv := &ConfigEnvironment{
 		Marathon: service,

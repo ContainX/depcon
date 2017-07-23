@@ -131,7 +131,7 @@ func (c *MarathonClient) UpdateGroup(group *Group, wait bool) (*Group, error) {
 	if resp.Error != nil {
 		if resp.Error == httpclient.ErrorMessage {
 			if resp.Status == 422 {
-				return nil, ErrorGropAppExists
+				return nil, ErrorGroupAppExists
 			}
 		}
 		return nil, resp.Error

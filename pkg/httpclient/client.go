@@ -4,6 +4,7 @@ package httpclient
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"github.com/ContainX/depcon/pkg/encoding"
 	"github.com/ContainX/depcon/pkg/logger"
 	"io"
@@ -42,6 +43,8 @@ type HttpClientConfig struct {
 	HttpUser string
 	// Http Basic Auth Password
 	HttpPass string
+	// Http Authorization Token
+	HttpToken string
 	// Request timeout
 	RequestTimeout int
 	// TLS Insecure Skip Verify
@@ -142,7 +145,7 @@ func (h *HttpClient) CreateHttpRequest(method, urlStr string, body io.Reader) (*
 
 func (h *HttpClient) invoke(r *Request) *Response {
 
-	log.Debug("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
+	log.Debugf("%s - %s, Body:\n%s", r.method.String(), r.url, r.data)
 
 	request, err := h.CreateHttpRequest(r.method.String(), r.url, strings.NewReader(r.data))
 
@@ -169,7 +172,7 @@ func (h *HttpClient) invoke(r *Request) *Response {
 		content = string(rc)
 	}
 
-	log.Debug("Status: %v, RAW: %s", status, content)
+	log.Debugf("Status: %v, RAW: %s", status, content)
 
 	if status >= 200 && status < 300 {
 		if r.result != nil {
@@ -217,6 +220,10 @@ func AddDefaultHeaders(req *http.Request) {
 }
 
 func AddAuthentication(c HttpClientConfig, req *http.Request) {
+	if c.HttpToken != "" {
+		req.Header.Set("Authorization", fmt.Sprintf("token=%v", c.HttpToken))
+		return
+	}
 	if c.HttpUser != "" {
 		req.SetBasicAuth(c.HttpUser, c.HttpPass)
 	}
