@@ -52,7 +52,7 @@ type HttpClientConfig struct {
 }
 
 type HttpClient struct {
-	config HttpClientConfig
+	config *HttpClientConfig
 	http   *http.Client
 }
 
@@ -70,14 +70,14 @@ var (
 )
 
 func NewDefaultConfig() *HttpClientConfig {
-	return &HttpClientConfig{RequestTimeout: 30, TLSInsecureSkipVerify: false}
+	return &HttpClientConfig{RWMutex: sync.RWMutex{}, RequestTimeout: 30, TLSInsecureSkipVerify: false}
 }
 
 func DefaultHttpClient() *HttpClient {
-	return NewHttpClient(*NewDefaultConfig())
+	return NewHttpClient(NewDefaultConfig())
 }
 
-func NewHttpClient(config HttpClientConfig) *HttpClient {
+func NewHttpClient(config *HttpClientConfig) *HttpClient {
 	hc := &HttpClient{
 		config: config,
 		http: &http.Client{
@@ -219,7 +219,7 @@ func AddDefaultHeaders(req *http.Request) {
 	req.Header.Add("Accept", "application/json")
 }
 
-func AddAuthentication(c HttpClientConfig, req *http.Request) {
+func AddAuthentication(c *HttpClientConfig, req *http.Request) {
 	if c.HttpToken != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("token=%v", c.HttpToken))
 		return
@@ -233,6 +233,6 @@ func (h *HttpClient) Unwrap() *http.Client {
 	return h.http
 }
 
-func (h *HttpClient) Configuration() HttpClientConfig {
+func (h *HttpClient) Configuration() *HttpClientConfig {
 	return h.config
 }
