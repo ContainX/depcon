@@ -21,7 +21,7 @@ func TestCreateApplicationFromFile(t *testing.T) {
 	c := MarathonClient{}
 	app, err := c.ParseApplicationFromFile(AppsFolder+"app_params.json", opts)
 	if err != nil {
-		log.Panic("Expected success %v", err)
+		log.Panicf("Expected success %v", err)
 	}
 	log.Debug("%v", app)
 	if app.Labels["tags"] != "prom-metrics" {

@@ -216,9 +216,9 @@ var configRootServiceCmd = &cobra.Command{
 			configFile.RootService = rootBool
 			configFile.Save()
 			if rootBool {
-				fmt.Println("\nService rooting is now enabled\n")
+				fmt.Println("\nService rooting is now enabled")
 			} else {
-				fmt.Println("\nService rooting is now disabled\n")
+				fmt.Println("\nService rooting is now disabled")
 			}
 		} else {
 			cli.Output(nil, ErrInvalidRootOption)

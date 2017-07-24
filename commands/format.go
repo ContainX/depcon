@@ -36,7 +36,7 @@ func getFormatType() string {
 }
 
 func PrintError(err error) {
-	log.Error("%v", err.Error())
+	log.Errorf("%v", err.Error())
 	os.Exit(1)
 }
 
@@ -60,6 +60,6 @@ func printEncodedType(formatter cli.Formatter, encoder encoding.EncoderType) {
 func printColumn(formatter cli.Formatter) {
 	err := formatter.ToColumns(os.Stdout)
 	if err != nil {
-		log.Error("Error: %s", err.Error())
+		log.Errorf("Error: %s", err.Error())
 	}
 }

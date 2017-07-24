@@ -81,7 +81,7 @@ func NewHttpClient(config HttpClientConfig) *HttpClient {
 	hc := &HttpClient{
 		config: config,
 		http: &http.Client{
-			Timeout: (time.Duration(config.RequestTimeout) * time.Second),
+			Timeout: time.Duration(config.RequestTimeout) * time.Second,
 		},
 	}
 	if config.TLSInsecureSkipVerify {

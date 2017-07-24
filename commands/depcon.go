@@ -87,7 +87,7 @@ func Execute() {
 				rootCmd.Execute()
 				return
 			}
-			logger.Logger().Error("%s file not found.  Generating initial configuration", file.Filename())
+			logger.Logger().Errorf("%s file not found.  Generating initial configuration", file.Filename())
 			configFile = cliconfig.CreateNewConfigFromUserInput()
 		}
 	}
@@ -123,7 +123,7 @@ func executeWithExistingConfig() {
 		os.Exit(1)
 	}
 	if _, err := configFile.GetEnvironment(envName); err != nil {
-		logger.Logger().Error("'%s' environment could not be found in config (%s)\n\n", envName, configFile.Filename())
+		logger.Logger().Errorf("'%s' environment could not be found in config (%s)\n\n", envName, configFile.Filename())
 		printValidEnvironments()
 		os.Exit(1)
 	} else {
