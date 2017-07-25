@@ -10,10 +10,10 @@ For full up to date documentation and usage please see:
 
 ## Overview
 
-Depcon makes managing clusters that run docker containers a breeze.  It offers the ability to define environments such as test, pre-prod, production against Marathon (initial release), Kubernetes and Amazon ECS.  
+Depcon makes managing clusters that run docker containers a breeze.  It offers the ability to define environments such as test, pre-prod, production against Marathon (initial release), Kubernetes and Amazon ECS.
 
 **Some key features of Depcon are:**
-- Variable substistution in deployment descriptors
+- Variable interpolation in deployment descriptors
 - Output results in Column, YAML and JSON formats for easy integration with automation
 - Accepts deployment descriptors in either JSON or YAML format
 - **Full Mesos/Marathon support**
