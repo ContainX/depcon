@@ -14,17 +14,17 @@ import (
 )
 
 const (
-	FlagVerbose     = "verbose"
-	EnvDepconMode   = "DEPCON_MODE"
-	ModeMarathon    = "marathon"
-	EnvMarathonHost = "MARATHON_HOST"
-	EnvMarathonUser = "MARATHON_USER"
-	EnvMarathonPass = "MARATHON_PASS"
+	FlagVerbose      = "verbose"
+	EnvDepconMode    = "DEPCON_MODE"
+	ModeMarathon     = "marathon"
+	EnvMarathonHost  = "MARATHON_HOST"
+	EnvMarathonUser  = "MARATHON_USER"
+	EnvMarathonPass  = "MARATHON_PASS"
 	EnvMarathonToken = "MARATHON_TOKEN"
-	FlagEnv         = "env"
-	ViperEnv        = "env_name"
-	EnvHelp         = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
-	DepConHelp      = `
+	FlagEnv          = "env"
+	ViperEnv         = "env_name"
+	EnvHelp          = `Specifies the Environment name to use (eg. test | prod | etc). This can be omitted if only a single environment has been defined`
+	DepConHelp       = `
 DEPCON (Deploy Containers)
 
 == Version: %s - Built: %s ==

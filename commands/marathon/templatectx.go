@@ -14,11 +14,12 @@ import (
 )
 
 const (
-	DefaultEnv    = "-"
-	ContextErrFmt = "Error parsing template context: %s - %s"
+	DefaultEnv      = "-"
+	DefaultRootPath = "."
+	ContextErrFmt   = "Error parsing template context: %s - %s"
 )
 
-// Templated based Functions
+// Template based Functions
 var Funcs = FuncMap()
 
 type TemplateContext struct {
@@ -29,7 +30,7 @@ type TemplateEnvironment struct {
 	Apps map[string]map[string]interface{} `json:"apps,omitempty"`
 }
 
-func (ctx *TemplateContext) Transform(writer io.Writer, descriptor string) error {
+func (ctx *TemplateContext) Transform(writer io.Writer, descriptor, rootDir string) error {
 	var t *template.Template
 
 	if b, err := ioutil.ReadFile(descriptor); err != nil {
@@ -41,7 +42,12 @@ func (ctx *TemplateContext) Transform(writer io.Writer, descriptor string) error
 		if e != nil {
 			return e
 		}
-		if matches, err := filepath.Glob("./**/*.tmpl"); err == nil && len(matches) > 0 {
+
+		if rootDir == "" {
+			rootDir = DefaultRootPath
+		}
+
+		if matches, err := filepath.Glob(fmt.Sprintf("%s/**/*.tmpl", rootDir)); err == nil && len(matches) > 0 {
 			if t, e = t.ParseFiles(matches...); err != nil {
 				return err
 			}

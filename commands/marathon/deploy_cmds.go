@@ -118,7 +118,7 @@ func deployAppOrGroup(cmd *cobra.Command, args []string) {
 	dryrun, _ := cmd.Flags().GetBool(DRYRUN_FLAG)
 	options := &marathon.CreateOptions{Wait: wait, Force: force, ErrorOnMissingParams: !ignore, StopDeploy: stop_deploy, DryRun: dryrun}
 
-	descriptor := parseDescriptor(tempctx, filename)
+	descriptor := ParseDescriptor(tempctx, filename, "")
 	et, err := encoding.NewEncoderFromFileExt(filename)
 	if err != nil {
 		exitWithError(err)
@@ -175,7 +175,7 @@ func outputDeployment(result interface{}, e error) {
 	}
 }
 
-func parseDescriptor(tempctx, filename string) string {
+func ParseDescriptor(tempctx, filename, rootDir string) string {
 	b := &bytes.Buffer{}
 
 	r, err := LoadTemplateContext(tempctx)
@@ -183,7 +183,7 @@ func parseDescriptor(tempctx, filename string) string {
 		exitWithError(err)
 	}
 
-	if err := r.Transform(b, filename); err != nil {
+	if err := r.Transform(b, filename, rootDir); err != nil {
 		exitWithError(err)
 	}
 	return b.String()

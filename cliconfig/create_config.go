@@ -25,7 +25,7 @@ func CreateMemoryMarathonConfig(host, user, password, token string) *ConfigFile 
 		HostUrl:  host,
 		Username: user,
 		Password: password,
-		Token: token,
+		Token:    token,
 	}
 	configEnv := &ConfigEnvironment{
 		Marathon: serviceEnv,
