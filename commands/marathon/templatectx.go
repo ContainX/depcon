@@ -31,6 +31,10 @@ type TemplateEnvironment struct {
 }
 
 func (ctx *TemplateContext) Transform(writer io.Writer, descriptor, rootDir string) error {
+	return ctx.TransformWithEnv(writer, descriptor, rootDir, viper.GetString(ENV_NAME))
+}
+
+func (ctx *TemplateContext) TransformWithEnv(writer io.Writer, descriptor, rootDir, env string) error {
 	var t *template.Template
 
 	if b, err := ioutil.ReadFile(descriptor); err != nil {
@@ -53,8 +57,7 @@ func (ctx *TemplateContext) Transform(writer io.Writer, descriptor, rootDir stri
 			}
 		}
 	}
-	environment := viper.GetString(ENV_NAME)
-	m := ctx.mergeAppWithDefault(strings.ToLower(environment))
+	m := ctx.mergeAppWithDefault(strings.ToLower(env))
 
 	if err := t.Execute(writer, m); err != nil {
 		return err
