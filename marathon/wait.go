@@ -12,7 +12,7 @@ func (c *MarathonClient) WaitForApplication(id string, timeout time.Duration) er
 	t_now := time.Now()
 	t_stop := t_now.Add(timeout)
 
-	logWaitApplication(id)
+	c.logWaitApplication(id)
 	for {
 		if time.Now().After(t_stop) {
 			return ErrorTimeout
@@ -33,7 +33,7 @@ func (c *MarathonClient) WaitForApplication(id string, timeout time.Duration) er
 				return nil
 			}
 		}
-		logWaitApplication(id)
+		c.logWaitApplication(id)
 		time.Sleep(time.Duration(2) * time.Second)
 	}
 }
@@ -66,25 +66,25 @@ func (c *MarathonClient) WaitForDeployment(id string, timeout time.Duration) err
 	t_now := time.Now()
 	t_stop := t_now.Add(timeout)
 
-	logWaitDeployment(id)
+	c.logWaitDeployment(id)
 
 	for {
 		if time.Now().After(t_stop) {
 			return ErrorTimeout
 		}
 		if found, _ := c.HasDeployment(id); !found {
-			logWait.Info("Deployment has completed for %s, elapsed time %s", id, utils.ElapsedStr(time.Since(t_now)))
+			c.logOutput(logWait.Info, "Deployment has completed for %s, elapsed time %s", id, utils.ElapsedStr(time.Since(t_now)))
 			return nil
 		}
-		logWaitDeployment(id)
+		c.logWaitDeployment(id)
 		time.Sleep(time.Duration(2) * time.Second)
 	}
 }
 
-func logWaitDeployment(id string) {
-	logWait.Info("Waiting for deployment %s", id)
+func (c *MarathonClient) logWaitDeployment(id string) {
+	c.logOutput(logWait.Info, "Waiting for deployment %s", id)
 }
 
-func logWaitApplication(id string) {
-	logWait.Info("Waiting for application deployment to complete for %s", id)
+func (c *MarathonClient) logWaitApplication(id string) {
+	c.logOutput(logWait.Info, "Waiting for application deployment to complete for %s", id)
 }

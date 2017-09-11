@@ -2,6 +2,7 @@
 package marathon
 
 import (
+	"fmt"
 	"github.com/ContainX/depcon/pkg/httpclient"
 	"github.com/ContainX/depcon/pkg/logger"
 	"github.com/ContainX/depcon/utils"
@@ -264,6 +265,11 @@ type EventStreamState struct {
 type MarathonOptions struct {
 	WaitTimeout      time.Duration
 	TLSAllowInsecure bool
+	DeploymentChan   chan DeploymentStatus
+}
+
+type DeploymentStatus struct {
+	Message string
 }
 
 func NewMarathonClient(host, username, password, token string) Marathon {
@@ -312,4 +318,12 @@ func initCreateOptions(opts *CreateOptions) *CreateOptions {
 		return &CreateOptions{}
 	}
 	return opts
+}
+
+func (c *MarathonClient) logOutput(f func(message string, args ...interface{}), message string, args ...interface{}) {
+	m := fmt.Sprintf(message, args...)
+	f(m)
+	if c.opts != nil && c.opts.DeploymentChan != nil {
+		c.opts.DeploymentChan <- DeploymentStatus{Message: m}
+	}
 }
