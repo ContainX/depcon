@@ -57,7 +57,7 @@ func (c *MarathonClient) CreateApplicationFromString(filename string, appstr str
 
 	if opts.StopDeploy {
 		if deployment, err := c.CancelAppDeployment(app.ID, false); err == nil && deployment != nil {
-			c.logOutput(log.Info, "Previous deployment found..  cancelling and waiting until complete.")
+			c.logOutput(log.Infof, "Previous deployment found..  cancelling and waiting until complete.")
 			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
 		}
 	}
@@ -113,7 +113,7 @@ func (c *MarathonClient) ParseApplicationFromString(r io.Reader, et encoding.Enc
 }
 
 func (c *MarathonClient) CreateApplication(app *Application, wait, force bool) (*Application, error) {
-	c.logOutput(log.Info, "Creating Application '%s', wait: %v, force: %v", app.ID, wait, force)
+	c.logOutput(log.Infof, "Creating Application '%s', wait: %v, force: %v", app.ID, wait, force)
 
 	result := new(Application)
 	resp := c.http.HttpPost(c.marathonUrl(API_APPS), app, result)

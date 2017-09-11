@@ -24,7 +24,7 @@ func (c *MarathonClient) CreateGroupFromString(filename string, grpstr string, o
 
 	if opts.StopDeploy {
 		if deployment, err := c.CancelAppDeployment(group.GroupID, true); err == nil && deployment != nil {
-			c.logOutput(log.Info, "Previous deployment found..  cancelling and waiting until complete.")
+			c.logOutput(log.Infof, "Previous deployment found..  cancelling and waiting until complete.")
 			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
 		}
 	}
@@ -97,7 +97,7 @@ func (c *MarathonClient) ParseGroupFromString(r io.Reader, et encoding.EncoderTy
 }
 
 func (c *MarathonClient) CreateGroup(group *Group, wait, force bool) (*Group, error) {
-	c.logOutput(log.Info, "Creating Group '%s', wait: %v, force: %v", group.GroupID, wait, force)
+	c.logOutput(log.Infof, "Creating Group '%s', wait: %v, force: %v", group.GroupID, wait, force)
 	result := new(DeploymentID)
 	resp := c.http.HttpPost(c.marathonUrl(API_GROUPS), group, result)
 	if resp.Error != nil {

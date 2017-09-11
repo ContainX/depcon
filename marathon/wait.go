@@ -73,7 +73,7 @@ func (c *MarathonClient) WaitForDeployment(id string, timeout time.Duration) err
 			return ErrorTimeout
 		}
 		if found, _ := c.HasDeployment(id); !found {
-			c.logOutput(logWait.Info, "Deployment has completed for %s, elapsed time %s", id, utils.ElapsedStr(time.Since(t_now)))
+			c.logOutput(logWait.Infof, "Deployment has completed for %s, elapsed time %s", id, utils.ElapsedStr(time.Since(t_now)))
 			return nil
 		}
 		c.logWaitDeployment(id)
@@ -82,9 +82,9 @@ func (c *MarathonClient) WaitForDeployment(id string, timeout time.Duration) err
 }
 
 func (c *MarathonClient) logWaitDeployment(id string) {
-	c.logOutput(logWait.Info, "Waiting for deployment %s", id)
+	c.logOutput(logWait.Infof, "Waiting for deployment %s", id)
 }
 
 func (c *MarathonClient) logWaitApplication(id string) {
-	c.logOutput(logWait.Info, "Waiting for application deployment to complete for %s", id)
+	c.logOutput(logWait.Infof, "Waiting for application deployment to complete for %s", id)
 }
