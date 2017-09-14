@@ -36,7 +36,7 @@ func (c *MarathonClient) CreateApplicationFromFile(filename string, opts *Create
 
 	if opts.StopDeploy {
 		if deployment, err := c.CancelAppDeployment(app.ID, false); err == nil && deployment != nil {
-			log.Info("Previous deployment found..  cancelling and waiting until complete.")
+			log.Infof("Previous deployment found..  cancelling and waiting until complete.")
 			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
 		}
 	}
@@ -67,7 +67,7 @@ func (c *MarathonClient) CreateApplicationFromString(filename string, appstr str
 }
 
 func (c *MarathonClient) ParseApplicationFromFile(filename string, opts *CreateOptions) (*Application, error) {
-	log.Info("Creating Application from file: %s", filename)
+	log.Infof("Creating Application from file: %s", filename)
 
 	file, err := os.Open(filename)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *MarathonClient) CreateApplication(app *Application, wait, force bool) (
 }
 
 func (c *MarathonClient) UpdateApplication(app *Application, wait bool, force bool) (*Application, error) {
-	log.Info("Update Application '%s', wait = %v", app.ID, wait)
+	log.Infof("Update Application '%s', wait = %v", app.ID, wait)
 	result := new(DeploymentID)
 	id := utils.TrimRootPath(app.ID)
 	app.ID = ""
@@ -183,7 +183,7 @@ func (c *MarathonClient) ListApplications() (*Applications, error) {
 }
 
 func (c *MarathonClient) ListApplicationsWithFilters(filter string) (*Applications, error) {
-	log.Debug("Enter: ListApplications")
+	log.Debugf("Enter: ListApplications")
 
 	apps := new(Applications)
 
@@ -202,7 +202,7 @@ func (c *MarathonClient) ListApplicationsWithFilters(filter string) (*Applicatio
 }
 
 func (c *MarathonClient) GetApplication(id string) (*Application, error) {
-	log.Debug("Enter: GetApplication: %s", id)
+	log.Debugf("Enter: GetApplication: %s", id)
 	app := new(AppById)
 	resp := c.http.HttpGet(c.marathonUrl(API_APPS, id), app)
 	if resp.Error != nil {
@@ -224,7 +224,7 @@ func (c *MarathonClient) HasApplication(id string) (bool, error) {
 }
 
 func (c *MarathonClient) DestroyApplication(id string) (*DeploymentID, error) {
-	log.Info("Deleting Application '%s'", id)
+	log.Infof("Deleting Application '%s'", id)
 	deploymentId := new(DeploymentID)
 
 	resp := c.http.HttpDelete(c.marathonUrl(API_APPS, id), nil, deploymentId)
@@ -235,7 +235,7 @@ func (c *MarathonClient) DestroyApplication(id string) (*DeploymentID, error) {
 }
 
 func (c *MarathonClient) RestartApplication(id string, force bool) (*DeploymentID, error) {
-	log.Info("Restarting Application '%s', force: %v", id, force)
+	log.Infof("Restarting Application '%s', force: %v", id, force)
 
 	deploymentId := new(DeploymentID)
 
@@ -248,7 +248,7 @@ func (c *MarathonClient) RestartApplication(id string, force bool) (*DeploymentI
 }
 
 func (c *MarathonClient) PauseApplication(id string) (*DeploymentID, error) {
-	log.Info("Suspending Application '%s'", id)
+	log.Infof("Suspending Application '%s'", id)
 	deploymentId := new(DeploymentID)
 
 	uri := fmt.Sprintf("%s?scale=true&force=true", c.marathonUrl(API_APPS, id, "tasks"))
@@ -260,7 +260,7 @@ func (c *MarathonClient) PauseApplication(id string) (*DeploymentID, error) {
 }
 
 func (c *MarathonClient) ScaleApplication(id string, instances int) (*DeploymentID, error) {
-	log.Info("Scale Application '%s' to %v instances", id, instances)
+	log.Infof("Scale Application '%s' to %v instances", id, instances)
 
 	update := new(Application)
 	update.ID = id
@@ -335,7 +335,7 @@ func (c *MarathonClient) determineTimeout(app *Application) time.Duration {
 				max = grace
 			}
 		}
-		log.Debug("determineTimeout:  Max is %d\n", max)
+		log.Debugf("determineTimeout:  Max is %d\n", max)
 		return max
 	}
 	return DefaultTimeout

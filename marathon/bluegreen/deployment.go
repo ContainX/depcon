@@ -31,7 +31,7 @@ var (
 
 func (c *BGClient) DeployBlueGreenFromFile(filename string) (*marathon.Application, error) {
 
-	log.Debug("Enter DeployBlueGreenFromFile")
+	log.Debugf("Enter DeployBlueGreenFromFile")
 
 	parseOpts := &marathon.CreateOptions{
 		ErrorOnMissingParams: c.opts.ErrorOnMissingParams,
@@ -46,7 +46,7 @@ func (c *BGClient) DeployBlueGreenFromFile(filename string) (*marathon.Applicati
 
 func (c *BGClient) DeployBlueGreen(app *marathon.Application) (*marathon.Application, error) {
 
-	log.Debug("Enter DeployBlueGreen")
+	log.Debugf("Enter DeployBlueGreen")
 
 	// Before we return the client lets make sure the LoadBalancer is properly defined
 	c.isProxyAlive()
@@ -106,7 +106,7 @@ func (c *BGClient) DeployBlueGreen(app *marathon.Application) (*marathon.Applica
 }
 
 func (c *BGClient) updateServicePort(app *marathon.Application, port int) *marathon.Application {
-	log.Debug("Entering updateServicePort, port=%d", port)
+	log.Debugf("Entering updateServicePort, port=%d", port)
 	if app.Container != nil && app.Container.Docker != nil {
 		if app.Container.Docker.PortMappings != nil && len(app.Container.Docker.PortMappings) > 0 {
 			app.Container.Docker.PortMappings[0].ServicePort = port
@@ -119,11 +119,11 @@ func (c *BGClient) updateServicePort(app *marathon.Application, port int) *marat
 }
 
 func (c *BGClient) startDeployment(app *marathon.Application, state *appState) bool {
-	log.Debug("startDeployment: resuming: %v", state.resuming)
+	log.Debugf("startDeployment: resuming: %v", state.resuming)
 	if !state.resuming {
 		a, err := c.marathon.CreateApplication(app, true, false)
 		if err != nil {
-			log.Error("Unable to create application: %s", err.Error())
+			log.Errorf("Unable to create application: %s", err.Error())
 			os.Exit(1)
 		}
 		app = a
@@ -149,14 +149,14 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 	exists := false
 
 	for _, app := range apps.Apps {
-		log.Debug("bgAppInfo: loop %s", app.ID)
+		log.Debugf("bgAppInfo: loop %s", app.ID)
 		if len(app.Labels) <= 0 {
 			continue
 		}
 		if labelExists(&app, DeployGroup) && labelExists(&app, DeployGroupColour) && app.Labels[DeployGroup] == deployGroup {
 			if exists {
 				if c.opts.Resume {
-					log.Info("Found previous deployment -- resuming")
+					log.Infof("Found previous deployment -- resuming")
 					resume = true
 					if deployStartTimeCompare(&existingApp, &app) == -1 {
 						break
@@ -168,7 +168,7 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 			prev_colour := app.Labels[DeployGroupColour]
 			prev_port := app.Ports[0]
 
-			log.Debug("bgAppInfo: assigning %s to existing app: %s = %s", app.ID, app.Labels[DeployGroup], deployGroup)
+			log.Debugf("bgAppInfo: assigning %s to existing app: %s = %s", app.ID, app.Labels[DeployGroup], deployGroup)
 			existingApp = app
 			exists = true
 
@@ -194,9 +194,9 @@ func (c *BGClient) bgAppInfo(deployGroup string, deployGroupAltPort int) (*appSt
 
 	if exists {
 		as.existingApp = &existingApp
-		log.Debug("bgAppInfo: Returning %s, np: %d, clr: %s", sprintApp(as.existingApp), as.nextPort, as.colour)
+		log.Debugf("bgAppInfo: Returning %s, np: %d, clr: %s", sprintApp(as.existingApp), as.nextPort, as.colour)
 	} else {
-		log.Debug("bgAppInfo: Returning np: %d, clr: %s", as.nextPort, as.colour)
+		log.Debugf("bgAppInfo: Returning np: %d, clr: %s", as.nextPort, as.colour)
 	}
 	return as, nil
 }

@@ -33,7 +33,7 @@ func (c *MarathonClient) CreateGroupFromString(filename string, grpstr string, o
 }
 
 func (c *MarathonClient) CreateGroupFromFile(filename string, opts *CreateOptions) (*Group, error) {
-	log.Info("Creating Group from file: %s", filename)
+	log.Infof("Creating Group from file: %s", filename)
 
 	group, err := c.ParseGroupFromFile(filename, opts)
 	if err != nil {
@@ -42,7 +42,7 @@ func (c *MarathonClient) CreateGroupFromFile(filename string, opts *CreateOption
 
 	if opts.StopDeploy {
 		if deployment, err := c.CancelAppDeployment(group.GroupID, true); err == nil && deployment != nil {
-			log.Info("Previous deployment found..  cancelling and waiting until complete.")
+			log.Infof("Previous deployment found..  cancelling and waiting until complete.")
 			c.WaitForDeployment(deployment.DeploymentID, time.Second*30)
 		}
 	}
@@ -51,7 +51,7 @@ func (c *MarathonClient) CreateGroupFromFile(filename string, opts *CreateOption
 }
 
 func (c *MarathonClient) ParseGroupFromFile(filename string, opts *CreateOptions) (*Group, error) {
-	log.Info("Creating Group from file: %s", filename)
+	log.Infof("Creating Group from file: %s", filename)
 
 	file, err := os.Open(filename)
 	if err != nil {

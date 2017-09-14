@@ -47,7 +47,7 @@ func (c *MarathonClient) CancelAppDeployment(appId string, matchPrefix bool) (*D
 		for _, value := range deployments {
 			for _, id := range value.AffectedApps {
 				if doesIDMatch(appId, id, matchPrefix) {
-					log.Info("Removing matched deployment: %s for app: %s", value.DeployID, id)
+					log.Infof("Removing matched deployment: %s for app: %s", value.DeployID, id)
 					return c.DeleteDeployment(value.DeployID, true)
 				}
 			}

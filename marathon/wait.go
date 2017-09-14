@@ -21,14 +21,14 @@ func (c *MarathonClient) WaitForApplication(id string, timeout time.Duration) er
 		app, err := c.GetApplication(id)
 		if err == nil {
 			if app.DeploymentID == nil || len(app.DeploymentID) <= 0 {
-				logWait.Info("Application deployment has completed for %s, elapsed time %s", id, utils.ElapsedStr(time.Since(t_now)))
+				logWait.Infof("Application deployment has completed for %s, elapsed time %s", id, utils.ElapsedStr(time.Since(t_now)))
 				if app.HealthChecks != nil && len(app.HealthChecks) > 0 {
 					err := c.WaitForApplicationHealthy(id, timeout)
 					if err != nil {
-						logWait.Error("Error waiting for application '%s' to become healthy: %s", id, err.Error())
+						logWait.Errorf("Error waiting for application '%s' to become healthy: %s", id, err.Error())
 					}
 				} else {
-					logWait.Warning("No health checks defined for '%s', skipping waiting for healthy state", id)
+					logWait.Warningf("No health checks defined for '%s', skipping waiting for healthy state", id)
 				}
 				return nil
 			}
@@ -53,10 +53,10 @@ func (c *MarathonClient) WaitForApplicationHealthy(id string, timeout time.Durat
 		total := app.TasksStaged + app.TasksRunning
 		diff := total - app.TasksHealthy
 		if diff == 0 {
-			logWait.Info("%v of %v expected instances are healthy.  Elapsed health check time of %s", app.TasksHealthy, total, utils.ElapsedStr(time.Since(t_now)))
+			logWait.Infof("%v of %v expected instances are healthy.  Elapsed health check time of %s", app.TasksHealthy, total, utils.ElapsedStr(time.Since(t_now)))
 			return nil
 		}
-		logWait.Info("%v healthy instances.  Waiting for %v total instances. Retrying check in %v seconds", app.TasksHealthy, total, duration)
+		logWait.Infof("%v healthy instances.  Waiting for %v total instances. Retrying check in %v seconds", app.TasksHealthy, total, duration)
 		time.Sleep(duration)
 	}
 }
