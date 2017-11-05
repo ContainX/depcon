@@ -99,7 +99,6 @@ func empty(given interface{}) bool {
 	case reflect.Struct:
 		return false
 	}
-	return true
 }
 
 func max(a interface{}, i ...interface{}) int64 {

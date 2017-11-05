@@ -84,7 +84,7 @@ func buildFuncMap(userFuncs template.FuncMap) template.FuncMap {
 }
 
 func durationToMilliseconds(t time.Duration) string {
-	return fmt.Sprintf("%d ms", (t.Nanoseconds() / int64(time.Millisecond)))
+	return fmt.Sprintf("%d ms", t.Nanoseconds()/int64(time.Millisecond))
 }
 
 func padString(s string) string {

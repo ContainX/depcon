@@ -51,10 +51,10 @@ func (c *MarathonClient) setupSSEStream() error {
 			select {
 			case ev := <-stream.Events:
 				if err := c.handleStreamEvent(ev.Data()); err != nil {
-					log.Error("Error setting up SSE Stream: %v", err)
+					log.Errorf("Error setting up SSE Stream: %v", err)
 				}
 			case err := <-stream.Errors:
-				log.Error("Error setting up SSE Stream: %v", err)
+				log.Errorf("Error setting up SSE Stream: %v", err)
 			}
 		}
 	}()
@@ -78,7 +78,7 @@ func (c *MarathonClient) handleStreamEvent(data string) error {
 	}
 
 	if err := encoding.DefaultJSONEncoder().UnMarshalStr(data, event.Event); err != nil {
-		return fmt.Errorf("Failed to decode event, id: %s, error: %s", event.ID, err)
+		return fmt.Errorf("Failed to decode event, id: %d, error: %s", event.ID, err)
 	}
 
 	if event.ID&c.eventStreamState.filter != 0 {

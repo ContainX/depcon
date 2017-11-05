@@ -44,7 +44,7 @@ func getPasswordWithVerify() string {
 	pass1 := getPassword("Password: ")
 	pass2 := getPassword("Verify Password: ")
 	if pass1 != pass2 {
-		fmt.Println("Password and Verify Password don't match\n")
+		fmt.Println("Password and Verify Password don't match")
 		return getPasswordWithVerify()
 	}
 	return pass1
@@ -54,7 +54,7 @@ func getTokenWithVerify() string {
 	token := getPassword("Token: ")
 	token2 := getPassword("Verify Token: ")
 	if token != token2 {
-		fmt.Println("Token and Verify Token don't match\n")
+		fmt.Println("Token and Verify Token don't match")
 		return getTokenWithVerify()
 	}
 	return token

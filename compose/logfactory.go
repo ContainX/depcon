@@ -13,11 +13,11 @@ type ComposeLogger struct {
 }
 
 func (n *ComposeLogger) Out(b []byte) {
-	log.Info("%v", b)
+	log.Infof("%v", b)
 }
 
 func (n *ComposeLogger) Err(b []byte) {
-	log.Error("%v", b)
+	log.Errorf("%v", b)
 }
 
 func (n *ComposeLogger) ErrWriter() io.Writer {

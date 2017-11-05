@@ -291,17 +291,18 @@ func createMarathonClient(username, password, token string, opts *MarathonOption
 	httpConfig.HttpUser = username
 	httpConfig.HttpPass = password
 	httpConfig.HttpToken = token
+	httpConfig.RWMutex = sync.RWMutex{}
 
 	if opts != nil && opts.TLSAllowInsecure {
 		httpConfig.TLSInsecureSkipVerify = opts.TLSAllowInsecure
 	}
 
-	httpClient := httpclient.NewHttpClient(*httpConfig)
-
-	c := new(MarathonClient)
-	c.http = *httpClient
-	c.hosts = hosts
-	c.opts = opts
+	httpClient := httpclient.NewHttpClient(httpConfig)
+	c := &MarathonClient{
+		http:  *httpClient,
+		hosts: hosts,
+		opts:  opts,
+	}
 	return c
 }
 
