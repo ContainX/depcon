@@ -314,6 +314,10 @@ func (c *MarathonClient) marathonUrl(elements ...string) string {
 	return utils.BuildPath(c.getHost(), elements)
 }
 
+func (c *MarathonClient) marathonUrlWithHost(host string, elements ...string) string {
+	return utils.BuildPath(host, elements)
+}
+
 func initCreateOptions(opts *CreateOptions) *CreateOptions {
 	if opts == nil {
 		return &CreateOptions{}
