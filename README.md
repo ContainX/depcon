@@ -100,7 +100,7 @@ $ depcon app get myapp
 Remove an application [applicationId] and all of it's instances
 
 ```
-$ decon app destroy myapp
+$ depcon app destroy myapp
 ```
 
 #### Scale an Application
