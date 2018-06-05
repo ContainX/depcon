@@ -148,13 +148,18 @@ type UpgradeStrategy struct {
 }
 
 type HealthCheck struct {
-	Protocol               string `json:"protocol,omitempty"`
-	Path                   string `json:"path,omitempty"`
-	GracePeriodSeconds     int    `json:"gracePeriodSeconds,omitempty"`
-	IntervalSeconds        int    `json:"intervalSeconds,omitempty"`
-	PortIndex              int    `json:"portIndex,omitempty"`
-	MaxConsecutiveFailures int    `json:"maxConsecutiveFailures,omitempty"`
-	TimeoutSeconds         int    `json:"timeoutSeconds,omitempty"`
+	Protocol               string              `json:"protocol,omitempty"`
+	Command                *HealthCheckCommand `json:"command,omitempty"`
+	Path                   string              `json:"path,omitempty"`
+	GracePeriodSeconds     int                 `json:"gracePeriodSeconds,omitempty"`
+	IntervalSeconds        int                 `json:"intervalSeconds,omitempty"`
+	PortIndex              int                 `json:"portIndex,omitempty"`
+	MaxConsecutiveFailures int                 `json:"maxConsecutiveFailures,omitempty"`
+	TimeoutSeconds         int                 `json:"timeoutSeconds,omitempty"`
+}
+
+type HealthCheckCommand struct {
+	Value string `json:"value,omitempty"`
 }
 
 type TaskIPAddress struct {
